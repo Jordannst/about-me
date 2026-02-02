@@ -4,6 +4,8 @@ import '../styles/global.css';
 import GridLines from '../components/GridLines.astro';
 import NoiseTexture from '../components/NoiseTexture.astro';
 import ScrollReveal from '../components/ScrollReveal.astro';
+import LoadingScreen from '../components/LoadingScreen.astro';
+import PageTransition from '../components/PageTransition.astro';
 ---
 
 <!doctype html>
@@ -41,6 +43,12 @@ import ScrollReveal from '../components/ScrollReveal.astro';
     </script>
   </head>
   <body class="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-700">
+    <!-- Loading Screen -->
+    <LoadingScreen />
+    
+    <!-- Page Transition Overlay -->
+    <PageTransition />
+    
     <!-- Noise Texture Overlay -->
     <NoiseTexture />
     
