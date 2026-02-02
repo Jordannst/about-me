@@ -1,0 +1,119 @@
+---
+import { personal } from '../data/portfolio';
+---
+
+<!-- Elegant Loading Screen -->
+<div id="loading-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--bg-primary)] transition-opacity duration-700">
+  <!-- Logo/Name -->
+  <div class="loading-logo mb-8">
+    <span class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl text-[var(--text-primary)]">
+      {personal.name.split(' ')[0]}
+      <span class="text-[var(--accent)]">.</span>
+    </span>
+  </div>
+  
+  <!-- Elegant Line Loader -->
+  <div class="loading-line-container w-48 md:w-64 h-px bg-[var(--border-color)] overflow-hidden">
+    <div class="loading-line h-full bg-[var(--accent)]"></div>
+  </div>
+  
+  <!-- Loading Text -->
+  <p class="loading-text mt-6 text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+    Loading
+  </p>
+</div>
+
+<style>
+  /* Logo entrance animation */
+  .loading-logo {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: loadingFadeUp 800ms var(--ease-luxury) forwards;
+    animation-delay: 100ms;
+  }
+  
+  /* Line container entrance */
+  .loading-line-container {
+    opacity: 0;
+    animation: loadingFade 600ms var(--ease-luxury) forwards;
+    animation-delay: 400ms;
+  }
+  
+  /* Loading line animation */
+  .loading-line {
+    width: 0%;
+    animation: loadingProgress 1800ms var(--ease-luxury) forwards;
+    animation-delay: 500ms;
+  }
+  
+  /* Loading text */
+  .loading-text {
+    opacity: 0;
+    animation: loadingFade 600ms var(--ease-luxury) forwards;
+    animation-delay: 600ms;
+  }
+  
+  @keyframes loadingFadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes loadingFade {
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes loadingProgress {
+    0% {
+      width: 0%;
+    }
+    50% {
+      width: 70%;
+    }
+    100% {
+      width: 100%;
+    }
+  }
+  
+  /* Hidden state after loading */
+  #loading-screen.loaded {
+    opacity: 0;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  // Loading screen controller
+  document.addEventListener('DOMContentLoaded', () => {
+    const loadingScreen = document.getElementById('loading-screen');
+    const mainContent = document.querySelector('main');
+    
+    // Hide loading screen after animations complete
+    const hideLoader = () => {
+      if (loadingScreen) {
+        loadingScreen.classList.add('loaded');
+        // Remove from DOM after transition
+        setTimeout(() => {
+          loadingScreen.style.display = 'none';
+        }, 700);
+      }
+      
+      // Trigger main content reveal
+      if (mainContent) {
+        mainContent.classList.add('content-revealed');
+      }
+    };
+    
+    // Wait for loading animation to complete (2.3s total)
+    // Logo (100ms + 800ms) + Line (500ms + 1800ms)
+    setTimeout(hideLoader, 2500);
+    
+    // Fallback: hide after window load if taking too long
+    window.addEventListener('load', () => {
+      setTimeout(hideLoader, 500);
+    });
+  });
+</script>

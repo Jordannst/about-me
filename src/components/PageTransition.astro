@@ -1,0 +1,73 @@
+---
+// Page Transition - Smooth transitions between navigation
+---
+
+<div id="page-transition" class="page-transition">
+  <div class="transition-overlay"></div>
+</div>
+
+<style>
+  .page-transition {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    pointer-events: none;
+  }
+  
+  .transition-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: var(--bg-inverted);
+    transform: translateY(100%);
+    transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  
+  .page-transition.transitioning .transition-overlay {
+    transform: translateY(0);
+  }
+  
+  .page-transition.transitioning-out .transition-overlay {
+    transform: translateY(-100%);
+  }
+</style>
+
+<script>
+  // Page transition for internal navigation
+  document.addEventListener('DOMContentLoaded', () => {
+    const transition = document.getElementById('page-transition');
+    const internalLinks = document.querySelectorAll('a[href^="/"]');
+    
+    internalLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const href = link.getAttribute('href');
+        
+        // Skip if same page anchor or external
+        if (!href || href.startsWith('#') || href.startsWith('http')) return;
+        
+        e.preventDefault();
+        
+        // Start transition
+        transition?.classList.add('transitioning');
+        
+        // Navigate after transition in
+        setTimeout(() => {
+          window.location.href = href;
+        }, 600);
+      });
+    });
+    
+    // On page load, transition out
+    window.addEventListener('pageshow', () => {
+      if (transition?.classList.contains('transitioning')) {
+        setTimeout(() => {
+          transition.classList.remove('transitioning');
+          transition.classList.add('transitioning-out');
+          
+          setTimeout(() => {
+            transition.classList.remove('transitioning-out');
+          }, 600);
+        }, 100);
+      }
+    });
+  });
+</script>
