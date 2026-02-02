@@ -11,7 +11,7 @@ export const personal = {
 
 export const about = {
   intro: `A 3rd-year Computer Science student passionate about web development and crafting beautiful user interfaces. I thrive on building real-world projects that solve meaningful problems, and I actively participate in tech competitions to push my boundaries.`,
-  highlight: `For me, coding isn't just about logic—it's about creating experiences that leave an impression.`,
+  highlight: `For me, coding isn't just about logic, it's about creating experiences that leave an impression.`,
 };
 
 export const skills = [
@@ -20,8 +20,10 @@ export const skills = [
   { name: "Python", category: "Languages" },
   { name: "Golang", category: "Languages" },
   { name: "React", category: "Frontend" },
+  { name: "React Native", category: "Frontend" },
   { name: "Next.js", category: "Frontend" },
   { name: "Tailwind CSS", category: "Frontend" },
+  { name: "Express.js", category: "Backend" },
   { name: "MongoDB", category: "Backend" },
   { name: "PostgreSQL", category: "Backend" },
   { name: "Figma", category: "Design" },
