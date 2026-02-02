@@ -1,0 +1,51 @@
+---
+// Back to Top Button
+// Shows after scrolling down, smooth scroll to top
+---
+
+<button 
+  id="back-to-top" 
+  class="fixed bottom-8 right-8 z-50 w-12 h-12 bg-[var(--bg-inverted)] text-[var(--text-inverted)] opacity-0 pointer-events-none translate-y-4 transition-all duration-500 hover:bg-[var(--accent)] hover:text-[var(--text-inverted)] group"
+  aria-label="Back to top"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mx-auto transition-transform duration-300 group-hover:-translate-y-1">
+    <path d="M12 19V5M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<style>
+  #back-to-top.visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const backToTop = document.getElementById('back-to-top');
+    
+    // Show/hide based on scroll position
+    const toggleVisibility = () => {
+      if (window.scrollY > 500) {
+        backToTop?.classList.add('visible');
+      } else {
+        backToTop?.classList.remove('visible');
+      }
+    };
+    
+    // Smooth scroll to top
+    backToTop?.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+    
+    // Listen to scroll
+    window.addEventListener('scroll', toggleVisibility, { passive: true });
+    
+    // Initial check
+    toggleVisibility();
+  });
+</script>
