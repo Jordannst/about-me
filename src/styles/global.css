@@ -1,0 +1,260 @@
+@import "tailwindcss";
+
+/* ================================
+   LUXURY EDITORIAL DESIGN SYSTEM
+   ================================ */
+
+/* Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+
+/* ================================
+   DESIGN TOKENS
+   ================================ */
+
+@theme {
+  /* Base Colors (used for reference) */
+  --color-alabaster: #F9F8F6;
+  --color-charcoal: #1A1A1A;
+  --color-taupe: #EBE5DE;
+  --color-warm-grey: #6C6863;
+  --color-gold: #D4AF37;
+
+  /* Font Families */
+  --font-serif: "Playfair Display", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  /* Custom Shadows */
+  --shadow-subtle: 0 2px 8px rgba(0, 0, 0, 0.02);
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-image: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-button: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-button-hover: 0 8px 24px rgba(0, 0, 0, 0.25);
+  --shadow-inner: inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+
+  /* Animation Durations */
+  --duration-fast: 300ms;
+  --duration-normal: 500ms;
+  --duration-slow: 700ms;
+  --duration-cinematic: 1500ms;
+  --duration-ultra: 2000ms;
+
+  /* Easing */
+  --ease-luxury: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* ================================
+   THEME CUSTOM PROPERTIES
+   ================================ */
+
+:root {
+  /* Light Theme (default) */
+  --bg-primary: #F9F8F6;
+  --bg-secondary: #EBE5DE;
+  --bg-inverted: #1A1A1A;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6C6863;
+  --text-inverted: #F9F8F6;
+  --border-color: rgba(26, 26, 26, 0.1);
+  --border-strong: #1A1A1A;
+  --accent: #D4AF37;
+  color-scheme: light;
+}
+
+:root.dark {
+  /* Dark Theme */
+  --bg-primary: #1A1A1A;
+  --bg-secondary: #2A2A2A;
+  --bg-inverted: #F9F8F6;
+  --text-primary: #F9F8F6;
+  --text-secondary: rgba(249, 248, 246, 0.6);
+  --text-inverted: #1A1A1A;
+  --border-color: rgba(249, 248, 246, 0.1);
+  --border-strong: #F9F8F6;
+  --accent: #D4AF37;
+  color-scheme: dark;
+}
+
+/* ================================
+   BASE STYLES
+   ================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.625;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color var(--duration-slow) var(--ease-luxury),
+              color var(--duration-slow) var(--ease-luxury);
+}
+
+/* ================================
+   TYPOGRAPHY
+   ================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  line-height: 0.95;
+}
+
+/* ================================
+   SELECTION
+   ================================ */
+
+::selection {
+  background-color: var(--accent);
+  color: var(--text-inverted);
+}
+
+/* ================================
+   PAPER NOISE TEXTURE
+   ================================ */
+
+.noise-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+:root.dark .noise-overlay {
+  opacity: 0.03;
+}
+
+/* ================================
+   VERTICAL TEXT
+   ================================ */
+
+.vertical-text {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* ================================
+   DROP CAP
+   ================================ */
+
+.drop-cap::first-letter {
+  float: left;
+  font-family: var(--font-serif);
+  font-size: 4.5rem;
+  line-height: 0.8;
+  margin-right: 0.75rem;
+  margin-top: 0.125rem;
+  color: var(--text-primary);
+}
+
+/* ================================
+   BUTTON ANIMATIONS
+   ================================ */
+
+.btn-primary {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--border-strong);
+  color: var(--text-inverted);
+  transition: box-shadow var(--duration-normal) var(--ease-luxury);
+  box-shadow: var(--shadow-button);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--accent);
+  transform: translateX(-100%);
+  transition: transform var(--duration-normal) var(--ease-luxury);
+  z-index: 0;
+}
+
+.btn-primary:hover::before {
+  transform: translateX(0);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--shadow-button-hover);
+}
+
+.btn-primary span {
+  position: relative;
+  z-index: 1;
+}
+
+/* ================================
+   IMAGE EFFECTS
+   ================================ */
+
+.image-luxury {
+  filter: grayscale(100%);
+  transition: filter var(--duration-cinematic) var(--ease-luxury),
+              transform var(--duration-cinematic) var(--ease-luxury),
+              box-shadow var(--duration-slow) var(--ease-luxury);
+  box-shadow: var(--shadow-card), var(--shadow-inner);
+}
+
+.image-luxury:hover,
+.group:hover .image-luxury {
+  filter: grayscale(0%);
+  transform: scale(1.03);
+  box-shadow: var(--shadow-card-hover), var(--shadow-inner);
+}
+
+/* ================================
+   THEME TOGGLE
+   ================================ */
+
+.theme-toggle {
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0;
+  transition: color var(--duration-normal) var(--ease-luxury);
+}
+
+.theme-toggle:hover {
+  color: var(--accent);
+}
+
+.theme-toggle .icon-sun {
+  display: none;
+}
+
+.theme-toggle .icon-moon {
+  display: block;
+}
+
+:root.dark .theme-toggle .icon-sun {
+  display: block;
+}
+
+:root.dark .theme-toggle .icon-moon {
+  display: none;
+}
+
+/* ================================
+   RESPONSIVE UTILITIES
+   ================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
