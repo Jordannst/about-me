@@ -6,7 +6,7 @@ export const personal = {
   tagline: "Fullstack Developer",
   taglineAccent: "AI Enthusiast",
   location: "Indonesia",
-  email: "your-email@example.com", // Update this
+  email: "jordannst.08@gmail.com", // Update this
 };
 
 export const about = {

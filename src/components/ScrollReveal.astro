@@ -1,0 +1,30 @@
+---
+// ScrollReveal - Intersection Observer based scroll animations
+---
+
+<script>
+  // Scroll Reveal Intersection Observer
+  document.addEventListener('DOMContentLoaded', () => {
+    const revealElements = document.querySelectorAll('.reveal, .reveal-fade-up, .reveal-fade, .reveal-scale, .reveal-left, .reveal-right');
+    
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px 0px -80px 0px', // Trigger 80px before element enters viewport
+      threshold: 0.1
+    };
+    
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('revealed');
+          // Unobserve after revealing (one-time animation)
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    revealElements.forEach(el => {
+      revealObserver.observe(el);
+    });
+  });
+</script>

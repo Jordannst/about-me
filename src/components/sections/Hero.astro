@@ -12,7 +12,7 @@ import { personal, meta } from '../../data/portfolio';
 
   <div class="max-w-[1600px] mx-auto w-full">
     <!-- Decorative Line -->
-    <div class="flex items-center gap-4 mb-8">
+    <div class="flex items-center gap-4 mb-8 hero-line">
       <div class="h-px w-8 md:w-12 bg-[var(--border-strong)]"></div>
       <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
         Welcome
@@ -21,21 +21,21 @@ import { personal, meta } from '../../data/portfolio';
 
     <!-- Main Headline -->
     <div class="max-w-5xl">
-      <h1 class="font-[family-name:var(--font-serif)] text-5xl md:text-7xl lg:text-9xl leading-[0.9] mb-8 text-[var(--text-primary)]">
+      <h1 class="font-[family-name:var(--font-serif)] text-5xl md:text-7xl lg:text-9xl leading-[0.9] mb-8 text-[var(--text-primary)] hero-title">
         {personal.name.split(' ')[0]}
         <br />
         <span class="text-[var(--text-secondary)]">{personal.name.split(' ')[1]}</span>
       </h1>
       
       <!-- Tagline with Mixed Italic -->
-      <p class="font-[family-name:var(--font-serif)] text-2xl md:text-4xl lg:text-5xl leading-tight text-[var(--text-secondary)]">
+      <p class="font-[family-name:var(--font-serif)] text-2xl md:text-4xl lg:text-5xl leading-tight text-[var(--text-secondary)] hero-subtitle">
         {personal.tagline}
         <span class="italic text-[var(--accent)]"> / {personal.taglineAccent}</span>
       </p>
     </div>
 
     <!-- Scroll Indicator -->
-    <div class="mt-16 md:mt-24 flex items-center gap-4">
+    <div class="mt-16 md:mt-24 flex items-center gap-4 hero-scroll">
       <div class="w-px h-12 bg-[var(--border-color)]"></div>
       <span class="text-[10px] uppercase tracking-[0.25em] text-[var(--text-secondary)]">
         Scroll to explore

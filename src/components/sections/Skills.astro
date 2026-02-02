@@ -17,7 +17,7 @@ const categories = Object.entries(groupedSkills);
 <section id="skills" class="py-20 md:py-32 px-8 md:px-16 bg-[var(--bg-inverted)] text-[var(--text-inverted)]">
   <div class="max-w-[1600px] mx-auto">
     <!-- Section Label -->
-    <div class="flex items-center gap-4 mb-12 md:mb-16">
+    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
       <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
         03
       </span>
@@ -28,15 +28,15 @@ const categories = Object.entries(groupedSkills);
     </div>
 
     <!-- Section Title -->
-    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24">
+    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 reveal-fade-up">
       Skills &
       <span class="italic text-[var(--accent)]">Technologies</span>
     </h2>
 
     <!-- Skills Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-16">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-16 stagger">
       {categories.map(([category, skillList], index) => (
-        <div class="border-t border-current/20 pt-8">
+        <div class="border-t border-current/20 pt-8 reveal" style={`transition-delay: ${index * 100}ms`}>
           <h3 class="text-xs uppercase tracking-[0.25em] text-[var(--accent)] mb-6">
             {category}
           </h3>

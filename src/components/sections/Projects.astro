@@ -5,7 +5,7 @@ import { projects } from '../../data/portfolio';
 <section id="work" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
   <div class="max-w-[1600px] mx-auto">
     <!-- Section Label -->
-    <div class="flex items-center gap-4 mb-12 md:mb-16">
+    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
       <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
         02
       </span>
@@ -16,7 +16,7 @@ import { projects } from '../../data/portfolio';
     </div>
 
     <!-- Section Title -->
-    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl text-[var(--text-primary)]">
+    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl text-[var(--text-primary)] reveal-fade-up">
       Featured
       <span class="italic text-[var(--accent)]">Projects</span>
     </h2>
@@ -28,7 +28,8 @@ import { projects } from '../../data/portfolio';
           href={project.link}
           target="_blank"
           rel="noopener"
-          class="group block"
+          class="group block reveal-fade-up"
+          style={`transition-delay: ${index * 150}ms`}
         >
           <!-- Project Image -->
           <div class="aspect-[4/5] mb-6 overflow-hidden relative bg-[var(--bg-secondary)]">
@@ -73,7 +74,7 @@ import { projects } from '../../data/portfolio';
     </div>
 
     <!-- View All Link -->
-    <div class="mt-16 md:mt-24 text-center">
+    <div class="mt-16 md:mt-24 text-center reveal-fade">
       <a href="#" class="inline-flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500">
         <span>View all projects</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">

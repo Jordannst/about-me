@@ -3,6 +3,7 @@ import { meta } from '../data/portfolio';
 import '../styles/global.css';
 import GridLines from '../components/GridLines.astro';
 import NoiseTexture from '../components/NoiseTexture.astro';
+import ScrollReveal from '../components/ScrollReveal.astro';
 ---
 
 <!doctype html>
@@ -48,5 +49,8 @@ import NoiseTexture from '../components/NoiseTexture.astro';
     
     <!-- Main Content -->
     <slot />
+    
+    <!-- Scroll Reveal Script -->
+    <ScrollReveal />
   </body>
 </html>
