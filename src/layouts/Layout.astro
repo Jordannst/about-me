@@ -6,6 +6,7 @@ import NoiseTexture from '../components/NoiseTexture.astro';
 import ScrollReveal from '../components/ScrollReveal.astro';
 import LoadingScreen from '../components/LoadingScreen.astro';
 import PageTransition from '../components/PageTransition.astro';
+import BackToTop from '../components/BackToTop.astro';
 ---
 
 <!doctype html>
@@ -57,6 +58,9 @@ import PageTransition from '../components/PageTransition.astro';
     
     <!-- Main Content -->
     <slot />
+    
+    <!-- Back to Top Button -->
+    <BackToTop />
     
     <!-- Scroll Reveal Script -->
     <ScrollReveal />

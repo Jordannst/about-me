@@ -16,25 +16,74 @@ import { about } from '../../data/portfolio';
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
-      <!-- Left Column -->
-      <div class="lg:col-span-5 lg:col-start-2 reveal-fade-up">
-        <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-6xl leading-[0.95] mb-8 text-[var(--text-primary)]">
+      <!-- Left Column: Headline + Photo -->
+      <div class="lg:col-span-5 lg:col-start-2">
+        <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-6xl leading-[0.95] mb-8 text-[var(--text-primary)] reveal-fade-up">
           Creating
           <br />
           <span class="italic text-[var(--accent)]">Digital</span>
           <br />
           Experiences
         </h2>
+        
+        <!-- Profile Photo -->
+        <div class="mt-8 lg:mt-12 reveal-fade-up" style="transition-delay: 200ms;">
+          <div class="aspect-[4/5] w-full max-w-sm overflow-hidden relative group">
+            <!-- Placeholder (akan diganti dengan foto asli) -->
+            <div class="w-full h-full bg-[var(--bg-secondary)] flex items-center justify-center border border-[var(--border-color)]">
+              <div class="text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--border-color)] flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-[var(--text-secondary)]">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M20 21a8 8 0 0 0-16 0"/>
+                  </svg>
+                </div>
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                  Your Photo
+                </span>
+              </div>
+            </div>
+            
+            <!-- Uncomment ketika foto sudah ada:
+            <img 
+              src="/images/jordan.jpg" 
+              alt="Jordan Sutarto"
+              class="image-luxury w-full h-full object-cover"
+            />
+            -->
+            
+            <!-- Decorative corner -->
+            <div class="absolute -bottom-3 -right-3 w-full h-full border border-[var(--accent)] -z-10"></div>
+          </div>
+        </div>
       </div>
 
-      <!-- Right Column -->
-      <div class="lg:col-span-5 lg:col-start-8">
-        <p class="drop-cap text-lg leading-relaxed text-[var(--text-primary)] mb-6 reveal-fade-up" style="transition-delay: 150ms;">
+      <!-- Right Column: Bio Text -->
+      <div class="lg:col-span-5 lg:col-start-8 lg:pt-16">
+        <p class="drop-cap text-lg leading-relaxed text-[var(--text-primary)] mb-6 reveal-fade-up" style="transition-delay: 300ms;">
           {about.intro}
         </p>
-        <p class="text-lg leading-relaxed text-[var(--text-secondary)] reveal-fade-up" style="transition-delay: 300ms;">
+        <p class="text-lg leading-relaxed text-[var(--text-secondary)] reveal-fade-up" style="transition-delay: 450ms;">
           {about.highlight}
         </p>
+        
+        <!-- Optional: Quick Stats -->
+        <div class="mt-12 pt-8 border-t border-[var(--border-color)] reveal-fade-up" style="transition-delay: 600ms;">
+          <div class="grid grid-cols-3 gap-6">
+            <div>
+              <span class="font-[family-name:var(--font-serif)] text-3xl md:text-4xl text-[var(--text-primary)]">3+</span>
+              <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] mt-2">Years Coding</p>
+            </div>
+            <div>
+              <span class="font-[family-name:var(--font-serif)] text-3xl md:text-4xl text-[var(--text-primary)]">10+</span>
+              <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] mt-2">Projects</p>
+            </div>
+            <div>
+              <span class="font-[family-name:var(--font-serif)] text-3xl md:text-4xl text-[var(--text-primary)]">5+</span>
+              <p class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] mt-2">Competitions</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

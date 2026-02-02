@@ -6,7 +6,7 @@ export const personal = {
   tagline: "Fullstack Developer",
   taglineAccent: "AI Enthusiast",
   location: "Indonesia",
-  email: "jordannst.08@gmail.com", // Update this
+  email: "jordannst.08@gmail.com",
 };
 
 export const about = {
@@ -27,40 +27,67 @@ export const skills = [
   { name: "Figma", category: "Design" },
 ];
 
-export const projects = [
+export interface Project {
+  id: number;
+  slug: string;
+  title: string;
+  description: string;
+  longDescription?: string;
+  image: string;
+  tags: string[];
+  link: string;
+  liveUrl?: string;
+  featured: boolean;
+  year?: string;
+  role?: string;
+}
+
+export const projects: Project[] = [
   {
     id: 1,
+    slug: "project-one",
     title: "Project Name",
     description: "A brief description of your project. What problem does it solve?",
-    image: "/images/project-1.jpg", // Add your project image
+    longDescription: "This is a longer description that explains the project in more detail. Talk about the challenges you faced, the solutions you implemented, and the impact of the project.",
+    image: "/images/project-1.jpg",
     tags: ["Next.js", "TypeScript", "MongoDB"],
     link: "https://github.com/yourusername/project",
     featured: true,
+    year: "2024",
+    role: "Full Stack Developer",
   },
   {
     id: 2,
+    slug: "project-two",
     title: "Another Project",
     description: "Description of another amazing project you built.",
+    longDescription: "Detailed description of the second project, explaining the technical challenges and how you solved them.",
     image: "/images/project-2.jpg",
     tags: ["React", "Golang", "PostgreSQL"],
     link: "https://github.com/yourusername/project-2",
     featured: true,
+    year: "2024",
+    role: "Backend Developer",
   },
   {
     id: 3,
+    slug: "project-three",
     title: "Third Project",
     description: "Yet another cool project showcasing your skills.",
+    longDescription: "A comprehensive description of your third project.",
     image: "/images/project-3.jpg",
     tags: ["Python", "Tailwind CSS"],
     link: "https://github.com/yourusername/project-3",
     featured: false,
+    year: "2023",
+    role: "Frontend Developer",
   },
 ];
 
 export const social = {
-  github: "https://github.com/yourusername", // Update this
-  linkedin: "https://linkedin.com/in/yourusername", // Update this
-  instagram: "https://instagram.com/yourusername", // Update this
+  github: "https://github.com/yourusername",
+  linkedin: "https://linkedin.com/in/yourusername",
+  instagram: "https://instagram.com/yourusername",
 };
 
 export const meta = {
