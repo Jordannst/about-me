@@ -84,6 +84,48 @@ export const projects: Project[] = [
   },
 ];
 
+// Certificate Types: "organization", "competition", "course"
+export interface Certificate {
+  id: number;
+  title: string;
+  issuer: string;
+  date: string;
+  type: "organization" | "competition" | "course";
+  image?: string;
+  credentialUrl?: string;
+  description?: string;
+}
+
+export const certificates: Certificate[] = [
+  {
+    id: 1,
+    title: "Certificate Name",
+    issuer: "Organization / Platform Name",
+    date: "2024",
+    type: "organization",
+    description: "Brief description of the certificate or achievement.",
+    credentialUrl: "#",
+  },
+  {
+    id: 2,
+    title: "Competition Winner",
+    issuer: "Competition Name",
+    date: "2024",
+    type: "competition",
+    description: "1st Place / Winner description.",
+    credentialUrl: "#",
+  },
+  {
+    id: 3,
+    title: "Course Completion",
+    issuer: "Course Platform",
+    date: "2023",
+    type: "course",
+    description: "Course completion details.",
+    credentialUrl: "#",
+  },
+];
+
 export const social = {
   github: "https://github.com/yourusername",
   linkedin: "https://linkedin.com/in/yourusername",

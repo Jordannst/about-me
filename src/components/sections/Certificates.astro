@@ -1,0 +1,116 @@
+---
+import { certificates } from '../../data/portfolio';
+
+// Icons for each certificate type
+const typeIcons = {
+  organization: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+  competition: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`,
+  course: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+};
+
+const typeLabels = {
+  organization: "Organization",
+  competition: "Competition",
+  course: "Course",
+};
+---
+
+<section id="certificates" class="py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Section Label -->
+    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        04
+      </span>
+      <div class="h-px w-8 bg-[var(--border-color)]"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        Achievements
+      </span>
+    </div>
+
+    <!-- Section Title -->
+    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl text-[var(--text-primary)] reveal-fade-up">
+      Certificates &
+      <span class="italic text-[var(--accent)]">Awards</span>
+    </h2>
+
+    <!-- Certificates Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+      {certificates.map((cert, index) => (
+        <div 
+          class="group border border-[var(--border-color)] overflow-hidden hover:border-[var(--accent)] transition-all duration-500 reveal-fade-up"
+          style={`transition-delay: ${index * 100}ms`}
+        >
+          <!-- Certificate Image -->
+          <div class="aspect-[4/3] bg-[var(--bg-secondary)] overflow-hidden relative">
+            <div class="absolute inset-0 flex items-center justify-center text-[var(--text-secondary)]">
+              <div class="text-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto mb-2 opacity-50">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <path d="m21 15-5-5L5 21"/>
+                </svg>
+                <span class="text-[10px] uppercase tracking-[0.2em]">Certificate</span>
+              </div>
+            </div>
+            {/* Uncomment when image is available:
+            <img 
+              src={cert.image} 
+              alt={cert.title}
+              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+            />
+            */}
+          </div>
+          
+          <!-- Certificate Info -->
+          <div class="p-6 md:p-8">
+            <!-- Header: Type Icon + Date -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center gap-3">
+                <span class="text-[var(--accent)]" set:html={typeIcons[cert.type]} />
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                  {typeLabels[cert.type]}
+                </span>
+              </div>
+              <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                {cert.date}
+              </span>
+            </div>
+            
+            <!-- Title -->
+            <h3 class="font-[family-name:var(--font-serif)] text-xl md:text-2xl text-[var(--text-primary)] mb-2 group-hover:text-[var(--accent)] transition-colors duration-500">
+              {cert.title}
+            </h3>
+            
+            <!-- Issuer -->
+            <p class="text-sm text-[var(--text-secondary)] mb-4">
+              {cert.issuer}
+            </p>
+            
+            <!-- Description -->
+            {cert.description && (
+              <p class="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
+                {cert.description}
+              </p>
+            )}
+            
+            <!-- Credential Link -->
+            {cert.credentialUrl && cert.credentialUrl !== "#" && (
+              <a 
+                href={cert.credentialUrl}
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
+              >
+                <span>View Credential</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform duration-300 group-hover:translate-x-1">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
