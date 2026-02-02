@@ -1,0 +1,54 @@
+---
+import { skills } from '../../data/portfolio';
+
+// Group skills by category
+const groupedSkills = skills.reduce((acc, skill) => {
+  if (!acc[skill.category]) {
+    acc[skill.category] = [];
+  }
+  acc[skill.category].push(skill.name);
+  return acc;
+}, {} as Record<string, string[]>);
+
+const categories = Object.entries(groupedSkills);
+---
+
+<!-- Skills section uses inverted colors (always dark background) -->
+<section id="skills" class="py-20 md:py-32 px-8 md:px-16 bg-[var(--bg-inverted)] text-[var(--text-inverted)]">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Section Label -->
+    <div class="flex items-center gap-4 mb-12 md:mb-16">
+      <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
+        03
+      </span>
+      <div class="h-px w-8 bg-current opacity-30"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
+        Expertise
+      </span>
+    </div>
+
+    <!-- Section Title -->
+    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24">
+      Skills &
+      <span class="italic text-[var(--accent)]">Technologies</span>
+    </h2>
+
+    <!-- Skills Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-16">
+      {categories.map(([category, skillList], index) => (
+        <div class="border-t border-current/20 pt-8">
+          <h3 class="text-xs uppercase tracking-[0.25em] text-[var(--accent)] mb-6">
+            {category}
+          </h3>
+          <ul class="space-y-3">
+            {skillList.map((skill) => (
+              <li class="font-[family-name:var(--font-serif)] text-xl md:text-2xl opacity-80 hover:opacity-100 transition-opacity duration-500">
+                {skill}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

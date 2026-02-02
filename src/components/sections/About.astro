@@ -1,0 +1,41 @@
+---
+import { about } from '../../data/portfolio';
+---
+
+<section id="about" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Section Label -->
+    <div class="flex items-center gap-4 mb-12 md:mb-16">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        01
+      </span>
+      <div class="h-px w-8 bg-[var(--border-color)]"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        About
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <!-- Left Column -->
+      <div class="lg:col-span-5 lg:col-start-2">
+        <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-6xl leading-[0.95] mb-8 text-[var(--text-primary)]">
+          Creating
+          <br />
+          <span class="italic text-[var(--accent)]">Digital</span>
+          <br />
+          Experiences
+        </h2>
+      </div>
+
+      <!-- Right Column -->
+      <div class="lg:col-span-5 lg:col-start-8">
+        <p class="drop-cap text-lg leading-relaxed text-[var(--text-primary)] mb-6">
+          {about.intro}
+        </p>
+        <p class="text-lg leading-relaxed text-[var(--text-secondary)]">
+          {about.highlight}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

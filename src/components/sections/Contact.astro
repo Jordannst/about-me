@@ -1,0 +1,82 @@
+---
+import { personal, social } from '../../data/portfolio';
+---
+
+<section id="contact" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Section Label -->
+    <div class="flex items-center gap-4 mb-12 md:mb-16">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        04
+      </span>
+      <div class="h-px w-8 bg-[var(--border-color)]"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        Contact
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+      <!-- Left Column -->
+      <div class="lg:col-span-6">
+        <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-8 text-[var(--text-primary)]">
+          Let's work
+          <br />
+          <span class="italic text-[var(--accent)]">together</span>
+        </h2>
+        
+        <p class="text-lg text-[var(--text-secondary)] max-w-md leading-relaxed">
+          Have a project in mind or just want to chat? I'd love to hear from you.
+        </p>
+      </div>
+
+      <!-- Right Column -->
+      <div class="lg:col-span-5 lg:col-start-8">
+        <!-- Email CTA -->
+        <div class="border-t border-[var(--border-strong)] pt-8 mb-12">
+          <span class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-4">
+            Email
+          </span>
+          <a 
+            href={`mailto:${personal.email}`}
+            class="font-[family-name:var(--font-serif)] text-2xl md:text-3xl text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
+          >
+            {personal.email}
+          </a>
+        </div>
+
+        <!-- Social Links -->
+        <div class="border-t border-[var(--border-strong)] pt-8">
+          <span class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-6">
+            Social
+          </span>
+          <div class="flex flex-wrap gap-6">
+            <a 
+              href={social.github}
+              target="_blank"
+              rel="noopener"
+              class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
+            >
+              GitHub
+            </a>
+            <a 
+              href={social.linkedin}
+              target="_blank"
+              rel="noopener"
+              class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
+            >
+              LinkedIn
+            </a>
+            <a 
+              href={social.instagram}
+              target="_blank"
+              rel="noopener"
+              class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
+            >
+              Instagram
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

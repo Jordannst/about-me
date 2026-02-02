@@ -1,0 +1,85 @@
+---
+import { projects } from '../../data/portfolio';
+---
+
+<section id="work" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Section Label -->
+    <div class="flex items-center gap-4 mb-12 md:mb-16">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        02
+      </span>
+      <div class="h-px w-8 bg-[var(--border-color)]"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        Selected Work
+      </span>
+    </div>
+
+    <!-- Section Title -->
+    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl text-[var(--text-primary)]">
+      Featured
+      <span class="italic text-[var(--accent)]">Projects</span>
+    </h2>
+
+    <!-- Projects Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 lg:gap-24">
+      {projects.filter(p => p.featured).map((project, index) => (
+        <a
+          href={project.link}
+          target="_blank"
+          rel="noopener"
+          class="group block"
+        >
+          <!-- Project Image -->
+          <div class="aspect-[4/5] mb-6 overflow-hidden relative bg-[var(--bg-secondary)]">
+            <div class="absolute inset-0 flex items-center justify-center text-[var(--text-secondary)]">
+              <span class="text-xs uppercase tracking-[0.2em]">Image {project.id}</span>
+            </div>
+            {/* Uncomment when you have images:
+            <img
+              src={project.image}
+              alt={project.title}
+              class="image-luxury w-full h-full object-cover"
+            />
+            */}
+          </div>
+
+          <!-- Project Info -->
+          <div class="border-t border-[var(--border-strong)] pt-6">
+            <div class="flex items-start justify-between mb-4">
+              <h3 class="font-[family-name:var(--font-serif)] text-2xl md:text-3xl text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors duration-500">
+                {project.title}
+              </h3>
+              <span class="text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                0{index + 1}
+              </span>
+            </div>
+            
+            <p class="text-[var(--text-secondary)] mb-4 leading-relaxed">
+              {project.description}
+            </p>
+
+            <!-- Tags -->
+            <div class="flex flex-wrap gap-2">
+              {project.tags.map((tag) => (
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] px-3 py-1 border border-[var(--border-color)]">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+
+    <!-- View All Link -->
+    <div class="mt-16 md:mt-24 text-center">
+      <a href="#" class="inline-flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500">
+        <span>View all projects</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</section>
