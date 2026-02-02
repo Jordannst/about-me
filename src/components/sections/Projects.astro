@@ -2,7 +2,7 @@
 import { projects } from '../../data/portfolio';
 ---
 
-<section id="work" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
+<section id="work" class="py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]">
   <div class="max-w-[1600px] mx-auto">
     <!-- Section Label -->
     <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
@@ -22,33 +22,37 @@ import { projects } from '../../data/portfolio';
     </h2>
 
     <!-- Projects Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 lg:gap-24">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 lg:gap-24">
       {projects.filter(p => p.featured).map((project, index) => (
         <a
-          href={project.link}
-          target="_blank"
-          rel="noopener"
-          class="group block reveal-fade-up"
+          href={`/projects/${project.id}`}
+          class="project-card group block reveal-fade-up"
           style={`transition-delay: ${index * 150}ms`}
+          data-tilt
         >
-          <!-- Project Image -->
-          <div class="aspect-[4/5] mb-6 overflow-hidden relative bg-[var(--bg-secondary)]">
-            <div class="absolute inset-0 flex items-center justify-center text-[var(--text-secondary)]">
-              <span class="text-xs uppercase tracking-[0.2em]">Image {project.id}</span>
+          <!-- Project Image with 3D Tilt -->
+          <div class="tilt-container aspect-[4/5] mb-6 overflow-hidden relative bg-[var(--bg-secondary)]">
+            <div class="tilt-inner w-full h-full">
+              <div class="absolute inset-0 flex items-center justify-center text-[var(--text-secondary)]">
+                <span class="text-xs uppercase tracking-[0.2em]">Image {project.id}</span>
+              </div>
+              {/* Uncomment when you have images:
+              <img
+                src={project.image}
+                alt={project.title}
+                class="image-luxury w-full h-full object-cover"
+              />
+              */}
+              
+              <!-- Shine effect overlay -->
+              <div class="tilt-shine absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             </div>
-            {/* Uncomment when you have images:
-            <img
-              src={project.image}
-              alt={project.title}
-              class="image-luxury w-full h-full object-cover"
-            />
-            */}
           </div>
 
           <!-- Project Info -->
           <div class="border-t border-[var(--border-strong)] pt-6">
             <div class="flex items-start justify-between mb-4">
-              <h3 class="font-[family-name:var(--font-serif)] text-2xl md:text-3xl text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors duration-500">
+              <h3 class="font-[family-name:var(--font-serif)] text-xl md:text-2xl lg:text-3xl text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors duration-500">
                 {project.title}
               </h3>
               <span class="text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">
@@ -56,17 +60,25 @@ import { projects } from '../../data/portfolio';
               </span>
             </div>
             
-            <p class="text-[var(--text-secondary)] mb-4 leading-relaxed">
+            <p class="text-sm md:text-base text-[var(--text-secondary)] mb-4 leading-relaxed">
               {project.description}
             </p>
 
             <!-- Tags -->
-            <div class="flex flex-wrap gap-2">
+            <div class="flex flex-wrap gap-2 mb-6">
               {project.tags.map((tag) => (
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] px-3 py-1 border border-[var(--border-color)]">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] px-2 md:px-3 py-1 border border-[var(--border-color)]">
                   {tag}
                 </span>
               ))}
+            </div>
+            
+            <!-- View Project Link -->
+            <div class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors duration-500">
+              <span>View Project</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform duration-300 group-hover:translate-x-1">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
             </div>
           </div>
         </a>
@@ -75,7 +87,7 @@ import { projects } from '../../data/portfolio';
 
     <!-- View All Link -->
     <div class="mt-16 md:mt-24 text-center reveal-fade">
-      <a href="#" class="inline-flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500">
+      <a href="/projects" class="inline-flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500">
         <span>View all projects</span>
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
           <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -84,3 +96,63 @@ import { projects } from '../../data/portfolio';
     </div>
   </div>
 </section>
+
+<style>
+  /* 3D Tilt Container */
+  .tilt-container {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+  }
+  
+  .tilt-inner {
+    transition: transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform-style: preserve-3d;
+  }
+  
+  .project-card:hover .tilt-inner {
+    transform: rotateY(0deg) rotateX(0deg);
+  }
+  
+  /* Shine effect */
+  .tilt-shine {
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.1) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+</style>
+
+<script>
+  // 3D Tilt Effect
+  document.addEventListener('DOMContentLoaded', () => {
+    const cards = document.querySelectorAll('[data-tilt]');
+    
+    cards.forEach(card => {
+      const tiltInner = card.querySelector('.tilt-inner') as HTMLElement;
+      
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 20;
+        const rotateY = (centerX - x) / 20;
+        
+        if (tiltInner) {
+          tiltInner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+        }
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        if (tiltInner) {
+          tiltInner.style.transform = 'rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+        }
+      });
+    });
+  });
+</script>
