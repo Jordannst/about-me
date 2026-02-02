@@ -1,23 +1,52 @@
+---
+import { meta } from '../data/portfolio';
+import '../styles/global.css';
+import GridLines from '../components/GridLines.astro';
+import NoiseTexture from '../components/NoiseTexture.astro';
+---
+
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    
+    <!-- SEO -->
+    <title>{meta.title}</title>
+    <meta name="description" content={meta.description} />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content={meta.title} />
+    <meta property="og:description" content={meta.description} />
+    <meta property="og:type" content="website" />
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+    <!-- Theme Color (dynamic) -->
+    <meta name="theme-color" content="#F9F8F6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1A1A" media="(prefers-color-scheme: dark)" />
+
+    <!-- Anti-Flash Script: Runs immediately before page renders -->
+    <script is:inline>
+      (function() {
+        const stored = localStorage.getItem('theme-preference');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (prefersDark ? 'dark' : 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-[var(--bg-primary)] text-[var(--text-primary)] min-h-screen transition-colors duration-700">
+    <!-- Noise Texture Overlay -->
+    <NoiseTexture />
+    
+    <!-- Visible Grid Lines -->
+    <GridLines />
+    
+    <!-- Main Content -->
+    <slot />
+  </body>
+</html>
