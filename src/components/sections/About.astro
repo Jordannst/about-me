@@ -28,38 +28,21 @@ import { about } from '../../data/portfolio';
         
         <!-- Profile Photo -->
         <div class="mt-8 lg:mt-12 reveal-fade-up" style="transition-delay: 200ms;">
-          <div class="aspect-[4/5] w-full max-w-sm overflow-hidden relative group">
-            <!-- Placeholder (akan diganti dengan foto asli) -->
-            <div class="w-full h-full bg-[var(--bg-secondary)] flex items-center justify-center border border-[var(--border-color)]">
-              <div class="text-center">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--border-color)] flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="text-[var(--text-secondary)]">
-                    <circle cx="12" cy="8" r="4"/>
-                    <path d="M20 21a8 8 0 0 0-16 0"/>
-                  </svg>
-                </div>
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
-                  Your Photo
-                </span>
-              </div>
-            </div>
-            
-            <!-- Uncomment ketika foto sudah ada:
+          <div class="profile-photo-wrapper aspect-[4/5] w-full max-w-sm relative cursor-pointer">
             <img 
-              src="/images/jordan.jpg" 
+              src="/jordan-profile.jpeg" 
               alt="Jordan Sutarto"
-              class="image-luxury w-full h-full object-cover"
+              class="w-full h-full object-cover relative z-10"
             />
-            -->
             
-            <!-- Decorative corner -->
-            <div class="absolute -bottom-3 -right-3 w-full h-full border border-[var(--accent)] -z-10"></div>
+            <!-- Decorative corner with glow -->
+            <div class="profile-border absolute -bottom-3 -right-3 w-full h-full border border-[var(--accent)]"></div>
           </div>
         </div>
       </div>
 
       <!-- Right Column: Bio Text -->
-      <div class="lg:col-span-5 lg:col-start-8 lg:pt-16">
+      <div class="lg:col-span-5 lg:col-start-8 lg:pt-32">
         <p class="drop-cap text-lg leading-relaxed text-[var(--text-primary)] mb-6 reveal-fade-up" style="transition-delay: 300ms;">
           {about.intro}
         </p>
@@ -88,3 +71,14 @@ import { about } from '../../data/portfolio';
     </div>
   </div>
 </section>
+
+<style>
+  .profile-border {
+    transition: box-shadow 0.5s ease, transform 0.5s ease;
+  }
+  
+  .profile-photo-wrapper:hover .profile-border {
+    box-shadow: 0 0 25px rgba(181, 155, 107, 0.5), 0 0 50px rgba(181, 155, 107, 0.3);
+    transform: translate(-2px, -2px);
+  }
+</style>
