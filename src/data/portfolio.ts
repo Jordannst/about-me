@@ -116,7 +116,7 @@ export const social = {
 };
 
 export const meta = {
-  title: "Jordan Sutarto | Fullstack Developer & AI Enthusiast",
+  title: "Jordan Sutarto | About Me",
   description: "Personal portfolio of Jordan Sutarto - A passionate fullstack developer and AI enthusiast crafting beautiful digital experiences.",
   year: new Date().getFullYear(),
 };
