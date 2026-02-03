@@ -23,10 +23,12 @@ export const skills = [
   { name: "React Native", category: "Frontend" },
   { name: "Next.js", category: "Frontend" },
   { name: "Tailwind CSS", category: "Frontend" },
+  { name: "Node.js", category: "Backend" },
   { name: "Express.js", category: "Backend" },
   { name: "MongoDB", category: "Backend" },
   { name: "PostgreSQL", category: "Backend" },
-  { name: "Figma", category: "Design" },
+  { name: "Git", category: "Tools" },
+  { name: "Figma", category: "Tools" },
 ];
 
 export interface Project {
