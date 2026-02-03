@@ -15,21 +15,21 @@ const typeLabels = {
 };
 ---
 
-<section id="certificates" class="py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]">
+<section id="certificates" class="py-20 md:py-32 px-6 md:px-16 bg-[var(--bg-inverted)] text-[var(--text-inverted)]">
   <div class="max-w-[1600px] mx-auto">
     <!-- Section Label -->
     <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-        03
+      <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
+        04
       </span>
-      <div class="h-px w-8 bg-[var(--border-color)]"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+      <div class="h-px w-8 bg-current opacity-30"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
         Achievements
       </span>
     </div>
 
     <!-- Section Title -->
-    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl text-[var(--text-primary)] reveal-fade-up">
+    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl reveal-fade-up">
       Certificates &
       <span class="italic text-[var(--accent)]">Awards</span>
     </h2>
@@ -38,12 +38,12 @@ const typeLabels = {
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
       {certificates.map((cert, index) => (
         <div 
-          class="group border border-[var(--border-color)] overflow-hidden hover:border-[var(--accent)] transition-all duration-500 reveal-fade-up"
+          class="group border border-white/10 overflow-hidden hover:border-[var(--accent)] transition-all duration-500 reveal-fade-up"
           style={`transition-delay: ${index * 100}ms`}
         >
           <!-- Certificate Image -->
-          <div class="aspect-[4/3] bg-[var(--bg-secondary)] overflow-hidden relative">
-            <div class="absolute inset-0 flex items-center justify-center text-[var(--text-secondary)]">
+          <div class="aspect-[4/3] bg-white/5 overflow-hidden relative">
+            <div class="absolute inset-0 flex items-center justify-center opacity-60">
               <div class="text-center">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto mb-2 opacity-50">
                   <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
@@ -68,28 +68,28 @@ const typeLabels = {
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center gap-3">
                 <span class="text-[var(--accent)]" set:html={typeIcons[cert.type]} />
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+                <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">
                   {typeLabels[cert.type]}
                 </span>
               </div>
-              <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
+              <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">
                 {cert.date}
               </span>
             </div>
             
             <!-- Title -->
-            <h3 class="font-[family-name:var(--font-serif)] text-xl md:text-2xl text-[var(--text-primary)] mb-2 group-hover:text-[var(--accent)] transition-colors duration-500">
+            <h3 class="font-[family-name:var(--font-serif)] text-xl md:text-2xl mb-2 group-hover:text-[var(--accent)] transition-colors duration-500">
               {cert.title}
             </h3>
             
             <!-- Issuer -->
-            <p class="text-sm text-[var(--text-secondary)] mb-4">
+            <p class="text-sm opacity-70 mb-4">
               {cert.issuer}
             </p>
             
             <!-- Description -->
             {cert.description && (
-              <p class="text-sm text-[var(--text-secondary)] leading-relaxed mb-4">
+              <p class="text-sm opacity-70 leading-relaxed mb-4">
                 {cert.description}
               </p>
             )}

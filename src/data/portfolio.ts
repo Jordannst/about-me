@@ -1,5 +1,4 @@
-// Portfolio Data - Easy to update
-// Edit this file to change your portfolio content
+// Portfolio Data 
 
 export const personal = {
   name: "Jordan Sutarto",
@@ -107,15 +106,7 @@ export const certificates: Certificate[] = [
     description: "1st Place / Winner description.",
     credentialUrl: "#",
   },
-  {
-    id: 3,
-    title: "Course Completion",
-    issuer: "Course Platform",
-    date: "2023",
-    type: "course",
-    description: "Course completion details.",
-    credentialUrl: "#",
-  },
+ 
 ];
 
 export const social = {
