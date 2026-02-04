@@ -26,6 +26,7 @@ export const skills = [
   { name: "Express.js", category: "Backend" },
   { name: "MongoDB", category: "Backend" },
   { name: "PostgreSQL", category: "Backend" },
+  { name: "Supabase", category: "Backend" },
   { name: "Git", category: "Tools" },
   { name: "Figma", category: "Tools" },
 ];
@@ -73,6 +74,20 @@ export const projects: Project[] = [
     year: "2025",
     role: "Full Stack Developer",
   },
+  {
+  id: 3,
+  slug: "klk-invoice-system",
+  title: "KLK Invoice Management System",
+  description: "Full-stack invoice management system for logistics company. Features transaction tracking, digital signature support, PDF generation, soft-delete with trash system, and secure authentication.",
+  longDescription: "A modern invoice management system built for logistics/expedition businesses. Includes transaction management, invoice grouping, digital signature storage, PDF export with html2pdf.js, rate-limited authentication, soft-delete functionality, and real-time analytics dashboard.",
+  image: "/klkinvoice.webp",
+  tags: ["Next.js 16", "TypeScript", "Express.js", "Prisma", "PostgreSQL", "TailwindCSS 4", "Supabase"],
+  link: "https://klkinvoice.my.id/",
+  liveUrl: "https://klkinvoice.my.id/",
+  featured: true,
+  year: "2026",
+  role: "Full Stack Developer",
+},
 ];
 
 // Certificate Types: "organization", "competition", "course"
