@@ -110,9 +110,9 @@ export const certificates: Certificate[] = [
 ];
 
 export const social = {
-  github: "https://github.com/yourusername",
-  linkedin: "https://linkedin.com/in/yourusername",
-  instagram: "https://instagram.com/yourusername",
+  github: "https://github.com/Jordannst",
+  linkedin: "https://id.linkedin.com/in/jordan-sutarto-04866b26b",
+  instagram: "https://www.instagram.com/_jordannst/",
 };
 
 export const meta = {
