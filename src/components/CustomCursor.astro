@@ -1,0 +1,138 @@
+---
+---
+
+<div id="custom-cursor" class="custom-cursor hidden md:block">
+  <div class="cursor-line-h"></div>
+  <div class="cursor-line-v"></div>
+</div>
+
+<style>
+  .custom-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 9999;
+    mix-blend-mode: normal;
+    transform: translate(-50%, -50%);
+    opacity: 0; /* Hidden by default until mouse enters or initiates */
+    transition: opacity 0.3s ease;
+  }
+
+  .cursor-line-h, .cursor-line-v {
+    position: absolute;
+    background-color: var(--accent);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  /* Horizontal Line */
+  .cursor-line-h {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+
+  /* Vertical Line */
+  .cursor-line-v {
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    transform: translateX(-50%);
+  }
+
+  /* Hover State: Rotate 45deg to become 'x' */
+  .custom-cursor.hover {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  
+  /* Optional: Make it slightly larger on hover */
+  .custom-cursor.hover .cursor-line-h,
+  .custom-cursor.hover .cursor-line-v {
+    opacity: 0.8;
+  }
+
+  /* Hide on touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .custom-cursor {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  function initCustomCursor() {
+    const cursor = document.getElementById('custom-cursor');
+    if (!cursor) return;
+
+    // Add class to body to hide default cursor via CSS
+    document.body.classList.add('has-custom-cursor');
+
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+
+    // Track mouse movement
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      // On first move, jump to position to avoid slow lerp from (0,0)
+      if (cursorX === 0 && cursorY === 0) {
+        cursorX = mouseX;
+        cursorY = mouseY;
+        cursor.style.opacity = '1';
+      }
+    });
+
+    // Handle hover states
+    const interactiveElements = 'a, button, [role="button"], .cursor-pointer';
+    
+    document.addEventListener('mouseover', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(interactiveElements)) {
+        cursor.classList.add('hover');
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.closest(interactiveElements)) {
+        cursor.classList.remove('hover');
+      }
+    });
+
+    // Smooth follow animation
+    function animate() {
+      // Lerp (Linear Interpolation) for smoothness
+      // 0.35 is snappier than 0.2
+      cursorX += (mouseX - cursorX) * 0.35;
+      cursorY += (mouseY - cursorY) * 0.35;
+
+      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) ${cursor.classList.contains('hover') ? 'rotate(45deg)' : 'rotate(0deg)'}`;
+      
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // Hide when mouse leaves window
+    document.addEventListener('mouseleave', () => {
+      cursor.style.opacity = '0';
+    });
+
+    document.addEventListener('mouseenter', () => {
+      cursor.style.opacity = '1';
+    });
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', initCustomCursor);
+  // Re-initialize after Astro page transitions if using View Transitions
+  document.addEventListener('astro:after-swap', initCustomCursor);
+</script>
