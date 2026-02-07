@@ -1,0 +1,50 @@
+---
+// MagneticButton.astro - Creates a magnetic hover effect for interactive elements
+// Props: strength (how strong the magnetic pull), radius (activation distance)
+interface Props {
+  strength?: number;
+  class?: string;
+}
+
+const { strength = 0.5, class: className = '' } = Astro.props;
+---
+
+<div class:list={["magnetic-wrapper", className]} data-magnetic={strength}>
+  <slot />
+</div>
+
+<style>
+  .magnetic-wrapper {
+    display: inline-block;
+    position: relative;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+</style>
+
+<script>
+  function initMagneticButtons() {
+    const magneticElements = document.querySelectorAll('[data-magnetic]');
+    
+    magneticElements.forEach((element) => {
+      const el = element as HTMLElement;
+      const strength = parseFloat(el.dataset.magnetic || '0.5');
+      
+      el.addEventListener('mousemove', (e) => {
+        const rect = el.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        
+        el.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+      });
+      
+      el.addEventListener('mouseleave', () => {
+        el.style.transform = 'translate(0, 0)';
+      });
+    });
+  }
+
+  // Initialize on DOM ready
+  document.addEventListener('DOMContentLoaded', initMagneticButtons);
+  // Re-initialize for Astro page transitions
+  document.addEventListener('astro:after-swap', initMagneticButtons);
+</script>

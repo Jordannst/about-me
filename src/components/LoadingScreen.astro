@@ -86,34 +86,41 @@ import { personal } from '../data/portfolio';
 </style>
 
 <script>
-  // Loading screen controller
+  // Loading screen controller - event-based detection
   document.addEventListener('DOMContentLoaded', () => {
     const loadingScreen = document.getElementById('loading-screen');
     const mainContent = document.querySelector('main');
+    let hasHidden = false;
     
-    // Hide loading screen after animations complete
     const hideLoader = () => {
+      if (hasHidden) return;
+      hasHidden = true;
+      
       if (loadingScreen) {
         loadingScreen.classList.add('loaded');
-        // Remove from DOM after transition
         setTimeout(() => {
           loadingScreen.style.display = 'none';
         }, 700);
       }
       
-      // Trigger main content reveal
       if (mainContent) {
         mainContent.classList.add('content-revealed');
       }
     };
     
-    // Wait for loading animation to complete (2.3s total)
-    // Logo (100ms + 800ms) + Line (500ms + 1800ms)
-    setTimeout(hideLoader, 2500);
-    
-    // Fallback: hide after window load if taking too long
-    window.addEventListener('load', () => {
-      setTimeout(hideLoader, 500);
-    });
+    // Event-based: wait for all critical resources
+    if (document.readyState === 'complete') {
+      // Already loaded, hide after minimum animation time
+      setTimeout(hideLoader, 1500);
+    } else {
+      // Wait for window load (fonts, images, etc.)
+      window.addEventListener('load', () => {
+        // Ensure minimum animation duration for UX (loading line is 1.8s)
+        setTimeout(hideLoader, 800);
+      });
+      
+      // Safety fallback - never block longer than 4 seconds
+      setTimeout(hideLoader, 4000);
+    }
   });
 </script>

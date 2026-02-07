@@ -1,0 +1,76 @@
+---
+// Statement.astro - Full-bleed dramatic statement section
+// Creates a "wow moment" visual break between content sections
+import TextReveal from '../TextReveal.astro';
+---
+
+<section class="statement-section relative overflow-hidden py-24 md:py-40 lg:py-52 px-8 md:px-16">
+  <!-- Animated background gradient blob -->
+  <div class="statement-blob"></div>
+
+  <div class="max-w-[1600px] mx-auto relative z-10">
+    <div class="max-w-5xl">
+      <TextReveal tag="p" animation="words" stagger={0.06} duration={1} class="font-[family-name:var(--font-serif)] text-3xl md:text-5xl lg:text-7xl leading-[1.1] text-[var(--text-primary)]">
+        I believe in crafting
+        <span class="italic text-[var(--accent)]">digital experiences</span>
+        that are both beautiful and
+        <span class="italic text-[var(--accent)]">purposeful</span>.
+      </TextReveal>
+    </div>
+  </div>
+
+  <!-- Large decorative ampersand -->
+  <div class="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 select-none pointer-events-none">
+    <span class="font-[family-name:var(--font-serif)] text-[25vw] leading-none text-[var(--text-primary)] opacity-[0.03]">
+      &amp;
+    </span>
+  </div>
+
+  <!-- Decorative corner marks -->
+  <div class="hidden lg:block absolute top-12 left-12 w-8 h-8 border-t border-l border-[var(--accent)] opacity-30"></div>
+  <div class="hidden lg:block absolute bottom-12 right-12 w-8 h-8 border-b border-r border-[var(--accent)] opacity-30"></div>
+</section>
+
+<style>
+  .statement-section {
+    position: relative;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .statement-blob {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60vw;
+    height: 60vw;
+    max-width: 600px;
+    max-height: 600px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: blobPulse 8s ease-in-out infinite;
+  }
+
+  :root.dark .statement-blob {
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);
+  }
+
+  @keyframes blobPulse {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(1.15);
+      opacity: 0.7;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .statement-blob {
+      animation: none;
+    }
+  }
+</style>

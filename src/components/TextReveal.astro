@@ -1,0 +1,135 @@
+---
+// TextReveal.astro - Split text and reveal with staggered animation
+// Uses SplitType and GSAP for advanced text animations
+interface Props {
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div';
+  class?: string;
+  animation?: 'chars' | 'words' | 'lines';
+  stagger?: number;
+  duration?: number;
+  delay?: number;
+}
+
+const { 
+  tag = 'div', 
+  class: className = '', 
+  animation = 'chars',
+  stagger = 0.03,
+  duration = 0.8,
+  delay = 0
+} = Astro.props;
+
+const Tag = tag;
+---
+
+<Tag 
+  class:list={["text-reveal", className]} 
+  data-reveal-type={animation}
+  data-reveal-stagger={stagger}
+  data-reveal-duration={duration}
+  data-reveal-delay={delay}
+>
+  <slot />
+</Tag>
+
+<style is:global>
+  .text-reveal {
+    overflow: hidden;
+  }
+
+  .text-reveal .char,
+  .text-reveal .word,
+  .text-reveal .line {
+    display: inline-block;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .text-reveal.revealed .char,
+  .text-reveal.revealed .word,
+  .text-reveal.revealed .line {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* Line wrapper for proper overflow hidden */
+  .text-reveal .line-wrapper {
+    overflow: hidden;
+    display: block;
+  }
+</style>
+
+<script>
+  import SplitType from 'split-type';
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initTextReveal() {
+    const elements = document.querySelectorAll('.text-reveal:not(.initialized)');
+
+    elements.forEach((element) => {
+      const el = element as HTMLElement;
+      const type = el.dataset.revealType || 'chars';
+      const stagger = parseFloat(el.dataset.revealStagger || '0.03');
+      const duration = parseFloat(el.dataset.revealDuration || '0.8');
+      const delay = parseFloat(el.dataset.revealDelay || '0');
+
+      // Split the text
+      const split = new SplitType(el, {
+        types: type === 'chars' ? 'chars,words' : type === 'words' ? 'words' : 'lines',
+        tagName: 'span'
+      });
+
+      const targets = type === 'chars' ? split.chars : type === 'words' ? split.words : split.lines;
+
+      if (!targets) return;
+
+      // Wrap lines for overflow hidden
+      if (type === 'lines' && split.lines) {
+        split.lines.forEach(line => {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'line-wrapper';
+          line.parentNode?.insertBefore(wrapper, line);
+          wrapper.appendChild(line);
+        });
+      }
+
+      // Set initial state
+      gsap.set(targets, {
+        y: '100%',
+        opacity: 0
+      });
+
+      // Create scroll-triggered animation
+      gsap.to(targets, {
+        y: '0%',
+        opacity: 1,
+        duration: duration,
+        stagger: stagger,
+        delay: delay,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        },
+        onComplete: () => {
+          el.classList.add('revealed');
+        }
+      });
+
+      el.classList.add('initialized');
+    });
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    // Small delay to ensure DOM is ready
+    setTimeout(initTextReveal, 100);
+  });
+  document.addEventListener('astro:after-swap', initTextReveal);
+</script>

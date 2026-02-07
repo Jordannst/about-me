@@ -1,0 +1,71 @@
+---
+// ParallaxImage.astro - Creates a parallax scrolling effect for images
+// Uses GSAP ScrollTrigger for smooth parallax
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  speed?: number; // Parallax intensity: 0.1 = subtle, 0.5 = dramatic
+}
+
+const { src, alt, class: className = '', speed = 0.2 } = Astro.props;
+---
+
+<div class:list={["parallax-container", className]} data-parallax-speed={speed}>
+  <img 
+    src={src} 
+    alt={alt} 
+    class="parallax-image"
+    loading="lazy"
+  />
+</div>
+
+<style>
+  .parallax-container {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .parallax-image {
+    width: 100%;
+    height: 120%; /* Extra height for parallax room */
+    object-fit: cover;
+    will-change: transform;
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initParallax() {
+    const containers = document.querySelectorAll('.parallax-container:not(.initialized)');
+
+    containers.forEach((container) => {
+      const el = container as HTMLElement;
+      const image = el.querySelector('.parallax-image') as HTMLElement;
+      const speed = parseFloat(el.dataset.parallaxSpeed || '0.2');
+
+      if (!image) return;
+
+      gsap.to(image, {
+        yPercent: -40 * speed,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 0.5
+        }
+      });
+
+      el.classList.add('initialized');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initParallax);
+  document.addEventListener('astro:after-swap', initParallax);
+</script>

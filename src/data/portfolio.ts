@@ -1,4 +1,4 @@
-// Portfolio Data 
+// Portfolio Data
 
 export const personal = {
   name: "Jordan Sutarto",
@@ -51,8 +51,10 @@ export const projects: Project[] = [
     id: 1,
     slug: "contextual-rag-chat",
     title: "Contextual RAG Chat",
-    description: "Production-grade Retrieval-Augmented Generation system with hybrid semantic search, AI-powered document analysis, and Data Analyst Agent for CSV/Excel analytics with chart visualization.",
-    longDescription: "Production-grade Retrieval-Augmented Generation system with hybrid semantic search (vector + full-text), AI-powered document analysis, and Data Analyst Agent that generates Python code from natural language queries for CSV/Excel analytics with chart visualization.",
+    description:
+      "Production-grade Retrieval-Augmented Generation system with hybrid semantic search, AI-powered document analysis, and Data Analyst Agent for CSV/Excel analytics with chart visualization.",
+    longDescription:
+      "Production-grade Retrieval-Augmented Generation system with hybrid semantic search (vector + full-text), AI-powered document analysis, and Data Analyst Agent that generates Python code from natural language queries for CSV/Excel analytics with chart visualization.",
     image: "/rag-chatbot.webp",
     tags: ["Next.js", "Go", "PostgreSQL", "pgvector", "Gemini AI"],
     link: "https://github.com/Jordannst/contextual-rag-chat",
@@ -64,8 +66,10 @@ export const projects: Project[] = [
     id: 2,
     slug: "kassentix-pos",
     title: "Kassentix POS",
-    description: "Cloud-based Point of Sale SaaS for Indonesian SMEs. Features AI analytics, real-time inventory sync, multi-outlet management & subscription tiers.",
-    longDescription: "Cloud-based Point of Sale SaaS for Indonesian SMEs. Features AI analytics, real-time inventory sync, multi-outlet management & subscription tiers. Try FREE at kassentix.cloud!",
+    description:
+      "Cloud-based Point of Sale SaaS for Indonesian SMEs. Features AI analytics, real-time inventory sync, multi-outlet management & subscription tiers.",
+    longDescription:
+      "Cloud-based Point of Sale SaaS for Indonesian SMEs. Features AI analytics, real-time inventory sync, multi-outlet management & subscription tiers. Try FREE at kassentix.cloud!",
     image: "/kassentix.webp",
     tags: ["Next.js 15", "TypeScript", "Express.js", "Prisma", "Socket.io"],
     link: "https://kassentix.cloud",
@@ -75,19 +79,29 @@ export const projects: Project[] = [
     role: "Full Stack Developer",
   },
   {
-  id: 3,
-  slug: "klk-invoice-system",
-  title: "KLK Invoice Management System",
-  description: "Full-stack invoice management system for logistics company. Features transaction tracking, digital signature support, PDF generation, soft-delete with trash system, and secure authentication.",
-  longDescription: "A modern invoice management system built for logistics/expedition businesses. Includes transaction management, invoice grouping, digital signature storage, PDF export with html2pdf.js, rate-limited authentication, soft-delete functionality, and real-time analytics dashboard.",
-  image: "/klkinvoice.webp",
-  tags: ["Next.js 16", "TypeScript", "Express.js", "Prisma", "PostgreSQL", "TailwindCSS 4", "Supabase"],
-  link: "https://klkinvoice.my.id/",
-  liveUrl: "https://klkinvoice.my.id/",
-  featured: true,
-  year: "2026",
-  role: "Full Stack Developer",
-},
+    id: 3,
+    slug: "klk-invoice-system",
+    title: "KLK Invoice Management System",
+    description:
+      "Full-stack invoice management system for logistics company. Features transaction tracking, digital signature support, PDF generation, soft-delete with trash system, and secure authentication.",
+    longDescription:
+      "A modern invoice management system built for logistics/expedition businesses. Includes transaction management, invoice grouping, digital signature storage, PDF export with html2pdf.js, rate-limited authentication, soft-delete functionality, and real-time analytics dashboard.",
+    image: "/klkinvoice.webp",
+    tags: [
+      "Next.js 16",
+      "TypeScript",
+      "Express.js",
+      "Prisma",
+      "PostgreSQL",
+      "TailwindCSS 4",
+      "Supabase",
+    ],
+    link: "https://klkinvoice.my.id/",
+    liveUrl: "https://klkinvoice.my.id/",
+    featured: true,
+    year: "2026",
+    role: "Full Stack Developer",
+  },
 ];
 
 // Certificate Types: "organization", "competition", "course"
@@ -105,20 +119,24 @@ export interface Certificate {
 export const certificates: Certificate[] = [
   {
     id: 1,
-    title: "Certificate Name",
-    issuer: "Organization / Platform Name",
-    date: "2024",
-    type: "organization",
-    description: "Brief description of the certificate or achievement.",
+    title: "Hackathon 1st Place",
+    issuer: "National University Tech Competition",
+    date: "2025",
+    type: "competition",
+    description:
+      "First place winner for building an AI-powered healthcare solution within 48 hours.",
+    image: "",
     credentialUrl: "#",
   },
   {
     id: 2,
-    title: "Competition Winner",
-    issuer: "Competition Name",
-    date: "2024",
+    title: "Hackathon 1st Place",
+    issuer: "National University Tech Competition",
+    date: "2025",
     type: "competition",
-    description: "1st Place / Winner description.",
+    description:
+      "First place winner for building an AI-powered healthcare solution within 48 hours.",
+    image: "",
     credentialUrl: "#",
   },
  
@@ -132,6 +150,7 @@ export const social = {
 
 export const meta = {
   title: "Jordan Sutarto | About Me",
-  description: "Personal portfolio of Jordan Sutarto - A passionate fullstack developer and AI enthusiast crafting beautiful digital experiences.",
+  description:
+    "Personal portfolio of Jordan Sutarto - A passionate fullstack developer and AI enthusiast crafting beautiful digital experiences.",
   year: new Date().getFullYear(),
 };

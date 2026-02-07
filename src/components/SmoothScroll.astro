@@ -1,0 +1,106 @@
+---
+// SmoothScroll.astro - Lenis Smooth Scroll Integration
+// Provides buttery smooth scrolling with momentum
+---
+
+<script>
+  import Lenis from 'lenis';
+  
+  // Initialize Lenis smooth scroll
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    orientation: 'vertical',
+    gestureOrientation: 'vertical',
+    smoothWheel: true,
+    touchMultiplier: 2,
+  });
+
+  // Make lenis available globally for other components
+  (window as any).lenis = lenis;
+
+  // RAF loop
+  function raf(time: number) {
+    lenis.raf(time);
+    requestAnimationFrame(raf);
+  }
+
+  requestAnimationFrame(raf);
+
+  // Handle anchor links on same page smoothly
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', (e) => {
+      e.preventDefault();
+      const href = anchor.getAttribute('href');
+      if (href && href !== '#') {
+        const target = document.querySelector(href);
+        if (target) {
+          lenis.scrollTo(target as HTMLElement, {
+            offset: 0,
+            duration: 1.5,
+          });
+        }
+      }
+    });
+  });
+
+  // Handle page load with hash in URL (e.g., from /#work navigation)
+  function scrollToHashOnLoad() {
+    const hash = window.location.hash;
+    if (hash && hash !== '#') {
+      const target = document.querySelector(hash);
+      if (target) {
+        // Small delay to ensure page is fully loaded
+        setTimeout(() => {
+          lenis.scrollTo(target as HTMLElement, {
+            offset: 0,
+            duration: 1.5,
+          });
+        }, 100);
+      }
+    }
+  }
+
+  // Run on page load
+  if (document.readyState === 'complete') {
+    scrollToHashOnLoad();
+  } else {
+    window.addEventListener('load', scrollToHashOnLoad);
+  }
+
+  // Also handle hash changes
+  window.addEventListener('hashchange', () => {
+    const hash = window.location.hash;
+    if (hash && hash !== '#') {
+      const target = document.querySelector(hash);
+      if (target) {
+        lenis.scrollTo(target as HTMLElement, {
+          offset: 0,
+          duration: 1.5,
+        });
+      }
+    }
+  });
+</script>
+
+<style is:global>
+  html.lenis, html.lenis body {
+    height: auto;
+  }
+
+  .lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+  }
+
+  .lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+  }
+
+  .lenis.lenis-stopped {
+    overflow: hidden;
+  }
+
+  .lenis.lenis-smooth iframe {
+    pointer-events: none;
+  }
+</style>

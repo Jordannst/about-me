@@ -1,5 +1,6 @@
 ---
 import { certificates } from '../../data/portfolio';
+import TextReveal from '../TextReveal.astro';
 
 // Icons for each certificate type
 const typeIcons = {
@@ -15,7 +16,7 @@ const typeLabels = {
 };
 ---
 
-<section id="certificates" class="py-20 md:py-32 px-6 md:px-16 bg-[var(--bg-inverted)] text-[var(--text-inverted)]">
+<section id="certificates" class="py-20 md:py-32 px-6 md:px-16 bg-[var(--bg-inverted)] text-[var(--text-inverted)] overflow-hidden">
   <div class="max-w-[1600px] mx-auto">
     <!-- Section Label -->
     <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
@@ -29,88 +30,160 @@ const typeLabels = {
     </div>
 
     <!-- Section Title -->
-    <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl reveal-fade-up">
+    <TextReveal tag="h2" animation="words" stagger={0.08} class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl">
       Certificates &
       <span class="italic text-[var(--accent)]">Awards</span>
-    </h2>
+    </TextReveal>
 
-    <!-- Certificates Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-      {certificates.map((cert, index) => (
-        <div 
-          class="group border border-white/10 overflow-hidden hover:border-[var(--accent)] transition-all duration-500 reveal-fade-up"
-          style={`transition-delay: ${index * 100}ms`}
-        >
-          <!-- Certificate Image -->
-          <div class="aspect-[4/3] bg-white/5 overflow-hidden relative">
-            <div class="absolute inset-0 flex items-center justify-center opacity-60">
-              <div class="text-center">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto mb-2 opacity-50">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                  <circle cx="8.5" cy="8.5" r="1.5"/>
-                  <path d="m21 15-5-5L5 21"/>
-                </svg>
-                <span class="text-[10px] uppercase tracking-[0.2em]">Certificate</span>
-              </div>
+    <!-- Horizontal Scroll Container -->
+    <div class="certificates-scroll-container">
+      <div class="certificates-track">
+        {certificates.map((cert, index) => (
+          <div 
+            class="certificate-card group"
+            style={`--delay: ${index * 100}ms`}
+          >
+            <!-- Certificate Image -->
+            <div class="aspect-[4/3] bg-white/5 overflow-hidden relative">
+              {cert.image ? (
+                <img 
+                  src={cert.image} 
+                  alt={cert.title}
+                  loading="lazy"
+                  decoding="async"
+                  class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+              ) : (
+                <div class="absolute inset-0 flex items-center justify-center opacity-60">
+                  <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mx-auto mb-2 opacity-50">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <path d="m21 15-5-5L5 21"/>
+                    </svg>
+                    <span class="text-[10px] uppercase tracking-[0.2em]">Certificate</span>
+                  </div>
+                </div>
+              )}
             </div>
-            {/* Uncomment when image is available:
-            <img 
-              src={cert.image} 
-              alt={cert.title}
-              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-            />
-            */}
-          </div>
-          
-          <!-- Certificate Info -->
-          <div class="p-6 md:p-8">
-            <!-- Header: Type Icon + Date -->
-            <div class="flex items-center justify-between mb-4">
-              <div class="flex items-center gap-3">
-                <span class="text-[var(--accent)]" set:html={typeIcons[cert.type]} />
+            
+            <!-- Certificate Info -->
+            <div class="p-6 md:p-8">
+              <!-- Header: Type Icon + Date -->
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center gap-3">
+                  <span class="text-[var(--accent)]" set:html={typeIcons[cert.type]} />
+                  <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">
+                    {typeLabels[cert.type]}
+                  </span>
+                </div>
                 <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">
-                  {typeLabels[cert.type]}
+                  {cert.date}
                 </span>
               </div>
-              <span class="text-[10px] uppercase tracking-[0.2em] opacity-60">
-                {cert.date}
-              </span>
-            </div>
-            
-            <!-- Title -->
-            <h3 class="font-[family-name:var(--font-serif)] text-xl md:text-2xl mb-2 group-hover:text-[var(--accent)] transition-colors duration-500">
-              {cert.title}
-            </h3>
-            
-            <!-- Issuer -->
-            <p class="text-sm opacity-70 mb-4">
-              {cert.issuer}
-            </p>
-            
-            <!-- Description -->
-            {cert.description && (
-              <p class="text-sm opacity-70 leading-relaxed mb-4">
-                {cert.description}
+              
+              <!-- Title -->
+              <h3 class="text-xl md:text-2xl mb-2 group-hover:text-[var(--accent)] transition-colors duration-500">
+                {cert.title}
+              </h3>
+              
+              <!-- Issuer -->
+              <p class="text-sm opacity-70 mb-4">
+                {cert.issuer}
               </p>
-            )}
-            
-            <!-- Credential Link -->
-            {cert.credentialUrl && cert.credentialUrl !== "#" && (
-              <a 
-                href={cert.credentialUrl}
-                target="_blank"
-                rel="noopener"
-                class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
-              >
-                <span>View Credential</span>
-                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform duration-300 group-hover:translate-x-1">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </a>
-            )}
+              
+              <!-- Description -->
+              {cert.description && (
+                <p class="text-sm opacity-70 leading-relaxed mb-4">
+                  {cert.description}
+                </p>
+              )}
+              
+              <!-- Credential Link -->
+              {cert.credentialUrl && cert.credentialUrl !== "#" && (
+                <a 
+                  href={cert.credentialUrl}
+                  target="_blank"
+                  rel="noopener"
+                  class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
+                >
+                  <span>View Credential</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform duration-300 group-hover:translate-x-1">
+                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </a>
+              )}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+    </div>
+
+    <!-- Scroll Hint -->
+    <div class="mt-8 flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.2em] opacity-40 md:hidden">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+      <span>Scroll to explore</span>
     </div>
   </div>
 </section>
+
+<style>
+  .certificates-scroll-container {
+    overflow-x: auto;
+    overflow-y: hidden;
+    margin-right: -1.5rem;
+    margin-left: -1.5rem;
+    padding: 0 1.5rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .certificates-scroll-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .certificates-track {
+    display: flex;
+    gap: 1.5rem;
+    padding-bottom: 1rem;
+    justify-content: center;
+  }
+
+  .certificate-card {
+    flex-shrink: 0;
+    width: 85vw;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    animation: fadeInUp 0.6s ease forwards;
+    animation-delay: var(--delay);
+    opacity: 0;
+  }
+
+  .certificate-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-8px);
+  }
+
+  @media (min-width: 768px) {
+    .certificates-scroll-container {
+      margin-right: -4rem;
+      margin-left: 0;
+      padding: 0;
+      padding-right: 4rem;
+    }
+
+    .certificates-track {
+      gap: 2rem;
+    }
+
+    .certificate-card {
+      width: 380px;
+    }
+  }
+
+  /* fadeInUp keyframes defined in global.css */
+</style>

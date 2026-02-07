@@ -1,30 +1,36 @@
 ---
-// ScrollReveal - Intersection Observer based scroll animations
+// ScrollReveal - GSAP ScrollTrigger based scroll animations
+// Unified with the same scroll system used by TextReveal and ImageReveal
 ---
 
 <script>
-  // Scroll Reveal Intersection Observer
-  document.addEventListener('DOMContentLoaded', () => {
-    const revealElements = document.querySelectorAll('.reveal, .reveal-fade-up, .reveal-fade, .reveal-scale, .reveal-left, .reveal-right');
-    
-    const observerOptions = {
-      root: null,
-      rootMargin: '0px 0px -80px 0px', // Trigger 80px before element enters viewport
-      threshold: 0.1
-    };
-    
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('revealed');
-          // Unobserve after revealing (one-time animation)
-          revealObserver.unobserve(entry.target);
-        }
-      });
-    }, observerOptions);
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initScrollReveal() {
+    const revealElements = document.querySelectorAll(
+      '.reveal:not(.revealed), .reveal-fade-up:not(.revealed), .reveal-fade:not(.revealed), .reveal-scale:not(.revealed), .reveal-left:not(.revealed), .reveal-right:not(.revealed)'
+    );
     
     revealElements.forEach(el => {
-      revealObserver.observe(el);
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 88%',
+        once: true,
+        onEnter: () => {
+          el.classList.add('revealed');
+        }
+      });
     });
+  }
+
+  // Initialize with small delay to ensure DOM readiness
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initScrollReveal, 150);
+  });
+  document.addEventListener('astro:after-swap', () => {
+    setTimeout(initScrollReveal, 150);
   });
 </script>

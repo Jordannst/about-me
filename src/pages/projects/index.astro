@@ -31,7 +31,7 @@ import { projects } from '../../data/portfolio';
       </div>
       
       <!-- Title -->
-      <h1 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] text-[var(--text-primary)]">
+      <h1 class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] text-[var(--text-primary)]">
         All
         <span class="italic text-[var(--accent)]">Projects</span>
       </h1>
@@ -44,6 +44,7 @@ import { projects } from '../../data/portfolio';
           <a
             href={`/projects/${project.id}`}
             class="project-card group block"
+            data-cursor-text="View"
           >
             <!-- Project Image -->
             <div class="image-container aspect-video mb-4 overflow-hidden relative bg-[var(--bg-secondary)]">
@@ -62,7 +63,7 @@ import { projects } from '../../data/portfolio';
             <!-- Project Info -->
             <div>
               <div class="flex items-start justify-between mb-2">
-                <h3 class="font-[family-name:var(--font-serif)] text-lg md:text-xl text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors duration-500">
+                <h3 class="text-lg md:text-xl text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors duration-500">
                   {project.title}
                 </h3>
                 <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">

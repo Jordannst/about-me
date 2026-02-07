@@ -13,16 +13,16 @@ import ThemeToggle from './ThemeToggle.astro';
       
       <!-- Desktop Navigation Links -->
       <div class="hidden md:flex items-center gap-12">
-        <a href="#about" class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500">
+        <a href="#about" class="nav-link text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500" data-text="About">
           About
         </a>
-        <a href="#work" class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500">
+        <a href="#work" class="nav-link text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500" data-text="Work">
           Work
         </a>
-        <a href="#skills" class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500">
+        <a href="#skills" class="nav-link text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500" data-text="Skills">
           Skills
         </a>
-        <a href="#contact" class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500">
+        <a href="#contact" class="nav-link text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-500" data-text="Contact">
           Contact
         </a>
       </div>
@@ -117,6 +117,27 @@ import ThemeToggle from './ThemeToggle.astro';
 </div>
 
 <style>
+  /* Nav link scramble effect */
+  .nav-link {
+    position: relative;
+    display: inline-block;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 1px;
+    background: var(--accent);
+    transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .nav-link:hover::after {
+    width: 100%;
+  }
+
   /* Mobile nav link animation */
   .mobile-nav-link {
     opacity: 0;
@@ -142,8 +163,42 @@ import ThemeToggle from './ThemeToggle.astro';
     const menuIcon = document.getElementById('menu-icon');
     const closeIcon = document.getElementById('close-icon');
     const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    const desktopNavLinks = document.querySelectorAll('.nav-link');
     
     let isOpen = false;
+
+    // Text scramble effect for desktop nav links
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    
+    desktopNavLinks.forEach(link => {
+      const originalText = link.getAttribute('data-text') || link.textContent?.trim() || '';
+      let animationFrame: number;
+      
+      link.addEventListener('mouseenter', () => {
+        let iteration = 0;
+        clearInterval(animationFrame);
+        
+        animationFrame = window.setInterval(() => {
+          link.textContent = originalText
+            .split('')
+            .map((char, index) => {
+              if (index < iteration) return originalText[index];
+              return chars[Math.floor(Math.random() * chars.length)];
+            })
+            .join('');
+          
+          if (iteration >= originalText.length) {
+            clearInterval(animationFrame);
+          }
+          iteration += 1 / 2;
+        }, 30);
+      });
+      
+      link.addEventListener('mouseleave', () => {
+        clearInterval(animationFrame);
+        link.textContent = originalText;
+      });
+    });
     
     function toggleMenu() {
       isOpen = !isOpen;

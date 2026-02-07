@@ -1,0 +1,126 @@
+---
+// ImageReveal.astro - Animated image reveal with mask/clip effect
+// Creates a dramatic reveal animation when image enters viewport
+interface Props {
+  src: string;
+  alt: string;
+  class?: string;
+  direction?: 'left' | 'right' | 'top' | 'bottom';
+}
+
+const { src, alt, class: className = '', direction = 'left' } = Astro.props;
+---
+
+<div class:list={["image-reveal", `reveal-from-${direction}`, className]}>
+  <div class="image-reveal-mask"></div>
+  <img 
+    src={src} 
+    alt={alt} 
+    class="image-reveal-img"
+    loading="lazy"
+  />
+</div>
+
+<style>
+  .image-reveal {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+  }
+
+  .image-reveal-mask {
+    position: absolute;
+    inset: 0;
+    background-color: var(--accent);
+    z-index: 2;
+    transform-origin: left;
+  }
+
+  .image-reveal-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.2);
+    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* Direction variants */
+  .reveal-from-left .image-reveal-mask {
+    transform: scaleX(1);
+    transform-origin: right;
+  }
+
+  .reveal-from-right .image-reveal-mask {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  .reveal-from-top .image-reveal-mask {
+    transform: scaleY(1);
+    transform-origin: bottom;
+  }
+
+  .reveal-from-bottom .image-reveal-mask {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+
+  /* Revealed state */
+  .image-reveal.revealed .image-reveal-mask {
+    transform: scale(0);
+  }
+
+  .image-reveal.revealed .image-reveal-img {
+    transform: scale(1);
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initImageReveal() {
+    const images = document.querySelectorAll('.image-reveal:not(.initialized)');
+
+    images.forEach((container) => {
+      const el = container as HTMLElement;
+      const mask = el.querySelector('.image-reveal-mask') as HTMLElement;
+      const img = el.querySelector('.image-reveal-img') as HTMLElement;
+      
+      if (!mask || !img) return;
+
+      const isHorizontal = el.classList.contains('reveal-from-left') || el.classList.contains('reveal-from-right');
+
+      // Create timeline
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 80%',
+          toggleActions: 'play none none none'
+        }
+      });
+
+      tl.to(mask, {
+        scaleX: isHorizontal ? 0 : 1,
+        scaleY: isHorizontal ? 1 : 0,
+        duration: 1,
+        ease: 'power3.inOut'
+      })
+      .to(img, {
+        scale: 1,
+        duration: 1.2,
+        ease: 'power3.out'
+      }, '-=0.6')
+      .add(() => {
+        el.classList.add('revealed');
+      });
+
+      el.classList.add('initialized');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', initImageReveal);
+  document.addEventListener('astro:after-swap', initImageReveal);
+</script>

@@ -1,5 +1,4 @@
-/* Google Fonts - Must be first */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');
+/* Google Fonts loaded via <link> in Layout.astro head for better performance */
 
 @import "tailwindcss";
 
@@ -13,11 +12,11 @@
 
 @theme {
   /* Base Colors (used for reference) */
-  --color-alabaster: #F9F8F6;
-  --color-charcoal: #1A1A1A;
-  --color-taupe: #EBE5DE;
-  --color-warm-grey: #6C6863;
-  --color-gold: #D4AF37;
+  --color-alabaster: #f9f8f6;
+  --color-charcoal: #1a1a1a;
+  --color-taupe: #ebe5de;
+  --color-warm-grey: #6c6863;
+  --color-gold: #d4af37;
 
   /* Font Families */
   --font-serif: "Playfair Display", Georgia, serif;
@@ -49,29 +48,29 @@
 
 :root {
   /* Light Theme (default) */
-  --bg-primary: #F9F8F6;
-  --bg-secondary: #EBE5DE;
-  --bg-inverted: #1A1A1A;
-  --text-primary: #1A1A1A;
-  --text-secondary: #6C6863;
-  --text-inverted: #F9F8F6;
+  --bg-primary: #f9f8f6;
+  --bg-secondary: #ebe5de;
+  --bg-inverted: #1a1a1a;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6c6863;
+  --text-inverted: #f9f8f6;
   --border-color: rgba(26, 26, 26, 0.1);
-  --border-strong: #1A1A1A;
-  --accent: #D4AF37;
+  --border-strong: #1a1a1a;
+  --accent: #d4af37;
   color-scheme: light;
 }
 
 :root.dark {
   /* Dark Theme */
-  --bg-primary: #1A1A1A;
-  --bg-secondary: #2A2A2A;
-  --bg-inverted: #F9F8F6;
-  --text-primary: #F9F8F6;
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2a2a2a;
+  --bg-inverted: #f9f8f6;
+  --text-primary: #f9f8f6;
   --text-secondary: rgba(249, 248, 246, 0.6);
-  --text-inverted: #1A1A1A;
+  --text-inverted: #1a1a1a;
   --border-color: rgba(249, 248, 246, 0.1);
-  --border-strong: #F9F8F6;
-  --accent: #D4AF37;
+  --border-strong: #f9f8f6;
+  --accent: #d4af37;
   color-scheme: dark;
 }
 
@@ -90,8 +89,9 @@ body {
   line-height: 1.625;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  transition: background-color var(--duration-slow) var(--ease-luxury),
-              color var(--duration-slow) var(--ease-luxury);
+  transition:
+    background-color var(--duration-slow) var(--ease-luxury),
+    color var(--duration-slow) var(--ease-luxury);
 }
 
 /* Hide default cursor only when custom cursor is preferred and active */
@@ -109,7 +109,12 @@ body {
    TYPOGRAPHY
    ================================ */
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-serif);
   font-weight: 400;
   line-height: 0.95;
@@ -181,7 +186,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -212,9 +217,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .image-luxury {
   filter: grayscale(100%);
-  transition: filter var(--duration-cinematic) var(--ease-luxury),
-              transform var(--duration-cinematic) var(--ease-luxury),
-              box-shadow var(--duration-slow) var(--ease-luxury);
+  transition:
+    filter var(--duration-cinematic) var(--ease-luxury),
+    transform var(--duration-cinematic) var(--ease-luxury),
+    box-shadow var(--duration-slow) var(--ease-luxury);
   box-shadow: var(--shadow-card), var(--shadow-inner);
 }
 
@@ -264,8 +270,9 @@ h1, h2, h3, h4, h5, h6 {
 .reveal {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity var(--duration-slow) var(--ease-luxury),
-              transform var(--duration-slow) var(--ease-luxury);
+  transition:
+    opacity var(--duration-slow) var(--ease-luxury),
+    transform var(--duration-slow) var(--ease-luxury);
 }
 
 .reveal.revealed {
@@ -277,8 +284,9 @@ h1, h2, h3, h4, h5, h6 {
 .reveal-fade-up {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 800ms var(--ease-luxury),
-              transform 800ms var(--ease-luxury);
+  transition:
+    opacity 800ms var(--ease-luxury),
+    transform 800ms var(--ease-luxury);
 }
 
 .reveal-fade-up.revealed {
@@ -300,8 +308,9 @@ h1, h2, h3, h4, h5, h6 {
 .reveal-scale {
   opacity: 0;
   transform: scale(0.95);
-  transition: opacity 800ms var(--ease-luxury),
-              transform 800ms var(--ease-luxury);
+  transition:
+    opacity 800ms var(--ease-luxury),
+    transform 800ms var(--ease-luxury);
 }
 
 .reveal-scale.revealed {
@@ -313,8 +322,9 @@ h1, h2, h3, h4, h5, h6 {
 .reveal-left {
   opacity: 0;
   transform: translateX(-40px);
-  transition: opacity 800ms var(--ease-luxury),
-              transform 800ms var(--ease-luxury);
+  transition:
+    opacity 800ms var(--ease-luxury),
+    transform 800ms var(--ease-luxury);
 }
 
 .reveal-left.revealed {
@@ -326,8 +336,9 @@ h1, h2, h3, h4, h5, h6 {
 .reveal-right {
   opacity: 0;
   transform: translateX(40px);
-  transition: opacity 800ms var(--ease-luxury),
-              transform 800ms var(--ease-luxury);
+  transition:
+    opacity 800ms var(--ease-luxury),
+    transform 800ms var(--ease-luxury);
 }
 
 .reveal-right.revealed {
@@ -336,14 +347,30 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Stagger delays for children */
-.stagger > .reveal:nth-child(1) { transition-delay: 0ms; }
-.stagger > .reveal:nth-child(2) { transition-delay: 100ms; }
-.stagger > .reveal:nth-child(3) { transition-delay: 200ms; }
-.stagger > .reveal:nth-child(4) { transition-delay: 300ms; }
-.stagger > .reveal:nth-child(5) { transition-delay: 400ms; }
-.stagger > .reveal:nth-child(6) { transition-delay: 500ms; }
-.stagger > .reveal:nth-child(7) { transition-delay: 600ms; }
-.stagger > .reveal:nth-child(8) { transition-delay: 700ms; }
+.stagger > .reveal:nth-child(1) {
+  transition-delay: 0ms;
+}
+.stagger > .reveal:nth-child(2) {
+  transition-delay: 100ms;
+}
+.stagger > .reveal:nth-child(3) {
+  transition-delay: 200ms;
+}
+.stagger > .reveal:nth-child(4) {
+  transition-delay: 300ms;
+}
+.stagger > .reveal:nth-child(5) {
+  transition-delay: 400ms;
+}
+.stagger > .reveal:nth-child(6) {
+  transition-delay: 500ms;
+}
+.stagger > .reveal:nth-child(7) {
+  transition-delay: 600ms;
+}
+.stagger > .reveal:nth-child(8) {
+  transition-delay: 700ms;
+}
 
 /* Hero specific animations */
 .hero-title {
@@ -398,6 +425,57 @@ h1, h2, h3, h4, h5, h6 {
    RESPONSIVE UTILITIES
    ================================ */
 
+/* ================================
+   SHARED KEYFRAMES
+   ================================ */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================
+   CREATIVE HOVER UNDERLINES
+   ================================ */
+
+.link-underline {
+  position: relative;
+  display: inline-block;
+}
+
+.link-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--accent);
+  transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.link-underline:hover::after {
+  width: 100%;
+}
+
+/* ================================
+   CURSOR TEXT SUPPORT
+   ================================ */
+
+[data-cursor-text] {
+  cursor: none;
+}
+
+/* ================================
+   REDUCED MOTION
+   ================================ */
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -406,7 +484,7 @@ h1, h2, h3, h4, h5, h6 {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  
+
   .reveal,
   .reveal-fade-up,
   .reveal-fade,

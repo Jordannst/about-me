@@ -1,16 +1,20 @@
 ---
-// Page Transition - Smooth transitions between navigation
+// PageTransition.astro - Enhanced page transitions with curve/reveal effect
+// Uses GSAP for smooth animated transitions between pages
 ---
 
 <div id="page-transition" class="page-transition">
   <div class="transition-overlay"></div>
+  <svg class="transition-curve" viewBox="0 0 100 100" preserveAspectRatio="none">
+    <path class="curve-path" d="M0,100 Q50,100 100,100 L100,100 L0,100 Z" />
+  </svg>
 </div>
 
 <style>
   .page-transition {
     position: fixed;
     inset: 0;
-    z-index: 90;
+    z-index: 100;
     pointer-events: none;
   }
   
@@ -19,55 +23,168 @@
     inset: 0;
     background-color: var(--bg-inverted);
     transform: translateY(100%);
-    transition: transform 600ms cubic-bezier(0.65, 0, 0.35, 1);
   }
-  
-  .page-transition.transitioning .transition-overlay {
-    transform: translateY(0);
+
+  .transition-curve {
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    width: 100%;
+    height: 150px;
+    fill: var(--bg-inverted);
+    transform: rotate(180deg);
+    opacity: 0;
   }
-  
-  .page-transition.transitioning-out .transition-overlay {
-    transform: translateY(-100%);
+
+  /* Active states */
+  .page-transition.entering .transition-overlay {
+    animation: slideIn 800ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  }
+
+  .page-transition.entering .transition-curve {
+    animation: curveIn 800ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  }
+
+  .page-transition.exiting .transition-overlay {
+    animation: slideOut 800ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  }
+
+  .page-transition.exiting .transition-curve {
+    animation: curveOut 800ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  }
+
+  @keyframes slideIn {
+    0% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(0%);
+    }
+  }
+
+  @keyframes slideOut {
+    0% {
+      transform: translateY(0%);
+    }
+    100% {
+      transform: translateY(-100%);
+    }
+  }
+
+  @keyframes curveIn {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes curveOut {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
   }
 </style>
 
 <script>
-  // Page transition for internal navigation
-  document.addEventListener('DOMContentLoaded', () => {
+  import { gsap } from 'gsap';
+
+  function initPageTransitions() {
     const transition = document.getElementById('page-transition');
+    const curvePath = document.querySelector('.curve-path');
     const internalLinks = document.querySelectorAll('a[href^="/"]');
     
+    if (!transition || !curvePath) return;
+
+    // Animate curve path
+    function animateCurve(entering: boolean) {
+      const tl = gsap.timeline();
+      
+      if (entering) {
+        tl.to(curvePath, {
+          attr: { d: 'M0,100 Q50,0 100,100 L100,100 L0,100 Z' },
+          duration: 0.4,
+          ease: 'power2.in'
+        }).to(curvePath, {
+          attr: { d: 'M0,0 Q50,0 100,0 L100,100 L0,100 Z' },
+          duration: 0.4,
+          ease: 'power2.out'
+        });
+      } else {
+        tl.set(curvePath, {
+          attr: { d: 'M0,100 Q50,100 100,100 L100,100 L0,100 Z' }
+        }).to(curvePath, {
+          attr: { d: 'M0,100 Q50,0 100,100 L100,100 L0,100 Z' },
+          duration: 0.4,
+          ease: 'power2.in'
+        }).to(curvePath, {
+          attr: { d: 'M0,0 Q50,0 100,0 L100,100 L0,100 Z' },
+          duration: 0.4,
+          ease: 'power2.out'
+        });
+      }
+      
+      return tl;
+    }
+
     internalLinks.forEach(link => {
       link.addEventListener('click', (e) => {
         const href = link.getAttribute('href');
         
-        // Skip if same page anchor or external
+        // Skip anchors and external
         if (!href || href.startsWith('#') || href.startsWith('http')) return;
+        // Skip if same page
+        if (href === window.location.pathname) return;
         
         e.preventDefault();
         
-        // Start transition
-        transition?.classList.add('transitioning');
+        // Stop Lenis during transition
+        const lenis = (window as any).lenis;
+        if (lenis) lenis.stop();
         
-        // Navigate after transition in
+        // Start entering transition
+        transition.classList.add('entering');
+        animateCurve(true);
+        
+        // Navigate after animation
         setTimeout(() => {
           window.location.href = href;
-        }, 600);
+        }, 800);
       });
     });
-    
-    // On page load, transition out
-    window.addEventListener('pageshow', () => {
-      if (transition?.classList.contains('transitioning')) {
+
+    // On page load - exit transition
+    window.addEventListener('pageshow', (e) => {
+      // Check if coming from bfcache or transition
+      if (e.persisted || transition.classList.contains('entering')) {
+        transition.classList.remove('entering');
+        transition.classList.add('exiting');
+        animateCurve(false);
+        
+        // Restart Lenis
+        const lenis = (window as any).lenis;
+        if (lenis) lenis.start();
+        
         setTimeout(() => {
-          transition.classList.remove('transitioning');
-          transition.classList.add('transitioning-out');
-          
-          setTimeout(() => {
-            transition.classList.remove('transitioning-out');
-          }, 600);
-        }, 100);
+          transition.classList.remove('exiting');
+          // Reset curve
+          gsap.set(curvePath, {
+            attr: { d: 'M0,100 Q50,100 100,100 L100,100 L0,100 Z' }
+          });
+        }, 800);
       }
     });
-  });
+  }
+
+  document.addEventListener('DOMContentLoaded', initPageTransitions);
 </script>

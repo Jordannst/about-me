@@ -9,6 +9,7 @@ import PageTransition from '../components/PageTransition.astro';
 import BackToTop from '../components/BackToTop.astro';
 import ScrollProgress from '../components/ScrollProgress.astro';
 import CustomCursor from '../components/CustomCursor.astro';
+import SmoothScroll from '../components/SmoothScroll.astro';
 ---
 
 <!doctype html>
@@ -23,6 +24,7 @@ import CustomCursor from '../components/CustomCursor.astro';
     <!-- Performance Optimization: Preconnect & Preload -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
     <link rel="preload" href="/logo.png" as="image">
     <link rel="preload" href="/jordan-profile.jpeg" as="image">
     
@@ -88,6 +90,9 @@ import CustomCursor from '../components/CustomCursor.astro';
     
     <!-- Back to Top Button -->
     <BackToTop />
+    
+    <!-- Smooth Scroll -->
+    <SmoothScroll />
     
     <!-- Scroll Reveal Script -->
     <ScrollReveal />

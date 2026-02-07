@@ -1,5 +1,7 @@
 ---
 import { personal, social } from '../../data/portfolio';
+import MagneticButton from '../MagneticButton.astro';
+import TextReveal from '../TextReveal.astro';
 ---
 
 <section id="contact" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
@@ -7,7 +9,7 @@ import { personal, social } from '../../data/portfolio';
     <!-- Section Label -->
     <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
       <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-        06
+        05
       </span>
       <div class="h-px w-8 bg-[var(--border-color)]"></div>
       <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
@@ -17,66 +19,229 @@ import { personal, social } from '../../data/portfolio';
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
       <!-- Left Column -->
-      <div class="lg:col-span-6 reveal-fade-up">
-        <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-8 text-[var(--text-primary)]">
+      <div class="lg:col-span-5 reveal-fade-up">
+        <TextReveal tag="h2" animation="words" stagger={0.1} class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-8 text-[var(--text-primary)]">
           Let's work
           <br />
           <span class="italic text-[var(--accent)]">together</span>
-        </h2>
+        </TextReveal>
         
-        <p class="text-lg text-[var(--text-secondary)] max-w-md leading-relaxed">
+        <p class="text-lg text-[var(--text-secondary)] max-w-md leading-relaxed mb-12">
           Have a project in mind or just want to chat? I'd love to hear from you.
         </p>
-      </div>
 
-      <!-- Right Column -->
-      <div class="lg:col-span-5 lg:col-start-8">
-        <!-- Email CTA -->
-        <div class="border-t border-[var(--border-strong)] pt-8 mb-12 reveal-fade-up" style="transition-delay: 150ms;">
-          <span class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-4">
-            Email
-          </span>
-          <a 
-            href={`mailto:${personal.email}`}
-            class="font-[family-name:var(--font-serif)] text-2xl md:text-3xl text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
-          >
-            {personal.email}
-          </a>
-        </div>
+        <!-- Direct Contact Info -->
+        <div class="space-y-8">
+          <!-- Email -->
+          <div class="border-t border-[var(--border-strong)] pt-6">
+            <span class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-3">
+              Email
+            </span>
+            <MagneticButton strength={0.3}>
+              <a 
+                href={`mailto:${personal.email}`}
+                class="font-[family-name:var(--font-serif)] text-xl md:text-2xl text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500 inline-block"
+              >
+                {personal.email}
+              </a>
+            </MagneticButton>
+          </div>
 
-        <!-- Social Links -->
-        <div class="border-t border-[var(--border-strong)] pt-8 reveal-fade-up" style="transition-delay: 300ms;">
-          <span class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-6">
-            Social
-          </span>
-          <div class="flex flex-wrap gap-6">
-            <a 
-              href={social.github}
-              target="_blank"
-              rel="noopener"
-              class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
-            >
-              GitHub
-            </a>
-            <a 
-              href={social.linkedin}
-              target="_blank"
-              rel="noopener"
-              class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
-            >
-              LinkedIn
-            </a>
-            <a 
-              href={social.instagram}
-              target="_blank"
-              rel="noopener"
-              class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500"
-            >
-              Instagram
-            </a>
+          <!-- Social Links -->
+          <div class="border-t border-[var(--border-strong)] pt-6">
+            <span class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-4">
+              Social
+            </span>
+            <div class="flex flex-wrap gap-6">
+              <MagneticButton strength={0.4}>
+                <a 
+                  href={social.github}
+                  target="_blank"
+                  rel="noopener"
+                  class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500 link-underline"
+                >
+                  GitHub
+                </a>
+              </MagneticButton>
+              <MagneticButton strength={0.4}>
+                <a 
+                  href={social.linkedin}
+                  target="_blank"
+                  rel="noopener"
+                  class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500 link-underline"
+                >
+                  LinkedIn
+                </a>
+              </MagneticButton>
+              <MagneticButton strength={0.4}>
+                <a 
+                  href={social.instagram}
+                  target="_blank"
+                  rel="noopener"
+                  class="text-sm uppercase tracking-[0.2em] text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-500 link-underline"
+                >
+                  Instagram
+                </a>
+              </MagneticButton>
+            </div>
           </div>
         </div>
+      </div>
+
+      <!-- Right Column: Contact Form -->
+      <div class="lg:col-span-6 lg:col-start-7">
+        <form id="contact-form" class="space-y-8 reveal-fade-up" style="transition-delay: 200ms;">
+          <!-- Name Field -->
+          <div class="form-group">
+            <label for="contact-name" class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-3">
+              Name
+            </label>
+            <input 
+              type="text" 
+              id="contact-name"
+              name="name"
+              required
+              autocomplete="name"
+              placeholder="Your name"
+              class="contact-input w-full bg-transparent border-b border-[var(--border-color)] pb-3 text-lg text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/40 focus:border-[var(--accent)] focus:outline-none transition-colors duration-500"
+            />
+          </div>
+
+          <!-- Email Field -->
+          <div class="form-group">
+            <label for="contact-email" class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-3">
+              Email
+            </label>
+            <input 
+              type="email"
+              id="contact-email"
+              name="email"
+              required
+              autocomplete="email"
+              placeholder="your@email.com"
+              class="contact-input w-full bg-transparent border-b border-[var(--border-color)] pb-3 text-lg text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/40 focus:border-[var(--accent)] focus:outline-none transition-colors duration-500"
+            />
+          </div>
+
+          <!-- Subject Field -->
+          <div class="form-group">
+            <label for="contact-subject" class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-3">
+              Subject
+            </label>
+            <input 
+              type="text"
+              id="contact-subject"
+              name="subject"
+              required
+              placeholder="Project inquiry"
+              class="contact-input w-full bg-transparent border-b border-[var(--border-color)] pb-3 text-lg text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/40 focus:border-[var(--accent)] focus:outline-none transition-colors duration-500"
+            />
+          </div>
+
+          <!-- Message Field -->
+          <div class="form-group">
+            <label for="contact-message" class="text-xs uppercase tracking-[0.25em] text-[var(--text-secondary)] block mb-3">
+              Message
+            </label>
+            <textarea 
+              id="contact-message"
+              name="message"
+              required
+              rows={4}
+              placeholder="Tell me about your project..."
+              class="contact-input w-full bg-transparent border-b border-[var(--border-color)] pb-3 text-lg text-[var(--text-primary)] placeholder:text-[var(--text-secondary)]/40 focus:border-[var(--accent)] focus:outline-none transition-colors duration-500 resize-none"
+            ></textarea>
+          </div>
+
+          <!-- Submit Button -->
+          <div class="pt-4">
+            <MagneticButton strength={0.3}>
+              <button 
+                type="submit"
+                class="btn-primary px-8 py-4 inline-flex items-center gap-3"
+              >
+                <span class="text-xs uppercase tracking-[0.2em]">Send Message</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="relative z-1">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+            </MagneticButton>
+          </div>
+
+          <!-- Form Status -->
+          <div id="form-status" class="hidden">
+            <p class="text-sm text-[var(--accent)]"></p>
+          </div>
+        </form>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .contact-input {
+    font-family: var(--font-sans);
+    transition: border-color 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .contact-input:focus {
+    border-bottom-width: 2px;
+  }
+
+  /* Animated focus indicator */
+  .form-group {
+    position: relative;
+  }
+
+  .form-group::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    transition: width 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .form-group:focus-within::after {
+    width: 100%;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contact-form') as HTMLFormElement;
+    const status = document.getElementById('form-status');
+    
+    if (!form || !status) return;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(form);
+      const name = formData.get('name') as string;
+      const email = formData.get('email') as string;
+      const subject = formData.get('subject') as string;
+      const message = formData.get('message') as string;
+      
+      // Construct mailto link with form data
+      const body = `Hi Jordan,%0D%0A%0D%0AMy name is ${encodeURIComponent(name)}.%0D%0AEmail: ${encodeURIComponent(email)}%0D%0A%0D%0A${encodeURIComponent(message)}`;
+      const mailtoUrl = `mailto:jordannst.08@gmail.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+      
+      window.location.href = mailtoUrl;
+      
+      // Show success message
+      status.classList.remove('hidden');
+      const statusP = status.querySelector('p');
+      if (statusP) {
+        statusP.textContent = 'Opening your email client...';
+      }
+      
+      // Reset after delay
+      setTimeout(() => {
+        status.classList.add('hidden');
+      }, 3000);
+    });
+  });
+</script>

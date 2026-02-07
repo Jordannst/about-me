@@ -1,5 +1,7 @@
 ---
 import { about } from '../../data/portfolio';
+import ImageReveal from '../ImageReveal.astro';
+import TextReveal from '../TextReveal.astro';
 ---
 
 <section id="about" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
@@ -18,27 +20,26 @@ import { about } from '../../data/portfolio';
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
       <!-- Left Column: Headline + Photo -->
       <div class="lg:col-span-5 lg:col-start-2">
-        <h2 class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl lg:text-6xl leading-[0.95] mb-8 text-[var(--text-primary)] reveal-fade-up">
+        <TextReveal tag="h2" animation="words" stagger={0.08} class="text-4xl md:text-5xl lg:text-6xl leading-[0.95] mb-8 text-[var(--text-primary)]">
           Creating
           <br />
           <span class="italic text-[var(--accent)]">Digital</span>
           <br />
           Experiences
-        </h2>
+        </TextReveal>
         
-        <!-- Profile Photo -->
-        <div class="mt-8 lg:mt-12 reveal-fade-up" style="transition-delay: 200ms;">
+        <!-- Profile Photo with ImageReveal -->
+        <div class="mt-8 lg:mt-12">
           <div class="profile-photo-wrapper aspect-[4/5] w-full max-w-sm relative cursor-pointer">
-            <img 
+            <ImageReveal 
               src="/jordan-profile.jpeg" 
               alt="Jordan Sutarto"
-              loading="eager"
-              decoding="async"
-              class="w-full h-full object-cover relative z-10"
+              direction="left"
+              class="w-full h-full"
             />
             
             <!-- Decorative corner with glow -->
-            <div class="profile-border absolute -bottom-3 -right-3 w-full h-full border border-[var(--accent)]"></div>
+            <div class="profile-border absolute -bottom-3 -right-3 w-full h-full border border-[var(--accent)] -z-10"></div>
           </div>
         </div>
       </div>
@@ -72,13 +73,13 @@ import { about } from '../../data/portfolio';
   .profile-border {
     transition: box-shadow 0.5s ease, transform 0.5s ease;
   }
-  
+
   /* Hover effect on desktop */
   .profile-photo-wrapper:hover .profile-border {
     box-shadow: 0 0 25px rgba(181, 155, 107, 0.5), 0 0 50px rgba(181, 155, 107, 0.3);
     transform: translate(-2px, -2px);
   }
-  
+
   /* Always active on touch devices (mobile/tablet) */
   @media (hover: none) and (pointer: coarse) {
     .profile-border {

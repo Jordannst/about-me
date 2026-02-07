@@ -1,138 +1,97 @@
 ---
+// CustomCursor.astro - Adaptive transparent arrow cursor
+// Features: Classic arrow shape that adapts to light/dark backgrounds
 ---
 
-<div id="custom-cursor" class="custom-cursor hidden md:block">
-  <div class="cursor-line-h"></div>
-  <div class="cursor-line-v"></div>
+<!-- Custom arrow cursor - adaptive style -->
+<div id="cursor-arrow" class="cursor-arrow">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path 
+      d="M5 3L19 12L12 13L9 20L5 3Z" 
+      stroke="white" 
+      stroke-width="2" 
+      stroke-linejoin="round"
+      fill="white"
+    />
+  </svg>
 </div>
 
 <style>
-  .custom-cursor {
+  .cursor-arrow {
     position: fixed;
     top: 0;
     left: 0;
-    width: 20px;
-    height: 20px;
     pointer-events: none;
     z-index: 9999;
-    mix-blend-mode: normal;
-    transform: translate(-50%, -50%);
-    opacity: 0; /* Hidden by default until mouse enters or initiates */
-    transition: opacity 0.3s ease;
+    transform: translate(-2px, -2px);
+    transition: opacity 0.2s ease;
+    will-change: transform, left, top;
+    mix-blend-mode: difference;
   }
 
-  .cursor-line-h, .cursor-line-v {
-    position: absolute;
-    background-color: var(--accent);
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  .cursor-arrow svg {
+    transition: transform 0.2s ease;
   }
 
-  /* Horizontal Line */
-  .cursor-line-h {
-    top: 50%;
-    left: 0;
-    width: 100%;
-    height: 1px;
-    transform: translateY(-50%);
+  .cursor-arrow.hover svg {
+    transform: scale(1.2);
   }
 
-  /* Vertical Line */
-  .cursor-line-v {
-    left: 50%;
-    top: 0;
-    width: 1px;
-    height: 100%;
-    transform: translateX(-50%);
+  .cursor-arrow.click svg {
+    transform: scale(0.9);
   }
 
-  /* Hover State: Rotate 45deg to become 'x' */
-  .custom-cursor.hover {
-    transform: translate(-50%, -50%) rotate(45deg);
-  }
-  
-  /* Optional: Make it slightly larger on hover */
-  .custom-cursor.hover .cursor-line-h,
-  .custom-cursor.hover .cursor-line-v {
-    opacity: 0.8;
+  .cursor-arrow.hidden {
+    opacity: 0;
   }
 
   /* Hide on touch devices */
   @media (hover: none) and (pointer: coarse) {
-    .custom-cursor {
+    .cursor-arrow {
       display: none !important;
+    }
+  }
+
+  /* Hide default cursor on desktop */
+  @media (hover: hover) and (pointer: fine) {
+    :global(html) {
+      cursor: none !important;
+    }
+    :global(a, button, [role="button"], input, textarea, select, label) {
+      cursor: none !important;
     }
   }
 </style>
 
 <script>
-  function initCustomCursor() {
-    const cursor = document.getElementById('custom-cursor');
+  function initCursor() {
+    const cursor = document.getElementById('cursor-arrow');
     if (!cursor) return;
 
-    // Add class to body to hide default cursor via CSS
-    document.body.classList.add('has-custom-cursor');
-
-    let mouseX = 0;
-    let mouseY = 0;
-    let cursorX = 0;
-    let cursorY = 0;
-
-    // Track mouse movement
+    // Instant cursor follow - no delay
     document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      
-      // On first move, jump to position to avoid slow lerp from (0,0)
-      if (cursorX === 0 && cursorY === 0) {
-        cursorX = mouseX;
-        cursorY = mouseY;
-        cursor.style.opacity = '1';
-      }
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
     });
 
-    // Handle hover states
-    const interactiveElements = 'a, button, [role="button"], .cursor-pointer';
-    
-    document.addEventListener('mouseover', (e) => {
-      const target = e.target as HTMLElement;
-      if (target.closest(interactiveElements)) {
-        cursor.classList.add('hover');
-      }
+    // Hover effect on interactive elements
+    const interactiveElements = 'a, button, [role="button"], input, textarea, select, label, .project-card, [data-cursor-hover]';
+
+    document.querySelectorAll(interactiveElements).forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
     });
 
-    document.addEventListener('mouseout', (e) => {
-      const target = e.target as HTMLElement;
-      if (target.closest(interactiveElements)) {
-        cursor.classList.remove('hover');
-      }
-    });
+    // Click effect
+    document.addEventListener('mousedown', () => cursor.classList.add('click'));
+    document.addEventListener('mouseup', () => cursor.classList.remove('click'));
 
-    // Smooth follow animation
-    function animate() {
-      // Lerp (Linear Interpolation) for smoothness
-      // 0.35 is snappier than 0.2
-      cursorX += (mouseX - cursorX) * 0.35;
-      cursorY += (mouseY - cursorY) * 0.35;
-
-      cursor.style.transform = `translate3d(${cursorX}px, ${cursorY}px, 0) ${cursor.classList.contains('hover') ? 'rotate(45deg)' : 'rotate(0deg)'}`;
-      
-      requestAnimationFrame(animate);
-    }
-
-    animate();
-
-    // Hide when mouse leaves window
-    document.addEventListener('mouseleave', () => {
-      cursor.style.opacity = '0';
-    });
-
-    document.addEventListener('mouseenter', () => {
-      cursor.style.opacity = '1';
-    });
+    // Hide on mouse leave window
+    document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
+    document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
   }
 
-  // Initialize on page load
-  document.addEventListener('DOMContentLoaded', initCustomCursor);
-  // Re-initialize after Astro page transitions if using View Transitions
-  document.addEventListener('astro:after-swap', initCustomCursor);
+  // Initialize
+  document.addEventListener('DOMContentLoaded', initCursor);
+  document.addEventListener('astro:after-swap', initCursor);
 </script>

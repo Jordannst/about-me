@@ -1,7 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Navigation from '../../components/Navigation.astro';
-import Footer from '../../components/Footer.astro';
+import FooterMinimal from '../../components/FooterMinimal.astro';
 import { projects } from '../../data/portfolio';
 
 export function getStaticPaths() {
@@ -46,7 +46,7 @@ const { project } = Astro.props;
           </div>
           
           <!-- Title -->
-          <h1 class="font-[family-name:var(--font-serif)] text-3xl md:text-4xl lg:text-5xl leading-[0.95] text-[var(--text-primary)] mb-6 reveal-fade-up">
+          <h1 class="text-3xl md:text-4xl lg:text-5xl leading-[0.95] text-[var(--text-primary)] mb-6 reveal-fade-up">
             {project.title}
           </h1>
           
@@ -121,5 +121,5 @@ const { project } = Astro.props;
     </section>
   </main>
   
-  <Footer />
+  <FooterMinimal />
 </Layout>
