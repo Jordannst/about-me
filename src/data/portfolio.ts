@@ -119,27 +119,27 @@ export interface Certificate {
 export const certificates: Certificate[] = [
   {
     id: 1,
-    title: "Hackathon 1st Place",
-    issuer: "National University Tech Competition",
+    title: "UI/UX Design 3rd Honorable Mention",
+    issuer: "Indoneris IT Competition - Universitas Amikom Purwokerto",
     date: "2025",
     type: "competition",
     description:
-      "First place winner for building an AI-powered healthcare solution within 48 hours.",
-    image: "",
+      "3rd Honorable Mention (Juara Harapan 3) in the UI/UX Design category at the Indonesia IT Competition (Indoneris) 2025.",
+    image: "/UIUX-6.webp",
     credentialUrl: "#",
   },
   {
     id: 2,
-    title: "Hackathon 1st Place",
-    issuer: "National University Tech Competition",
-    date: "2025",
+    title: "UI/UX Design 1st Place",
+    issuer: "Indoneris IT Competition - Universitas Amikom Purwokerto",
+    date: "2024",
     type: "competition",
     description:
-      "First place winner for building an AI-powered healthcare solution within 48 hours.",
-    image: "",
+      "First place winner in the UI/UX Design category at the Indonesia IT Competition (Indoneris) 2024.",
+    image: "/2024-UIUX.webp",
     credentialUrl: "#",
   },
- 
+  
 ];
 
 export const social = {
