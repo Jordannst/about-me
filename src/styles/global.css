@@ -273,6 +273,7 @@ h6 {
   transition:
     opacity var(--duration-slow) var(--ease-luxury),
     transform var(--duration-slow) var(--ease-luxury);
+  contain: layout style;
 }
 
 .reveal.revealed {
@@ -287,6 +288,7 @@ h6 {
   transition:
     opacity 800ms var(--ease-luxury),
     transform 800ms var(--ease-luxury);
+  contain: layout style;
 }
 
 .reveal-fade-up.revealed {
@@ -298,6 +300,7 @@ h6 {
 .reveal-fade {
   opacity: 0;
   transition: opacity 1000ms var(--ease-luxury);
+  contain: layout style;
 }
 
 .reveal-fade.revealed {
@@ -311,6 +314,7 @@ h6 {
   transition:
     opacity 800ms var(--ease-luxury),
     transform 800ms var(--ease-luxury);
+  contain: layout style;
 }
 
 .reveal-scale.revealed {
@@ -325,6 +329,7 @@ h6 {
   transition:
     opacity 800ms var(--ease-luxury),
     transform 800ms var(--ease-luxury);
+  contain: layout style;
 }
 
 .reveal-left.revealed {
@@ -339,6 +344,7 @@ h6 {
   transition:
     opacity 800ms var(--ease-luxury),
     transform 800ms var(--ease-luxury);
+  contain: layout style;
 }
 
 .reveal-right.revealed {

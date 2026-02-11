@@ -18,10 +18,10 @@ import { personal, meta, social } from '../data/portfolio';
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-end">
         <!-- Left: Big Headline -->
         <div class="lg:col-span-8">
-          <p class="text-xs uppercase tracking-[0.25em] opacity-50 mb-6">
+          <p class="text-xs uppercase tracking-[0.25em] opacity-50 mb-6 reveal-fade-up">
             Have a project in mind?
           </p>
-          <h2 class="text-5xl md:text-7xl lg:text-[7rem] xl:text-[8rem] leading-[0.85]">
+          <h2 class="text-5xl md:text-7xl lg:text-[7rem] xl:text-[8rem] leading-[0.85] reveal-fade-up" style="transition-delay: 150ms;">
             Let's create
             <br />
             <span class="italic text-[var(--accent)]">something</span>
@@ -31,7 +31,7 @@ import { personal, meta, social } from '../data/portfolio';
         </div>
 
         <!-- Right: CTA Button -->
-        <div class="lg:col-span-4 lg:text-right">
+        <div class="lg:col-span-4 lg:text-right reveal-fade-up" style="transition-delay: 300ms;">
           <a 
             href={`mailto:${personal.email}`}
             class="footer-cta-btn inline-flex items-center gap-4 group"
