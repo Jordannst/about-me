@@ -21,7 +21,7 @@ import TextReveal from '../TextReveal.astro';
 
   <!-- Large decorative star -->
   <div class="absolute right-8 md:right-16 top-1/2 -translate-y-1/2 select-none pointer-events-none">
-    <span class="font-[family-name:var(--font-serif)] text-[25vw] leading-none text-[var(--text-primary)] opacity-[0.03]">
+    <span class="star-glow font-[family-name:var(--font-serif)] text-[25vw] leading-none text-[var(--text-primary)] opacity-[0.03]">
       ✦
     </span>
   </div>
@@ -68,8 +68,48 @@ import TextReveal from '../TextReveal.astro';
     }
   }
 
+  /* Star glow - uses pseudo-element to avoid inheriting star's low opacity */
+  .star-glow {
+    position: relative;
+  }
+
+  .star-glow::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    height: 60%;
+    border-radius: 50%;
+    background: radial-gradient(
+      circle,
+      rgba(212, 175, 55, 0.15) 0%,
+      rgba(212, 175, 55, 0.08) 30%,
+      rgba(212, 175, 55, 0.03) 55%,
+      transparent 70%
+    );
+    filter: blur(40px);
+    animation: starPulse 6s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes starPulse {
+    0%, 100% {
+      opacity: 0.7;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1.25);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .statement-blob {
+      animation: none;
+    }
+    .star-glow::after {
       animation: none;
     }
   }

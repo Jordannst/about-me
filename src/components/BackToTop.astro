@@ -77,26 +77,10 @@
         overlay.classList.remove('reset');
         overlay.classList.add('entering');
         
-        // Step 2: After fully covered, scroll and start exit
+        // Step 2: After fully covered, reload page so all animations reset
         setTimeout(() => {
           window.scrollTo({ top: 0, behavior: 'instant' });
-          
-          // Remove entering, add exiting (overlay exits to top)
-          overlay.classList.remove('entering');
-          overlay.classList.add('exiting');
-          
-          // Step 3: After exit animation, reset instantly (no transition)
-          setTimeout(() => {
-            overlay.classList.remove('exiting');
-            overlay.classList.add('reset');
-            
-            // Remove reset class after a frame to re-enable transitions
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                overlay.classList.remove('reset');
-              });
-            });
-          }, 500);
+          window.location.href = window.location.pathname;
         }, 500);
       } else {
         // Fallback

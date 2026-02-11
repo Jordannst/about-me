@@ -87,11 +87,11 @@ const skillsWithSize = skills.map((skill, index) => {
     </h2>
 
     <!-- Staggered Grid -->
-    <div class="staggered-grid reveal-fade-up">
+    <div class="staggered-grid" id="skills-grid">
       {skillsWithSize.map((skill, index) => (
         <div 
           class={`skill-item skill-${skill.size}`} 
-          style={`--delay: ${index * 50}ms`}
+          data-skill-index={index}
         >
           <div class="skill-content">
             <span class="skill-category">{skill.category}</span>
@@ -121,10 +121,9 @@ const skillsWithSize = skills.map((skill, index) => {
     padding: 1.25rem;
     border: 1px solid var(--border-color);
     background: transparent;
-    transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    animation: fadeInUp 0.6s ease forwards;
-    animation-delay: var(--delay);
+    transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
     opacity: 0;
+    transform: translateY(60px) scale(0.85);
   }
   
   .skill-content {
@@ -307,3 +306,43 @@ const skillsWithSize = skills.map((skill, index) => {
   
   /* fadeInUp keyframes defined in global.css */
 </style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initSkillsAnimation() {
+    const grid = document.getElementById('skills-grid');
+    if (!grid) return;
+
+    const items = grid.querySelectorAll('.skill-item');
+    if (!items.length) return;
+
+    // Block stacking animation
+    gsap.to(items, {
+      opacity: 1,
+      y: 0,
+      scale: 1,
+      duration: 0.7,
+      stagger: {
+        each: 0.1,
+        from: 'start',
+      },
+      ease: 'back.out(1.2)',
+      scrollTrigger: {
+        trigger: grid,
+        start: 'top 75%',
+        toggleActions: 'play none none none',
+      },
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initSkillsAnimation, 200);
+  });
+  document.addEventListener('astro:after-swap', () => {
+    setTimeout(initSkillsAnimation, 200);
+  });
+</script>
