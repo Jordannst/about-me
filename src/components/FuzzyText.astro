@@ -1,0 +1,180 @@
+---
+// FuzzyText.astro - ReactBits-inspired fuzzy/noisy text effect
+// Uses SVG feTurbulence filter for animated noise directly on text
+// No canvas overlay - noise is applied as a text filter
+interface Props {
+  fontSize?: string;
+  baseIntensity?: number;
+  hoverIntensity?: number;
+  enableHover?: boolean;
+  color?: string;
+  class?: string;
+}
+
+const {
+  fontSize = 'clamp(3rem, 15vw, 18rem)',
+  baseIntensity = 0.2,
+  hoverIntensity = 0.5,
+  enableHover = true,
+  color = '',
+  class: className = '',
+} = Astro.props;
+
+// Generate unique ID for SVG filter
+const filterId = `fuzzy-filter-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<div
+  class:list={["fuzzy-text-wrapper", className]}
+  data-base-intensity={baseIntensity}
+  data-hover-intensity={hoverIntensity}
+  data-enable-hover={enableHover}
+  data-filter-id={filterId}
+  style={`font-size: ${fontSize};`}
+>
+  <!-- SVG Filter Definition -->
+  <svg class="fuzzy-svg-defs" aria-hidden="true">
+    <defs>
+      <filter id={filterId}>
+        <feTurbulence
+          type="fractalNoise"
+          baseFrequency="0.8"
+          numOctaves="4"
+          seed="0"
+          result="noise"
+        />
+        <feDisplacementMap
+          in="SourceGraphic"
+          in2="noise"
+          scale="3"
+          xChannelSelector="R"
+          yChannelSelector="G"
+        />
+      </filter>
+    </defs>
+  </svg>
+
+  <span
+    class="fuzzy-text-content"
+    style={`${color ? `color: ${color};` : ''} filter: url(#${filterId});`}
+  >
+    <slot />
+  </span>
+</div>
+
+<style>
+  .fuzzy-text-wrapper {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+    line-height: 1;
+  }
+
+  .fuzzy-svg-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .fuzzy-text-content {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    color: var(--text-primary);
+    display: block;
+    user-select: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fuzzy-text-content {
+      filter: none !important;
+    }
+  }
+</style>
+
+<script>
+  function initFuzzyText() {
+    const wrappers = document.querySelectorAll('.fuzzy-text-wrapper:not(.fuzzy-initialized)');
+
+    wrappers.forEach((wrapper) => {
+      const el = wrapper as HTMLElement;
+      const filterId = el.dataset.filterId;
+      const baseIntensity = parseFloat(el.dataset.baseIntensity || '0.2');
+      const hoverIntensity = parseFloat(el.dataset.hoverIntensity || '0.5');
+      const enableHover = el.dataset.enableHover !== 'false';
+
+      if (!filterId) return;
+
+      const turbulence = el.querySelector('feTurbulence');
+      const displacement = el.querySelector('feDisplacementMap');
+
+      if (!turbulence || !displacement) return;
+
+      let currentIntensity = baseIntensity;
+      let targetIntensity = baseIntensity;
+      let seed = 0;
+      let animationId: number;
+      let isRunning = true;
+
+      // Map intensity to displacement scale and frequency
+      function getDisplacementScale(intensity: number): number {
+        return intensity * 40; // 0.2 -> 8, 0.5 -> 20
+      }
+
+      function getFrequency(intensity: number): string {
+        const freq = 0.3 + intensity * 0.8;
+        return freq.toFixed(3);
+      }
+
+      function animate() {
+        if (!isRunning) return;
+
+        // Smooth interpolation
+        currentIntensity += (targetIntensity - currentIntensity) * 0.1;
+
+        // Update seed for animation (creates the "moving noise" effect)
+        seed += 1;
+        turbulence.setAttribute('seed', String(seed % 100));
+
+        // Update displacement scale based on intensity
+        const scale = getDisplacementScale(currentIntensity);
+        displacement.setAttribute('scale', scale.toFixed(1));
+
+        // Update frequency
+        const freq = getFrequency(currentIntensity);
+        turbulence.setAttribute('baseFrequency', freq);
+
+        animationId = requestAnimationFrame(animate);
+      }
+
+      // Start animation
+      animate();
+
+      // Hover handling
+      if (enableHover) {
+        el.addEventListener('mouseenter', () => {
+          targetIntensity = hoverIntensity;
+        });
+
+        el.addEventListener('mouseleave', () => {
+          targetIntensity = baseIntensity;
+        });
+      }
+
+      // Cleanup on page navigation
+      document.addEventListener('astro:before-swap', () => {
+        isRunning = false;
+        cancelAnimationFrame(animationId);
+      }, { once: true });
+
+      el.classList.add('fuzzy-initialized');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initFuzzyText, 200);
+  });
+  document.addEventListener('astro:after-swap', () => {
+    setTimeout(initFuzzyText, 200);
+  });
+</script>

@@ -1,6 +1,7 @@
 ---
 import { personal, meta } from '../../data/portfolio';
 import TextReveal from '../TextReveal.astro';
+import BlurText from '../BlurText.astro';
 ---
 
 <section class="min-h-screen flex items-center md:items-end pb-16 md:pb-32 pt-24 md:pt-32 px-8 md:px-16 relative overflow-hidden">
@@ -28,11 +29,11 @@ import TextReveal from '../TextReveal.astro';
         <span class="text-[var(--text-secondary)]">{personal.name.split(' ')[1]}</span>
       </TextReveal>
       
-      <!-- Tagline with TextReveal -->
-      <TextReveal tag="p" animation="words" stagger={0.05} delay={0.5} class="font-[family-name:var(--font-serif)] text-2xl md:text-4xl lg:text-5xl leading-tight text-[var(--text-secondary)]">
+      <!-- Tagline with BlurText (ReactBits-inspired blur-to-clear) -->
+      <BlurText tag="p" delay={0.5} stagger={0.08} duration={0.8} class="font-[family-name:var(--font-serif)] text-2xl md:text-4xl lg:text-5xl leading-tight text-[var(--text-secondary)]">
         {personal.tagline}
         <span class="italic text-[var(--accent)]"> / {personal.taglineAccent}</span>
-      </TextReveal>
+      </BlurText>
     </div>
   </div>
 

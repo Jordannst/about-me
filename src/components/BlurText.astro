@@ -1,0 +1,195 @@
+---
+// BlurText.astro - ReactBits-inspired blur-to-clear text animation
+// Each word starts blurred and fades in with stagger on scroll
+interface Props {
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'span' | 'div';
+  class?: string;
+  delay?: number;
+  stagger?: number;
+  duration?: number;
+}
+
+const {
+  tag = 'div',
+  class: className = '',
+  delay = 0,
+  stagger = 0.08,
+  duration = 0.8,
+} = Astro.props;
+
+const Tag = tag;
+---
+
+<Tag
+  class:list={["blur-text", className]}
+  data-blur-delay={delay}
+  data-blur-stagger={stagger}
+  data-blur-duration={duration}
+>
+  <slot />
+</Tag>
+
+<style is:global>
+  .blur-text .blur-word {
+    display: inline-block;
+    filter: blur(10px);
+    opacity: 0;
+    transition: filter 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+                transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transform: translateY(8px);
+  }
+
+  .blur-text .blur-word.revealed {
+    filter: blur(0px);
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Whitespace between words */
+  .blur-text .blur-word + .blur-word {
+    margin-left: 0.3em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .blur-text .blur-word {
+      filter: none;
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { gsap } from 'gsap';
+  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  function initBlurText() {
+    const elements = document.querySelectorAll('.blur-text:not(.blur-initialized)');
+
+    elements.forEach((element) => {
+      const el = element as HTMLElement;
+      const delay = parseFloat(el.dataset.blurDelay || '0');
+      const stagger = parseFloat(el.dataset.blurStagger || '0.08');
+      const duration = parseFloat(el.dataset.blurDuration || '0.8');
+
+      // Get all text nodes and inline elements, preserve HTML structure
+      const html = el.innerHTML;
+
+      // Split by words while preserving HTML tags
+      const words: string[] = [];
+      let currentWord = '';
+      let inTag = false;
+
+      for (let i = 0; i < html.length; i++) {
+        const char = html[i];
+
+        if (char === '<') {
+          inTag = true;
+          if (currentWord.trim()) {
+            words.push(currentWord);
+            currentWord = '';
+          }
+          currentWord += char;
+        } else if (char === '>') {
+          inTag = false;
+          currentWord += char;
+
+          // Check if this is a self-closing tag or closing tag
+          const tagContent = currentWord;
+          if (tagContent.match(/^<\/?[^>]+>$/)) {
+            // Check if it's a block-level tag wrapper (like <span>)
+            if (tagContent.match(/^<(span|em|strong|b|i|a|br\s*\/?)[\s>]/i) ||
+                tagContent.match(/^<\/(span|em|strong|b|i|a)>/i) ||
+                tagContent.match(/^<br\s*\/?>/i)) {
+              words.push(tagContent);
+              currentWord = '';
+            } else {
+              words.push(tagContent);
+              currentWord = '';
+            }
+          }
+        } else if (!inTag && (char === ' ' || char === '\n' || char === '\r' || char === '\t')) {
+          if (currentWord.trim()) {
+            words.push(currentWord);
+            currentWord = '';
+          }
+        } else {
+          currentWord += char;
+        }
+      }
+
+      if (currentWord.trim()) {
+        words.push(currentWord);
+      }
+
+      // Build new HTML with blur-word spans
+      let newHtml = '';
+      let openTags: string[] = [];
+
+      for (const word of words) {
+        if (word.match(/^<br\s*\/?>/i)) {
+          newHtml += word;
+        } else if (word.match(/^<\/[^>]+>$/)) {
+          // Closing tag
+          openTags.pop();
+          newHtml += word;
+        } else if (word.match(/^<[^/][^>]*>$/)) {
+          // Opening tag
+          openTags.push(word);
+          newHtml += word;
+        } else {
+          // Actual word - wrap in blur-word span
+          newHtml += `<span class="blur-word">${word}</span>`;
+        }
+      }
+
+      el.innerHTML = newHtml;
+
+      // Get all blur-word elements
+      const blurWords = el.querySelectorAll('.blur-word');
+
+      if (!blurWords.length) return;
+
+      // Set initial state via GSAP
+      gsap.set(blurWords, {
+        filter: 'blur(10px)',
+        opacity: 0,
+        y: 8,
+      });
+
+      // Animate on scroll
+      gsap.to(blurWords, {
+        filter: 'blur(0px)',
+        opacity: 1,
+        y: 0,
+        duration: duration,
+        stagger: stagger,
+        delay: delay,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: el,
+          start: 'top 85%',
+          toggleActions: 'play none none none',
+        },
+        onComplete: () => {
+          // Clean up inline styles after animation
+          blurWords.forEach((w) => {
+            (w as HTMLElement).classList.add('revealed');
+          });
+        },
+      });
+
+      el.classList.add('blur-initialized');
+    });
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initBlurText, 150);
+  });
+  document.addEventListener('astro:after-swap', initBlurText);
+</script>
