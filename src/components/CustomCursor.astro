@@ -68,6 +68,17 @@
     const cursor = document.getElementById('cursor-arrow');
     if (!cursor) return;
 
+    // Detect touch device and bail out
+    const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches
+      || 'ontouchstart' in window
+      || navigator.maxTouchPoints > 0;
+
+    if (isTouchDevice) {
+      cursor.style.display = 'none';
+      document.documentElement.style.cursor = '';
+      return;
+    }
+
     // Instant cursor follow - no delay
     document.addEventListener('mousemove', (e) => {
       cursor.style.left = e.clientX + 'px';
