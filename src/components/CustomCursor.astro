@@ -25,7 +25,7 @@
     z-index: 9999;
     transform: translate(-2px, -2px);
     transition: opacity 0.2s ease;
-    will-change: transform, left, top;
+    will-change: transform;
     mix-blend-mode: difference;
   }
 
@@ -79,10 +79,22 @@
       return;
     }
 
-    // Instant cursor follow - no delay
+    // Instant, lag-free cursor follow using hardware acceleration (transform)
+    let animationFrameId: number;
+    let mouseX = -100;
+    let mouseY = -100;
+
     document.addEventListener('mousemove', (e) => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top = e.clientY + 'px';
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      
+      // Use requestAnimationFrame to sync with screen refresh rate
+      if (!animationFrameId) {
+        animationFrameId = requestAnimationFrame(() => {
+          cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-2px, -2px)`;
+          animationFrameId = 0;
+        });
+      }
     });
 
     // Hover effect on interactive elements

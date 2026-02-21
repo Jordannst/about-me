@@ -1,0 +1,39 @@
+---
+// Quote.astro - Minimalist quote section featuring Typewriter effect
+import Typewriter from '../Typewriter.astro';
+---
+
+<section class="quote-section relative py-24 md:py-32 px-8 md:px-16 bg-[var(--bg-secondary)] border-t border-[var(--border-color)]">
+  <div class="max-w-[1600px] mx-auto flex flex-col items-center justify-center text-center">
+    
+    <!-- Minimalist Quote Icon -->
+    <div class="mb-8 md:mb-12">
+      <svg class="w-8 h-8 md:w-12 md:h-12 text-[var(--accent)] mx-auto opacity-40 mix-blend-screen" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+      </svg>
+    </div>
+
+    <!-- Typewriter Quote Text -->
+    <div class="max-w-4xl mx-auto flex flex-col items-center">
+      <Typewriter 
+        text="The only way to do great work is to love what you do." 
+        tag="h2" 
+        speed={60}
+        delay={300}
+        class="font-[family-name:var(--font-serif)] text-3xl md:text-5xl lg:text-6xl leading-[1.3] text-[var(--text-primary)]"
+      />
+      
+      <!-- Typewriter Author Text (Appears after quote finishes) -->
+      <!-- 55 chars * 60ms = ~3300ms + 300ms delay = 3600ms base wait time -->
+      <div class="mt-8 md:mt-12">
+        <Typewriter 
+          text="— Steve Jobs" 
+          tag="p" 
+          speed={70}
+          delay={4000}
+          class="text-xs md:text-sm uppercase tracking-[0.4em] text-[var(--text-secondary)]"
+        />
+      </div>
+    </div>
+  </div>
+</section>

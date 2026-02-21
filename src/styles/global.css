@@ -66,7 +66,7 @@
   --bg-secondary: #2a2a2a;
   --bg-inverted: #f9f8f6;
   --text-primary: #f9f8f6;
-  --text-secondary: rgba(249, 248, 246, 0.6);
+  --text-secondary: rgba(249, 248, 246, 0.75); /* Increased contrast from 0.6 for better readability */
   --text-inverted: #1a1a1a;
   --border-color: rgba(249, 248, 246, 0.1);
   --border-strong: #f9f8f6;
@@ -118,6 +118,7 @@ h6 {
   font-family: var(--font-serif);
   font-weight: 400;
   line-height: 0.95;
+  letter-spacing: -0.015em; /* Tighter letter spacing for editorial elegance */
 }
 
 /* ================================
@@ -141,12 +142,14 @@ h6 {
   height: 100%;
   pointer-events: none;
   z-index: 50;
-  opacity: 0.02;
+  opacity: 0.015; /* Sederhana dan elegan, tidak mengotori teks */
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
 }
 
 :root.dark .noise-overlay {
-  opacity: 0.03;
+  opacity: 0.02;
+  mix-blend-mode: screen;
 }
 
 /* ================================
@@ -198,14 +201,6 @@ h6 {
   z-index: 0;
 }
 
-.btn-primary:hover::before {
-  transform: translateX(0);
-}
-
-.btn-primary:hover {
-  box-shadow: var(--shadow-button-hover);
-}
-
 .btn-primary span {
   position: relative;
   z-index: 1;
@@ -224,11 +219,28 @@ h6 {
   box-shadow: var(--shadow-card), var(--shadow-inner);
 }
 
-.image-luxury:hover,
-.group:hover .image-luxury {
-  filter: grayscale(0%);
-  transform: scale(1.03);
-  box-shadow: var(--shadow-card-hover), var(--shadow-inner);
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover::before {
+    transform: translateX(0);
+  }
+
+  .btn-primary:hover {
+    box-shadow: var(--shadow-button-hover);
+  }
+
+  .image-luxury:hover,
+  .group:hover .image-luxury {
+    filter: grayscale(0%);
+    transform: scale(1.03);
+    box-shadow: var(--shadow-card-hover), var(--shadow-inner);
+  }
+}
+
+/* Tactile touch feedback for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .btn-primary:active {
+    transform: scale(0.98);
+  }
 }
 
 /* ================================

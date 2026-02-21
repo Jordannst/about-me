@@ -1,0 +1,119 @@
+---
+// Typewriter.astro - A premium typewriter text effect component
+interface Props {
+  text: string;
+  tag?: string;
+  speed?: number; // ms per character
+  delay?: number; // initial delay in ms before typing starts
+  class?: string;
+  hideCursorOnComplete?: boolean;
+}
+
+const {
+  text,
+  tag = 'p',
+  speed = 40,
+  delay = 0,
+  class: className = '',
+  hideCursorOnComplete = false,
+} = Astro.props;
+
+const Tag = tag as any;
+---
+
+<Tag class={`typewriter-container ${className}`} data-text={text} data-speed={speed} data-delay={delay} data-hide-cursor={String(hideCursorOnComplete)}>
+  <span class="typewriter-text opacity-0">{text}</span>
+  <span class="typewriter-cursor inline-block w-[0.05em] h-[1em] bg-[var(--accent)] align-middle ml-1 opacity-0"></span>
+</Tag>
+
+<style>
+  .typewriter-cursor.blinking {
+    animation: blink 1s step-end infinite;
+    opacity: 1;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .typewriter-container {
+    display: inline-block;
+  }
+</style>
+
+<script>
+  function initTypewriters() {
+    const containers = document.querySelectorAll('.typewriter-container');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const container = entry.target as HTMLElement;
+          
+          // Only animate once
+          if (container.dataset.animated === 'true') return;
+          container.dataset.animated = 'true';
+
+          const textEl = container.querySelector('.typewriter-text') as HTMLElement;
+          const cursorEl = container.querySelector('.typewriter-cursor') as HTMLElement;
+          
+          if (!textEl || !cursorEl) return;
+
+          const textToType = container.getAttribute('data-text') || '';
+          const speed = parseInt(container.getAttribute('data-speed') || '40', 10);
+          const delay = parseInt(container.getAttribute('data-delay') || '0', 10);
+
+          const hideCursor = container.getAttribute('data-hide-cursor') === 'true';
+
+          // Prepare for typing
+          textEl.textContent = '';
+          textEl.classList.remove('opacity-0');
+          cursorEl.classList.remove('opacity-0');
+          cursorEl.classList.add('blinking');
+          
+          let charIndex = 0;
+
+          function typeChar() {
+            if (charIndex < textToType.length) {
+              textEl.textContent += textToType.charAt(charIndex);
+              charIndex++;
+              
+              // Randomize typing speed slightly for realism (between speed/2 and speed*1.5)
+              const variation = Math.random() * speed + (speed / 2);
+              setTimeout(typeChar, variation);
+            } else {
+              // Typing finished
+              if (hideCursor) {
+                // If requested to hide, blink a few times then totally disappear
+                setTimeout(() => {
+                  cursorEl.style.display = 'none';
+                }, 1500); 
+              } else {
+                // Keep cursor blinking for a bit, then optionally fade out
+                setTimeout(() => {
+                  cursorEl.style.transition = 'opacity 1s ease';
+                  cursorEl.style.opacity = '0.3'; // Dim cursor after done
+                }, 3000);
+              }
+            }
+          }
+
+          // Start typing after delay
+          setTimeout(typeChar, delay);
+        }
+      });
+    }, {
+      threshold: 0.5, // Start when 50% of the element is visible
+      rootMargin: '0px 0px -100px 0px'
+    });
+
+    containers.forEach(container => {
+      observer.observe(container);
+    });
+  }
+
+  // Initialize on load and after Astro page transitions
+  document.addEventListener('DOMContentLoaded', initTypewriters);
+  document.addEventListener('astro:after-swap', initTypewriters);
+</script>

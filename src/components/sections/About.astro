@@ -2,6 +2,7 @@
 import { about } from '../../data/portfolio';
 import ImageReveal from '../ImageReveal.astro';
 import TextReveal from '../TextReveal.astro';
+import Typewriter from '../Typewriter.astro';
 ---
 
 <section id="about" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
@@ -54,14 +55,24 @@ import TextReveal from '../TextReveal.astro';
         </p>
         
         <!-- Quote -->
-        <div class="mt-12 pt-8 border-t border-[var(--border-color)] reveal-fade-up" style="transition-delay: 600ms;">
+        <div class="mt-12 pt-8 border-t border-[var(--border-color)]">
           <blockquote class="relative">
-            <p class="font-[family-name:var(--font-serif)] text-xl md:text-2xl italic text-[var(--text-primary)] leading-relaxed mb-4">
-              "The only way to do great work is to love what you do."
-            </p>
-            <cite class="text-[10px] uppercase tracking-[0.2em] text-[var(--accent)] not-italic">
-              — Steve Jobs
-            </cite>
+            <Typewriter 
+              text='"The only way to do great work is to love what you do."' 
+              tag="p" 
+              speed={35}
+              delay={300}
+              class="font-[family-name:var(--font-serif)] text-xl md:text-2xl italic text-[var(--text-primary)] leading-relaxed mb-4"
+            />
+            <br />
+            <Typewriter 
+              text="— Steve Jobs" 
+              tag="cite" 
+              speed={50}
+              delay={2300}
+              hideCursorOnComplete={true}
+              class="text-[10px] uppercase tracking-[0.2em] text-[var(--accent)] not-italic"
+            />
           </blockquote>
         </div>
       </div>

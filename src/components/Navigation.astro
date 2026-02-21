@@ -49,10 +49,9 @@ import ThemeToggle from './ThemeToggle.astro';
           <ThemeToggle />
         </div>
         
-        <!-- Mobile Menu Button -->
         <button 
           id="mobile-menu-btn" 
-          class="md:hidden p-2 text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-300"
+          class="md:hidden p-4 -mr-2 text-[var(--text-primary)] hover:text-[var(--accent)] transition-colors duration-300"
           aria-label="Toggle menu"
           aria-expanded="false"
         >
@@ -127,15 +126,18 @@ import ThemeToggle from './ThemeToggle.astro';
     content: '';
     position: absolute;
     bottom: -4px;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 0;
     height: 1px;
     background: var(--accent);
     transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  .nav-link:hover::after {
-    width: 100%;
+  @media (hover: hover) and (pointer: fine) {
+    .nav-link:hover::after {
+      width: 100%;
+    }
   }
 
   /* Mobile nav link animation */

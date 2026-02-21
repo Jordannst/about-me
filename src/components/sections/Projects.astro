@@ -33,7 +33,7 @@ const featuredProjects = projects.filter(p => p.featured);
         <div class="flex gap-2">
           <button 
             id="prev-btn"
-            class="w-10 h-10 border border-[var(--border-strong)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+            class="w-12 h-12 md:w-10 md:h-10 border border-[var(--border-strong)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
             aria-label="Previous project"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -42,7 +42,7 @@ const featuredProjects = projects.filter(p => p.featured);
           </button>
           <button 
             id="next-btn"
-            class="w-10 h-10 border border-[var(--border-strong)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
+            class="w-12 h-12 md:w-10 md:h-10 border border-[var(--border-strong)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
             aria-label="Next project"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -59,7 +59,7 @@ const featuredProjects = projects.filter(p => p.featured);
         {featuredProjects.map((project, index) => (
           <a
             href={`/projects/${project.id}`}
-            class="project-card group block flex-shrink-0 w-full md:w-1/2 pr-8 md:pr-16"
+            class="project-card group block flex-shrink-0 w-[85vw] md:w-1/2 pr-6 md:pr-16"
             data-index={index}
             data-cursor-text="View"
           >
@@ -216,8 +216,13 @@ const featuredProjects = projects.filter(p => p.featured);
     }
 
     function updateCarousel() {
-      const slideWidth = getItemsPerView() === 1 ? 100 : 50;
-      track.style.transform = `translateX(-${currentIndex * slideWidth}%)`;
+      if (!track || !counter || !prevBtn || !nextBtn) return;
+      // Use actual pixel width of the first card to account for w-[85vw] dynamically
+      const card = track.children[0] as HTMLElement;
+      if (!card) return;
+      const slideWidthPx = card.offsetWidth;
+      
+      track.style.transform = `translateX(-${currentIndex * slideWidthPx}px)`;
       counter.textContent = `${String(currentIndex + 1).padStart(2, '0')} / ${String(totalProjects).padStart(2, '0')}`;
       prevBtn.disabled = currentIndex === 0;
       nextBtn.disabled = currentIndex >= getMaxIndex();
@@ -237,8 +242,27 @@ const featuredProjects = projects.filter(p => p.featured);
       }
     });
 
+    // Mobile Swipe Support
+    let touchStartX = 0;
+    
+    track.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+
+    track.addEventListener('touchend', (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchStartX - touchEndX > 50) {
+        // Swipe Left -> Next
+        nextBtn.click();
+      } else if (touchEndX - touchStartX > 50) {
+        // Swipe Right -> Prev
+        prevBtn.click();
+      }
+    }, { passive: true });
+
     // Initial state
-    updateCarousel();
+    // Timeout to ensure actual pixel width is computed properly
+    setTimeout(updateCarousel, 50);
 
     // Handle resize
     let resizeTimer: ReturnType<typeof setTimeout>;
