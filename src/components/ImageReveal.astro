@@ -76,10 +76,8 @@ const { src, alt, class: className = '', direction = 'left' } = Astro.props;
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { gsap, ScrollTrigger } from '../lib/gsap-setup';
 
-  gsap.registerPlugin(ScrollTrigger);
 
   function initImageReveal() {
     const images = document.querySelectorAll('.image-reveal:not(.initialized)');

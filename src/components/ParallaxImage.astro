@@ -36,10 +36,8 @@ const { src, alt, class: className = '', speed = 0.2 } = Astro.props;
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { gsap, ScrollTrigger } from '../lib/gsap-setup';
 
-  gsap.registerPlugin(ScrollTrigger);
 
   function initParallax() {
     const containers = document.querySelectorAll('.parallax-container:not(.initialized)');

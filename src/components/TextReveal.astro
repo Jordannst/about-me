@@ -63,10 +63,8 @@ const Tag = tag;
 
 <script>
   import SplitType from 'split-type';
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { gsap, ScrollTrigger } from '../lib/gsap-setup';
 
-  gsap.registerPlugin(ScrollTrigger);
 
   function initTextReveal() {
     const elements = document.querySelectorAll('.text-reveal:not(.initialized)');

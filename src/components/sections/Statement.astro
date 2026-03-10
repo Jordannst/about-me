@@ -37,12 +37,10 @@
 </section>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+  import { gsap, ScrollTrigger } from '../../lib/gsap-setup';
   import SplitType from 'split-type';
 
   function initScrollytelling() {
-    gsap.registerPlugin(ScrollTrigger);
 
     const section = document.getElementById('statement-scrolly');
     const zoomTarget = section?.querySelector('.zoom-target');

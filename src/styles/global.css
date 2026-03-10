@@ -79,7 +79,7 @@
    ================================ */
 
 html {
-  scroll-behavior: smooth;
+  /* scroll-behavior: smooth; — removed: Lenis handles smooth scroll to avoid conflict */
 }
 
 body {

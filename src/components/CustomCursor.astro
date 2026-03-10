@@ -64,7 +64,16 @@
 </style>
 
 <script>
+  // Track cleanup functions to avoid memory leaks on page navigation
+  let cleanupCursor: (() => void) | null = null;
+
   function initCursor() {
+    // Cleanup previous listeners before re-init
+    if (cleanupCursor) {
+      cleanupCursor();
+      cleanupCursor = null;
+    }
+
     const cursor = document.getElementById('cursor-arrow');
     if (!cursor) return;
 
@@ -84,34 +93,53 @@
     let mouseX = -100;
     let mouseY = -100;
 
-    document.addEventListener('mousemove', (e) => {
+    const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
       mouseY = e.clientY;
-      
-      // Use requestAnimationFrame to sync with screen refresh rate
       if (!animationFrameId) {
         animationFrameId = requestAnimationFrame(() => {
           cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-2px, -2px)`;
           animationFrameId = 0;
         });
       }
-    });
+    };
 
-    // Hover effect on interactive elements
-    const interactiveElements = 'a, button, [role="button"], input, textarea, select, label, .project-card, [data-cursor-hover]';
+    const onMouseDown = () => cursor.classList.add('click');
+    const onMouseUp = () => cursor.classList.remove('click');
+    const onMouseLeave = () => cursor.classList.add('hidden');
+    const onMouseEnter = () => cursor.classList.remove('hidden');
 
-    document.querySelectorAll(interactiveElements).forEach(el => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-    });
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('mouseup', onMouseUp);
+    document.addEventListener('mouseleave', onMouseLeave);
+    document.addEventListener('mouseenter', onMouseEnter);
 
-    // Click effect
-    document.addEventListener('mousedown', () => cursor.classList.add('click'));
-    document.addEventListener('mouseup', () => cursor.classList.remove('click'));
+    // Hover effect using event delegation (no per-element listeners)
+    const interactiveSelector = 'a, button, [role="button"], input, textarea, select, label, .project-card, [data-cursor-hover]';
+    const onDelegatedEnter = (e: MouseEvent) => {
+      if ((e.target as Element)?.closest(interactiveSelector)) {
+        cursor.classList.add('hover');
+      }
+    };
+    const onDelegatedLeave = (e: MouseEvent) => {
+      if ((e.target as Element)?.closest(interactiveSelector)) {
+        cursor.classList.remove('hover');
+      }
+    };
+    document.addEventListener('mouseover', onDelegatedEnter);
+    document.addEventListener('mouseout', onDelegatedLeave);
 
-    // Hide on mouse leave window
-    document.addEventListener('mouseleave', () => cursor.classList.add('hidden'));
-    document.addEventListener('mouseenter', () => cursor.classList.remove('hidden'));
+    // Register cleanup
+    cleanupCursor = () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('mouseup', onMouseUp);
+      document.removeEventListener('mouseleave', onMouseLeave);
+      document.removeEventListener('mouseenter', onMouseEnter);
+      document.removeEventListener('mouseover', onDelegatedEnter);
+      document.removeEventListener('mouseout', onDelegatedLeave);
+    };
   }
 
   // Initialize

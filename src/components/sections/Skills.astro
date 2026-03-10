@@ -352,10 +352,8 @@ const skillsWithSize = skills.map((skill, index) => {
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { gsap, ScrollTrigger } from '../../lib/gsap-setup';
 
-  gsap.registerPlugin(ScrollTrigger);
 
   function initSkillsAnimation() {
     const grid = document.getElementById('skills-grid');

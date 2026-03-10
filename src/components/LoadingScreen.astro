@@ -111,7 +111,7 @@ import { personal } from '../data/portfolio';
     // Event-based: wait for all critical resources
     if (document.readyState === 'complete') {
       // Already loaded, hide after minimum animation time
-      setTimeout(hideLoader, 1500);
+      setTimeout(hideLoader, 800);
     } else {
       // Wait for window load (fonts, images, etc.)
       window.addEventListener('load', () => {
@@ -120,7 +120,7 @@ import { personal } from '../data/portfolio';
       });
       
       // Safety fallback - never block longer than 4 seconds
-      setTimeout(hideLoader, 4000);
+      setTimeout(hideLoader, 2500); // safety fallback
     }
   });
 </script>

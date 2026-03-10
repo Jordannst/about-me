@@ -219,10 +219,8 @@ import { personal, meta, social } from '../data/portfolio';
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { gsap, ScrollTrigger } from '../lib/gsap-setup';
 
-  gsap.registerPlugin(ScrollTrigger);
 
   function initHandwritingAnimation() {
     const svg = document.getElementById('something-svg');

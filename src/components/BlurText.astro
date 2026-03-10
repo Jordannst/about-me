@@ -62,10 +62,8 @@ const Tag = tag;
 </style>
 
 <script>
-  import { gsap } from 'gsap';
-  import { ScrollTrigger } from 'gsap/ScrollTrigger';
+  import { gsap, ScrollTrigger } from '../lib/gsap-setup';
 
-  gsap.registerPlugin(ScrollTrigger);
 
   function initBlurText() {
     const elements = document.querySelectorAll('.blur-text:not(.blur-initialized)');
