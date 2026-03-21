@@ -60,33 +60,45 @@ const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`
     >
       {certificates.map((cert, index) => (
         <div
-          class="cert-row group flex items-center justify-between py-8 md:py-10 border-t border-[var(--border-color)] relative overflow-hidden transition-all duration-500 cursor-none"
+          class="cert-row group flex items-center justify-between py-6 md:py-10 border-t border-[var(--border-color)] relative overflow-hidden transition-all duration-500 cursor-none"
           data-index={index}
         >
-          <!-- Left: number -->
-          <div class="flex items-center gap-6 md:gap-10 min-w-0">
-            <span class="cert-num shrink-0 text-[11px] uppercase tracking-[0.3em] text-[var(--text-secondary)] transition-all duration-500">
+          <!-- Mobile-only inline thumbnail -->
+          {cert.image && (
+            <div class="cert-thumb shrink-0 md:hidden w-16 h-16 mr-4 overflow-hidden bg-[var(--bg-secondary)]">
+              <img
+                src={cert.image}
+                alt={cert.title}
+                loading="lazy"
+                class="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
+          <!-- Left: number + title + issuer -->
+          <div class="flex items-center gap-4 md:gap-10 min-w-0 flex-1">
+            <span class="cert-num shrink-0 text-[11px] uppercase tracking-[0.3em] text-[var(--text-secondary)] transition-all duration-500 hidden md:inline">
               0{index + 1}
             </span>
             <div class="min-w-0">
               <h3
-                class="cert-title text-2xl md:text-4xl lg:text-5xl text-[var(--text-primary)] leading-tight transition-all duration-500 truncate"
+                class="cert-title text-xl md:text-4xl lg:text-5xl text-[var(--text-primary)] leading-tight transition-all duration-500 truncate"
                 data-text={cert.title}
               >
                 {cert.title}
               </h3>
-              <p class="cert-issuer text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
+              <p class="cert-issuer text-[10px] uppercase tracking-[0.15em] text-[var(--text-secondary)] mt-1 opacity-60 group-hover:opacity-100 transition-opacity duration-300 truncate">
                 {cert.issuer}
               </p>
             </div>
           </div>
 
           <!-- Right: type + year + arrow -->
-          <div class="shrink-0 flex items-center gap-6 ml-4">
+          <div class="shrink-0 flex items-center gap-3 md:gap-6 ml-3 md:ml-4">
             <span class="hidden md:inline text-[9px] uppercase tracking-[0.2em] text-[var(--accent)] border border-[var(--accent)]/30 px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               {cert.type}
             </span>
-            <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)]">
               {cert.date}
             </span>
             {cert.credentialUrl && cert.credentialUrl !== '#' ? (
@@ -94,7 +106,7 @@ const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`
                 href={cert.credentialUrl}
                 target="_blank"
                 rel="noopener"
-                class="cert-arrow w-9 h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300"
+                class="cert-arrow w-8 h-8 md:w-9 md:h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300"
                 onclick="event.stopPropagation()"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -102,7 +114,7 @@ const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`
                 </svg>
               </a>
             ) : (
-              <div class="cert-arrow w-9 h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300">
+              <div class="cert-arrow w-8 h-8 md:w-9 md:h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M12 5l7 7-7 7M5 12h14"/>
                 </svg>
