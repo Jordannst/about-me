@@ -3,9 +3,60 @@
 // 4 vertical lines at container boundaries
 ---
 
-<div class="fixed inset-0 pointer-events-none z-40 hidden lg:flex justify-between max-w-[1600px] mx-auto px-16">
-  <div class="w-px h-full bg-[var(--border-color)]"></div>
-  <div class="w-px h-full bg-[var(--border-color)]"></div>
-  <div class="w-px h-full bg-[var(--border-color)]"></div>
-  <div class="w-px h-full bg-[var(--border-color)]"></div>
+<div id="grid-lines" class="fixed inset-0 pointer-events-none z-40 hidden lg:flex justify-between max-w-[1600px] mx-auto px-16">
+  <div class="grid-line w-px h-full bg-[var(--border-color)]"></div>
+  <div class="grid-line w-px h-full bg-[var(--border-color)]"></div>
+  <div class="grid-line w-px h-full bg-[var(--border-color)]"></div>
+  <div class="grid-line w-px h-full bg-[var(--border-color)]"></div>
 </div>
+
+<style>
+  .grid-line {
+    transform: scaleY(0);
+    transform-origin: top center;
+  }
+
+  .grid-line.animated {
+    animation: drawLine 1.2s cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  }
+
+  .grid-line:nth-child(1).animated { animation-delay: 0ms; }
+  .grid-line:nth-child(2).animated { animation-delay: 80ms; }
+  .grid-line:nth-child(3).animated { animation-delay: 160ms; }
+  .grid-line:nth-child(4).animated { animation-delay: 240ms; }
+
+  @keyframes drawLine {
+    from {
+      transform: scaleY(0);
+    }
+    to {
+      transform: scaleY(1);
+    }
+  }
+</style>
+
+<script>
+  const triggerGridAnimation = () => {
+    const lines = document.querySelectorAll('.grid-line');
+    lines.forEach((line) => {
+      line.classList.add('animated');
+    });
+  };
+
+  // Watch for the loading screen to be hidden, then trigger
+  const loadingScreen = document.getElementById('loading-screen');
+
+  if (loadingScreen) {
+    const observer = new MutationObserver(() => {
+      if (loadingScreen.style.display === 'none' || loadingScreen.classList.contains('loaded')) {
+        observer.disconnect();
+        // Small delay to sync with loading screen fade out
+        setTimeout(triggerGridAnimation, 400);
+      }
+    });
+    observer.observe(loadingScreen, { attributes: true, attributeFilter: ['class', 'style'] });
+  } else {
+    // No loading screen, animate immediately
+    triggerGridAnimation();
+  }
+</script>
