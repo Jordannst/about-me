@@ -2,442 +2,336 @@
 import { certificates } from '../../data/portfolio';
 import TextReveal from '../TextReveal.astro';
 
-// Icons for each certificate type
-const typeIcons = {
-  organization: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-  competition: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`,
-  course: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
-};
-
-const typeLabels = {
-  organization: "Organization",
-  competition: "Competition",
-  course: "Course",
-};
+const years = certificates.map(c => parseInt(c.date)).filter(Boolean);
+const yearMin = Math.min(...years);
+const yearMax = Math.max(...years);
+const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`;
 ---
 
-<section id="certificates" class="py-20 md:py-32 px-6 md:px-16 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">
+<section id="certificates" class="relative py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]">
   <div class="max-w-[1600px] mx-auto">
+
     <!-- Section Label -->
-    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
-      <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
-        04
-      </span>
-      <div class="h-px w-8 bg-current opacity-30"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
-        Achievements
-      </span>
+    <div class="flex items-center gap-4 mb-16 reveal">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">04</span>
+      <div class="h-px w-8 bg-[var(--border-color)]"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">Achievements</span>
     </div>
 
     <!-- Section Title -->
-    <TextReveal tag="h2" animation="words" stagger={0.08} class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl">
-      Certificates &
-      <span class="italic text-[var(--accent)]">Awards</span>
-    </TextReveal>
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-16 md:mb-20">
+      <TextReveal tag="h2" animation="words" stagger={0.08} class="text-5xl md:text-7xl lg:text-8xl leading-[0.9] text-[var(--text-primary)]">
+        Certificates &amp;
+        <em class="not-italic text-[var(--accent)] font-light">Awards.</em>
+      </TextReveal>
+      <p class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)] max-w-[180px] leading-relaxed reveal-fade-up" style="transition-delay:100ms">
+        Move your cursor over each achievement
+      </p>
+    </div>
 
-    <!-- Horizontal Scroll Container -->
-    <div class="certificates-scroll-container">
-      <div class="certificates-track">
-        {certificates.map((cert, index) => (
-          <div 
-            class="certificate-card group"
-            style={`--delay: ${index * 100}ms`}
-          >
-            <!-- Certificate Image -->
-            <div class="card-image">
-              {cert.image ? (
-                <img 
-                  src={cert.image} 
-                  alt={cert.title}
-                  loading="lazy"
-                  decoding="async"
-                  class="w-full h-full object-cover"
-                />
-              ) : (
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <div class="text-center opacity-40">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" class="mx-auto mb-2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                      <circle cx="8.5" cy="8.5" r="1.5"/>
-                      <path d="m21 15-5-5L5 21"/>
-                    </svg>
-                    <span class="text-[10px] uppercase tracking-[0.2em]">Certificate</span>
-                  </div>
-                </div>
-              )}
-              
-              <!-- Year Tag -->
-              <div class="year-tag">
-                <span>{cert.date}</span>
-              </div>
-            </div>
-            
-            <!-- Certificate Info -->
-            <div class="card-content">
-              <!-- Type Badge -->
-              <div class="type-badge">
-                <span class="type-icon" set:html={typeIcons[cert.type]} />
-                <span>{typeLabels[cert.type]}</span>
-              </div>
-              
-              <!-- Title -->
-              <h3 class="card-title">
+    <!-- Stats Block -->
+    <div class="cert-stats reveal-fade-up mb-16 md:mb-24">
+      <div class="stat-item">
+        <span class="stat-number">{certificates.length}</span>
+        <span class="stat-label">Competition Wins</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{yearRange}</span>
+        <span class="stat-label">Years Active</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">#1</span>
+        <span class="stat-label">Best Placement</span>
+      </div>
+    </div>
+
+    <!-- Certificate List -->
+    <div
+      id="cert-list"
+      class="relative"
+      data-certs={JSON.stringify(certificates.map(c => ({
+        title: c.title,
+        issuer: c.issuer,
+        image: c.image ?? '',
+        date: c.date,
+        type: c.type,
+        credentialUrl: c.credentialUrl ?? '',
+      })))}
+    >
+      {certificates.map((cert, index) => (
+        <div
+          class="cert-row group flex items-center justify-between py-8 md:py-10 border-t border-[var(--border-color)] relative overflow-hidden transition-all duration-500 cursor-none"
+          data-index={index}
+        >
+          <!-- Left: number -->
+          <div class="flex items-center gap-6 md:gap-10 min-w-0">
+            <span class="cert-num shrink-0 text-[11px] uppercase tracking-[0.3em] text-[var(--text-secondary)] transition-all duration-500">
+              0{index + 1}
+            </span>
+            <div class="min-w-0">
+              <h3
+                class="cert-title text-2xl md:text-4xl lg:text-5xl text-[var(--text-primary)] leading-tight transition-all duration-500 truncate"
+                data-text={cert.title}
+              >
                 {cert.title}
               </h3>
-              
-              <!-- Issuer -->
-              <p class="card-issuer">
+              <p class="cert-issuer text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
                 {cert.issuer}
               </p>
-              
-              <!-- Description -->
-              {cert.description && (
-                <p class="card-description">
-                  {cert.description}
-                </p>
-              )}
-              
-              <!-- Credential Link -->
-              {cert.credentialUrl && cert.credentialUrl !== "#" && (
-                <a 
-                  href={cert.credentialUrl}
-                  target="_blank"
-                  rel="noopener"
-                  class="credential-link"
-                >
-                  <span>View Credential</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </a>
-              )}
             </div>
           </div>
-        ))}
 
-        <!-- Coming Soon Card -->
-        <div class="certificate-card coming-soon-card" style={`--delay: ${certificates.length * 100}ms`}>
-          <div class="coming-soon-content">
-            <div class="coming-soon-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 8v8M8 12h8"/>
-              </svg>
-            </div>
-            <p class="coming-soon-title">More on the way</p>
-            <p class="coming-soon-subtitle">Stay tuned for upcoming achievements</p>
+          <!-- Right: type + year + arrow -->
+          <div class="shrink-0 flex items-center gap-6 ml-4">
+            <span class="hidden md:inline text-[9px] uppercase tracking-[0.2em] text-[var(--accent)] border border-[var(--accent)]/30 px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              {cert.type}
+            </span>
+            <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity duration-400">
+              {cert.date}
+            </span>
+            {cert.credentialUrl && cert.credentialUrl !== '#' ? (
+              <a
+                href={cert.credentialUrl}
+                target="_blank"
+                rel="noopener"
+                class="cert-arrow w-9 h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300"
+                onclick="event.stopPropagation()"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            ) : (
+              <div class="cert-arrow w-9 h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M12 5l7 7-7 7M5 12h14"/>
+                </svg>
+              </div>
+            )}
+          </div>
+
+          <!-- Hover line sweep -->
+          <div class="absolute bottom-0 left-0 h-px w-0 bg-[var(--accent)] group-hover:w-full transition-all duration-700 ease-out"></div>
+        </div>
+      ))}
+
+      <!-- "More on the way" row -->
+      <div class="cert-row cert-row--more flex items-center justify-between py-8 md:py-10 border-t border-[var(--border-color)] relative opacity-30 transition-all duration-500">
+        <div class="flex items-center gap-6 md:gap-10 min-w-0">
+          <span class="shrink-0 text-[11px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">—</span>
+          <span class="text-2xl md:text-4xl lg:text-5xl text-[var(--text-primary)] leading-tight italic font-light">
+            More on the way
+          </span>
+        </div>
+        <span class="shrink-0 text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] ml-4">Soon</span>
+      </div>
+
+      <!-- Bottom border -->
+      <div class="border-t border-[var(--border-color)]"></div>
+
+      <!-- Floating cursor image -->
+      <div
+        id="cert-float-container"
+        class="fixed top-0 left-0 pointer-events-none z-[60] opacity-0 transition-opacity duration-400"
+        style="will-change: transform;"
+      >
+        <div id="cert-float-inner" class="relative w-[320px] md:w-[440px] aspect-[4/3] overflow-hidden shadow-2xl bg-[var(--bg-secondary)]">
+          {certificates.map((cert, index) => (
+            <img
+              src={cert.image ?? ''}
+              alt={cert.title}
+              class="cert-float-layer absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+              style={index === 0 ? "opacity:1" : "opacity:0"}
+              data-layer={index}
+              loading={index === 0 ? "eager" : "lazy"}
+            />
+          ))}
+          <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+            <span id="cert-float-label" class="text-[9px] uppercase tracking-[0.3em] text-white/70"></span>
+            <span id="cert-float-year" class="text-[9px] uppercase tracking-[0.3em] text-[var(--accent)]"></span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Scroll Hint - Only visible on mobile -->
-    <div class="scroll-hint sm:hidden">
-      <span>Scroll to explore</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
-      </svg>
-    </div>
   </div>
 </section>
 
 <style>
-  .certificates-scroll-container {
-    overflow-x: auto;
-    overflow-y: visible;
-    margin: 0 -1.5rem;
-    padding: 0.5rem 1.5rem 1.5rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  .certificates-scroll-container::-webkit-scrollbar {
-    display: none;
-  }
-
-  .certificates-track {
+  /* Stats block */
+  .cert-stats {
     display: flex;
-    gap: 1rem;
-    /* Don't center on mobile - allows natural scroll start */
-    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 2rem 4rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
   }
 
-  .certificate-card {
-    flex-shrink: 0;
-    width: 80vw;
-    max-width: 320px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color, rgba(0,0,0,0.1));
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    animation: fadeIn 0.5s ease forwards;
-    animation-delay: var(--delay);
-    opacity: 0;
-  }
-
-  .certificate-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  }
-
-  /* Coming Soon Card */
-  .coming-soon-card {
-    border-style: dashed !important;
-    border-width: 2px !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 280px;
-  }
-
-  .coming-soon-card:hover {
-    border-color: var(--accent) !important;
-    box-shadow: none !important;
-  }
-
-  .coming-soon-content {
+  .stat-item {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 2rem;
-    gap: 0.75rem;
+    gap: 0.25rem;
   }
 
-  .coming-soon-icon {
-    opacity: 0.3;
-    color: var(--accent);
-    transition: opacity 0.3s ease;
-  }
-
-  .coming-soon-card:hover .coming-soon-icon {
-    opacity: 0.6;
-  }
-
-  .coming-soon-title {
-    font-family: var(--font-serif);
-    font-size: 1.25rem;
-    font-style: italic;
-    opacity: 0.5;
+  .stat-number {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1;
     color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
   }
 
-  .coming-soon-subtitle {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    opacity: 0.3;
-  }
-
-  .card-image {
-    position: relative;
-    aspect-ratio: 4/3;
-    overflow: hidden;
-    background: var(--bg-tertiary, rgba(0,0,0,0.05));
-  }
-
-  .card-image img {
-    transition: transform 0.3s ease;
-  }
-
-  .certificate-card:hover .card-image img {
-    transform: scale(1.03);
-  }
-
-  .year-tag {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 10px;
-    font-weight: 600;
-    padding: 5px 10px;
-    border-radius: 5px;
-    letter-spacing: 0.05em;
-  }
-
-  .card-content {
-    padding: 1rem 1.25rem 1.25rem;
-  }
-
-  .type-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
+  .stat-label {
     font-size: 9px;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.25em;
+    color: var(--text-secondary);
     opacity: 0.7;
-    margin-bottom: 10px;
   }
 
-  .type-icon {
+  /* Dim non-hovered rows when one is active */
+  #cert-list.has-hover .cert-row:not(.is-hovered):not(.cert-row--more) {
+    opacity: 0.25;
+  }
+
+  #cert-list.has-hover .cert-row.is-hovered .cert-title {
     color: var(--accent);
   }
 
-  .card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 6px;
-    color: var(--text-primary);
-    transition: color 0.3s ease;
-  }
-
-  .certificate-card:hover .card-title {
+  #cert-list.has-hover .cert-row.is-hovered .cert-num {
     color: var(--accent);
   }
 
-  .card-issuer {
-    font-size: 0.8rem;
-    opacity: 0.6;
-    margin-bottom: 10px;
-    line-height: 1.4;
-  }
-
-  .card-description {
-    font-size: 0.75rem;
-    opacity: 0.5;
-    line-height: 1.5;
-    margin-bottom: 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .credential-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 600;
-    color: var(--accent);
-    transition: gap 0.2s ease;
-  }
-
-  .credential-link:hover {
-    gap: 8px;
-  }
-
-  .scroll-hint {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-top: 1.25rem;
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    opacity: 0.4;
-  }
-
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(16px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  /* Small phones */
-  @media (max-width: 375px) {
-    .certificate-card {
-      width: 85vw;
-      max-width: 300px;
-    }
-
-    .card-content {
-      padding: 1rem 1.25rem 1.25rem;
-    }
-
-    .card-title {
-      font-size: 1.1rem;
-    }
-  }
-
-  /* Tablets */
-  @media (min-width: 640px) {
-    .certificates-track {
-      gap: 2rem;
-      justify-content: center;
-    }
-
-    .certificate-card {
-      width: 400px;
-      max-width: 420px;
-      border-radius: 16px;
-    }
-
-    .card-content {
-      padding: 1.5rem;
-    }
-
-    .card-title {
-      font-size: 1.35rem;
-    }
-
-    .year-tag {
-      font-size: 12px;
-      padding: 6px 14px;
-    }
-  }
-
-  /* Desktop */
-  @media (min-width: 1024px) {
-    .certificates-scroll-container {
-      margin: 0 -4rem 0 0;
-      padding: 1rem 4rem 2rem 0;
-    }
-
-    .certificates-track {
-      gap: 2.5rem;
-    }
-
-    .certificate-card {
-      width: 450px;
-      max-width: 500px;
-      border-radius: 20px;
-    }
-
-    .card-content {
-      padding: 1.75rem 2rem 2rem;
-    }
-
-    .certificate-card:hover {
-      transform: translateY(-8px);
-    }
-
-    .card-title {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-    }
-
-    .card-issuer {
-      font-size: 1rem;
-      margin-bottom: 14px;
-    }
-
-    .card-description {
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-      -webkit-line-clamp: 4; /* Allow up to 4 lines on desktop */
-    }
-    
-    .credential-link {
-      font-size: 12px;
+  /* Hide floating image on touch/mobile */
+  @media (hover: none) {
+    #cert-float-container {
+      display: none !important;
     }
   }
 </style>
 
+<script>
+  const certList = document.getElementById('cert-list');
+  const certRows = document.querySelectorAll<HTMLElement>('.cert-row:not(.cert-row--more)');
+  const certFloatContainer = document.getElementById('cert-float-container');
+  const certFloatLayers = document.querySelectorAll<HTMLElement>('.cert-float-layer');
+  const certFloatLabel = document.getElementById('cert-float-label');
+  const certFloatYear = document.getElementById('cert-float-year');
+
+  const certData: { title: string; issuer: string; image: string; date: string; type: string; credentialUrl: string }[] =
+    JSON.parse(certList?.dataset.certs ?? '[]');
+
+  // --- Cursor tracking with lerp ---
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+  let rafId: number;
+
+  const IMG_W = 440;
+  const IMG_H = Math.round(IMG_W * (3 / 4));
+  const GAP = 24;
+
+  function lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t;
+  }
+
+  function computeCertTarget(mx: number, my: number) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const x = mx + GAP + IMG_W > vw ? mx - IMG_W - GAP : mx + GAP;
+    const y = my - IMG_H / 2 < 0
+      ? GAP
+      : my + IMG_H / 2 > vh
+        ? vh - IMG_H - GAP
+        : my - IMG_H / 2;
+    return { x, y };
+  }
+
+  function certTick() {
+    currentX = lerp(currentX, targetX, 0.1);
+    currentY = lerp(currentY, targetY, 0.1);
+    if (certFloatContainer) {
+      certFloatContainer.style.transform = `translate(${currentX}px, ${currentY}px)`;
+    }
+    rafId = requestAnimationFrame(certTick);
+  }
+  certTick();
+
+  document.addEventListener('mousemove', (e: MouseEvent) => {
+    const { x, y } = computeCertTarget(e.clientX, e.clientY);
+    targetX = x;
+    targetY = y;
+  });
+
+  // --- Text scramble ---
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&';
+  function scramble(el: HTMLElement, originalText: string, duration = 500) {
+    let frame = 0;
+    const totalFrames = Math.floor(duration / 40);
+    const interval = setInterval(() => {
+      const progress = frame / totalFrames;
+      el.textContent = originalText
+        .split('')
+        .map((char, i) => {
+          if (char === ' ') return ' ';
+          if (i < Math.floor(progress * originalText.length)) return char;
+          return CHARS[Math.floor(Math.random() * CHARS.length)];
+        })
+        .join('');
+      frame++;
+      if (frame > totalFrames) {
+        clearInterval(interval);
+        el.textContent = originalText;
+      }
+    }, 40);
+    return interval;
+  }
+
+  // --- Row hover ---
+  let activeIndex = -1;
+  let scrambleTimer: ReturnType<typeof setInterval> | null = null;
+
+  function showCert(index: number) {
+    if (index === activeIndex) return;
+    activeIndex = index;
+    const cert = certData[index];
+
+    if (certFloatContainer) certFloatContainer.style.opacity = '1';
+    if (certFloatLabel) certFloatLabel.textContent = cert.type;
+    if (certFloatYear) certFloatYear.textContent = cert.date;
+
+    certFloatLayers.forEach((layer, i) => {
+      layer.style.opacity = i === index ? '1' : '0';
+    });
+
+    certList?.classList.add('has-hover');
+    certRows.forEach((row, i) => {
+      row.classList.toggle('is-hovered', i === index);
+    });
+
+    const titleEl = certRows[index]?.querySelector<HTMLElement>('.cert-title');
+    const originalText = cert.title;
+    if (titleEl) {
+      if (scrambleTimer) clearInterval(scrambleTimer);
+      scrambleTimer = scramble(titleEl, originalText, 500);
+    }
+  }
+
+  function hideCert() {
+    activeIndex = -1;
+    if (certFloatContainer) certFloatContainer.style.opacity = '0';
+    certList?.classList.remove('has-hover');
+    certRows.forEach(row => row.classList.remove('is-hovered'));
+    if (scrambleTimer) { clearInterval(scrambleTimer); scrambleTimer = null; }
+    certRows.forEach((row, i) => {
+      const titleEl = row.querySelector<HTMLElement>('.cert-title');
+      if (titleEl && certData[i]) titleEl.textContent = certData[i].title;
+    });
+  }
+
+  certRows.forEach((row) => {
+    const index = parseInt(row.dataset.index ?? '0', 10);
+    row.addEventListener('mouseenter', () => showCert(index));
+    row.addEventListener('mouseleave', hideCert);
+  });
+</script>
