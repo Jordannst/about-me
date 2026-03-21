@@ -13,6 +13,9 @@ export default defineConfig({
     plugins: [tailwindcss()],
     server: {
       allowedHosts: true,
+      watch: {
+        ignored: ['**/.local/**', '**/.git/**'],
+      },
     }
   }
 });
