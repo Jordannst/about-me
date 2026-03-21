@@ -4,311 +4,246 @@ import { projects } from '../../data/portfolio';
 const featuredProjects = projects.filter(p => p.featured);
 ---
 
-<section id="work" class="relative py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)] overflow-hidden">
+<section id="work" class="relative py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]">
   <div class="max-w-[1600px] mx-auto">
 
     <!-- Section Label -->
-    <div class="flex items-center gap-4 mb-16 md:mb-20 reveal">
+    <div class="flex items-center gap-4 mb-16 reveal">
       <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">02</span>
       <div class="h-px w-8 bg-[var(--border-color)]"></div>
       <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">Selected Work</span>
     </div>
 
-    <!-- Main Split Layout -->
-    <div class="flex flex-col lg:flex-row gap-0 lg:gap-16 items-start">
+    <!-- Title block -->
+    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-16 md:mb-20">
+      <h2 class="text-5xl md:text-7xl lg:text-8xl leading-[0.9] text-[var(--text-primary)] reveal-fade-up">
+        Featured<br/>
+        <em class="not-italic text-[var(--accent)] font-light">Projects.</em>
+      </h2>
+      <p class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)] max-w-[180px] leading-relaxed reveal-fade-up" style="transition-delay:100ms">
+        Move your cursor over each project
+      </p>
+    </div>
 
-      <!-- LEFT: Project List -->
-      <div class="w-full lg:w-[45%] flex flex-col justify-center">
-
-        <!-- Title -->
-        <h2 class="text-4xl md:text-5xl lg:text-6xl leading-[0.95] mb-12 md:mb-16 text-[var(--text-primary)] reveal-fade-up">
-          Featured<br/>
-          <span class="italic text-[var(--accent)]">Projects</span>
-        </h2>
-
-        <!-- Project Rows -->
-        <div id="project-list" class="flex flex-col">
-          {featuredProjects.map((project, index) => (
-            <a
-              href={`/projects/${project.id}`}
-              class="project-row group relative flex items-center gap-6 py-7 border-t border-[var(--border-color)] cursor-pointer transition-all duration-500"
-              data-index={index}
-              data-image={project.image}
+    <!-- Project List -->
+    <div
+      id="project-list"
+      class="relative"
+      data-projects={JSON.stringify(featuredProjects.map(p => ({
+        title: p.title, image: p.image, year: p.year ?? '', role: p.role ?? '', id: p.id, tags: p.tags.slice(0,3)
+      })))}
+    >
+      {featuredProjects.map((project, index) => (
+        <a
+          href={`/projects/${project.id}`}
+          class="project-row group flex items-center justify-between py-8 md:py-10 border-t border-[var(--border-color)] relative overflow-hidden cursor-none transition-all duration-500"
+          data-index={index}
+        >
+          <!-- Row left: number + title -->
+          <div class="flex items-center gap-6 md:gap-10 min-w-0">
+            <span class="row-num shrink-0 text-[11px] uppercase tracking-[0.3em] text-[var(--text-secondary)] transition-all duration-500">
+              0{index + 1}
+            </span>
+            <h3
+              class="row-title text-2xl md:text-4xl lg:text-5xl text-[var(--text-primary)] leading-tight transition-all duration-500 truncate"
+              data-text={project.title}
             >
-              <!-- Number -->
-              <span class="project-num text-[11px] uppercase tracking-[0.25em] text-[var(--text-secondary)] transition-colors duration-500 min-w-[2rem]">
-                0{index + 1}
-              </span>
+              {project.title}
+            </h3>
+          </div>
 
-              <!-- Title & Tags -->
-              <div class="flex-1 min-w-0">
-                <h3 class="project-title text-xl md:text-2xl lg:text-3xl text-[var(--text-primary)] leading-tight mb-2 transition-all duration-500">
-                  {project.title}
-                </h3>
-                <div class="flex flex-wrap gap-2 overflow-hidden max-h-0 group-hover:max-h-10 transition-all duration-500 opacity-0 group-hover:opacity-100">
-                  {project.tags.slice(0, 3).map(tag => (
-                    <span class="text-[9px] uppercase tracking-[0.2em] text-[var(--accent)] border border-[var(--accent)]/30 px-2 py-0.5">{tag}</span>
-                  ))}
-                </div>
-              </div>
-
-              <!-- Year + Arrow -->
-              <div class="flex items-center gap-4 shrink-0">
-                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity duration-300">{project.year}</span>
-                <svg class="project-arrow w-5 h-5 text-[var(--text-secondary)] group-hover:text-[var(--accent)] transition-all duration-500 -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                  <path d="M5 12h14M12 5l7 7-7 7"/>
-                </svg>
-              </div>
-
-              <!-- Active indicator line -->
-              <div class="project-line absolute bottom-0 left-0 h-px w-0 bg-[var(--accent)] group-hover:w-full transition-all duration-700 ease-out"></div>
-            </a>
-          ))}
-
-          <!-- Last border -->
-          <div class="border-t border-[var(--border-color)]"></div>
-        </div>
-
-        <!-- View All -->
-        <div class="mt-10">
-          <a href="/projects" class="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-300 group">
-            <span>View All Projects</span>
-            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </a>
-        </div>
-      </div>
-
-      <!-- RIGHT: Image Panel -->
-      <div class="hidden lg:block lg:w-[55%] sticky top-24 h-[70vh]"
-        id="image-panel-wrapper"
-        data-projects={JSON.stringify(featuredProjects.map(p => ({
-          title: p.title,
-          description: p.description,
-          role: p.role ?? '',
-          year: p.year ?? '',
-          id: p.id,
-        })))}
-      >
-        <!-- Accent bar kiri -->
-        <div class="absolute left-0 top-0 w-[3px] h-full bg-[var(--accent)] z-20 origin-top panel-accent-bar"></div>
-
-        <div id="image-panel" class="relative w-full h-full overflow-hidden bg-[var(--bg-secondary)]">
-
-          <!-- Image layers (one per project, crossfade) -->
-          {featuredProjects.map((project, index) => (
-            <div
-              class="project-image-layer absolute inset-0 transition-opacity duration-700 ease-in-out"
-              data-layer={index}
-              style={index === 0 ? "opacity:1" : "opacity:0"}
-            >
-              <img
-                src={project.image}
-                alt={project.title}
-                class="w-full h-full object-cover object-center scale-110"
-                style="transform-origin: center center;"
-                loading={index === 0 ? "eager" : "lazy"}
-              />
-              <!-- Gradient overlay — halus dari tengah ke bawah -->
-              <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.85) 100%);"></div>
+          <!-- Row right: tags + year + arrow -->
+          <div class="shrink-0 flex items-center gap-6 ml-4">
+            <div class="hidden md:flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              {project.tags.slice(0,2).map(tag => (
+                <span class="text-[9px] uppercase tracking-[0.2em] text-[var(--accent)] border border-[var(--accent)]/30 px-2 py-1">{tag}</span>
+              ))}
             </div>
-          ))}
-
-          <!-- Corner brackets (crop marks) -->
-          <div class="panel-corners absolute inset-5 pointer-events-none z-10">
-            <!-- Top Left -->
-            <div class="absolute top-0 left-0 w-6 h-6 border-t border-l border-white/40"></div>
-            <!-- Top Right -->
-            <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-white/40"></div>
-            <!-- Bottom Left -->
-            <div class="absolute bottom-0 left-0 w-6 h-6 border-b border-l border-white/40"></div>
-            <!-- Bottom Right -->
-            <div class="absolute bottom-0 right-0 w-6 h-6 border-b border-r border-white/40"></div>
-          </div>
-
-          <!-- Default state (no hover) -->
-          <div id="panel-default" class="absolute inset-0 flex flex-col justify-end px-10 pb-10 transition-opacity duration-500 z-10">
-            <p class="text-[10px] uppercase tracking-[0.4em] text-white/40">— Hover a project</p>
-          </div>
-
-          <!-- Project detail overlay -->
-          <div id="panel-detail" class="absolute inset-0 flex flex-col justify-end px-10 pb-10 opacity-0 transition-opacity duration-500 pointer-events-none z-10">
-            <p id="panel-role" class="text-[9px] uppercase tracking-[0.35em] text-[var(--accent)] mb-3"></p>
-            <h4 id="panel-title" class="text-2xl md:text-3xl text-white mb-3 leading-tight font-light"></h4>
-            <p id="panel-desc" class="text-[13px] text-white/60 leading-relaxed max-w-xs mb-7"></p>
-            <a id="panel-link" href="#" class="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.25em] text-white border border-white/25 px-5 py-3 w-fit hover:bg-[var(--accent)] hover:border-[var(--accent)] transition-all duration-300 pointer-events-auto">
-              <span>View Project</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity duration-400">{project.year}</span>
+            <div class="row-arrow w-9 h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
-            </a>
+            </div>
           </div>
 
-          <!-- Large background number -->
-          <div id="panel-number" class="absolute top-8 right-10 text-[100px] leading-none font-bold text-white/[0.06] select-none transition-all duration-700 pointer-events-none tracking-tight z-10">
-            01
-          </div>
+          <!-- Hover line sweep -->
+          <div class="row-line absolute bottom-0 left-0 h-px w-0 bg-[var(--accent)] group-hover:w-full transition-all duration-700 ease-out"></div>
+        </a>
+      ))}
 
-          <!-- Top meta bar -->
-          <div class="absolute top-8 left-10 z-10 flex items-center gap-3">
-            <div class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></div>
-            <span id="panel-year" class="text-[9px] uppercase tracking-[0.35em] text-white/40 transition-opacity duration-500"></span>
+      <!-- Bottom border -->
+      <div class="border-t border-[var(--border-color)]"></div>
+
+      <!-- Floating cursor image -->
+      <div
+        id="float-img-container"
+        class="fixed top-0 left-0 pointer-events-none z-[60] opacity-0 transition-opacity duration-400"
+        style="will-change: transform;"
+      >
+        <div id="float-img-inner" class="relative w-[340px] md:w-[420px] aspect-[4/3] overflow-hidden shadow-2xl">
+          {featuredProjects.map((project, index) => (
+            <img
+              src={project.image}
+              alt={project.title}
+              class="float-img-layer absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+              style={index === 0 ? "opacity:1" : "opacity:0"}
+              data-layer={index}
+              loading={index === 0 ? "eager" : "lazy"}
+            />
+          ))}
+          <!-- Subtle overlay -->
+          <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+          <!-- Image label -->
+          <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+            <span id="float-label" class="text-[9px] uppercase tracking-[0.3em] text-white/70"></span>
+            <span id="float-year" class="text-[9px] uppercase tracking-[0.3em] text-[var(--accent)]"></span>
           </div>
         </div>
       </div>
-
     </div>
+
+    <!-- View all -->
+    <div class="mt-14 reveal-fade">
+      <a href="/projects" class="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-300 group">
+        <span>All Projects</span>
+        <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+
   </div>
 </section>
 
 <style>
-  .project-row {
-    will-change: opacity;
+  /* Dim non-hovered rows when one is active */
+  #project-list.has-hover .project-row:not(.is-hovered) {
+    opacity: 0.25;
   }
 
-  .project-row.other {
-    opacity: 0.35;
-  }
-
-  .project-row.active .project-title {
+  #project-list.has-hover .project-row.is-hovered .row-title {
     color: var(--accent);
   }
 
-  .project-image-layer img {
-    will-change: transform;
+  #project-list.has-hover .project-row.is-hovered .row-num {
+    color: var(--accent);
   }
-
-  /* Accent bar */
-  .panel-accent-bar {
-    transform: scaleY(1);
-    transform-origin: top;
-  }
-
-  /* Corner brackets animation */
-  .panel-corners > div {
-    opacity: 0;
-    transform: scale(0.7);
-    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  .panel-corners.active > div {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  .panel-corners.active > div:nth-child(1) { transition-delay: 0ms; }
-  .panel-corners.active > div:nth-child(2) { transition-delay: 60ms; }
-  .panel-corners.active > div:nth-child(3) { transition-delay: 120ms; }
-  .panel-corners.active > div:nth-child(4) { transition-delay: 180ms; }
 </style>
 
 <script>
+  const list = document.getElementById('project-list');
   const rows = document.querySelectorAll<HTMLElement>('.project-row');
-  const layers = document.querySelectorAll<HTMLElement>('.project-image-layer');
-  const panelDefault = document.getElementById('panel-default');
-  const panelDetail = document.getElementById('panel-detail');
-  const panelTitle = document.getElementById('panel-title');
-  const panelDesc = document.getElementById('panel-desc');
-  const panelRole = document.getElementById('panel-role');
-  const panelLink = document.getElementById('panel-link') as HTMLAnchorElement | null;
-  const panelNumber = document.getElementById('panel-number');
-  const panelYear = document.getElementById('panel-year');
-  const panelCorners = document.querySelector('.panel-corners') as HTMLElement | null;
-  const imagePanel = document.getElementById('image-panel');
+  const floatContainer = document.getElementById('float-img-container');
+  const floatLayers = document.querySelectorAll<HTMLElement>('.float-img-layer');
+  const floatLabel = document.getElementById('float-label');
+  const floatYear = document.getElementById('float-year');
 
-  const wrapper = document.getElementById('image-panel-wrapper');
-  const featuredProjects: { title: string; description: string; role: string; year: string; id: number }[] =
-    JSON.parse(wrapper?.dataset.projects ?? '[]');
+  const data: { title: string; image: string; year: string; role: string; id: number; tags: string[] }[] =
+    JSON.parse(list?.dataset.projects ?? '[]');
 
-  let activeIndex = -1;
-  let mouseX = 0;
-  let mouseY = 0;
+  // --- Cursor tracking with lerp ---
+  let targetX = 0, targetY = 0;
+  let currentX = 0, currentY = 0;
+  let isVisible = false;
   let rafId: number;
 
-  // Parallax on mouse move
-  if (imagePanel) {
-    imagePanel.addEventListener('mousemove', (e: MouseEvent) => {
-      const rect = imagePanel.getBoundingClientRect();
-      mouseX = (e.clientX - rect.left) / rect.width - 0.5;
-      mouseY = (e.clientY - rect.top) / rect.height - 0.5;
-    });
+  const OFFSET_X = 30;
+  const OFFSET_Y = -60;
+
+  function lerp(a: number, b: number, t: number) {
+    return a + (b - a) * t;
   }
 
-  function animateParallax() {
-    if (activeIndex >= 0) {
-      const activeLayer = layers[activeIndex];
-      if (activeLayer) {
-        const img = activeLayer.querySelector('img') as HTMLImageElement | null;
-        if (img) {
-          const tx = mouseX * 20;
-          const ty = mouseY * 15;
-          img.style.transform = `scale(1.1) translate(${tx}px, ${ty}px)`;
-        }
-      }
+  function tick() {
+    currentX = lerp(currentX, targetX, 0.1);
+    currentY = lerp(currentY, targetY, 0.1);
+    if (floatContainer) {
+      floatContainer.style.transform = `translate(${currentX + OFFSET_X}px, ${currentY + OFFSET_Y}px)`;
     }
-    rafId = requestAnimationFrame(animateParallax);
+    rafId = requestAnimationFrame(tick);
+  }
+  tick();
+
+  document.addEventListener('mousemove', (e: MouseEvent) => {
+    targetX = e.clientX;
+    targetY = e.clientY;
+  });
+
+  // --- Text scramble ---
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&';
+  function scramble(el: HTMLElement, originalText: string, duration = 600) {
+    let frame = 0;
+    const totalFrames = Math.floor(duration / 40);
+    const interval = setInterval(() => {
+      const progress = frame / totalFrames;
+      el.textContent = originalText
+        .split('')
+        .map((char, i) => {
+          if (char === ' ') return ' ';
+          if (i < Math.floor(progress * originalText.length)) return char;
+          return CHARS[Math.floor(Math.random() * CHARS.length)];
+        })
+        .join('');
+      frame++;
+      if (frame > totalFrames) {
+        clearInterval(interval);
+        el.textContent = originalText;
+      }
+    }, 40);
+    return interval;
   }
 
-  animateParallax();
+  // --- Row hover ---
+  let activeIndex = -1;
+  let scrambleTimer: ReturnType<typeof setInterval> | null = null;
 
-  function activateProject(index: number) {
+  function showProject(index: number) {
     if (index === activeIndex) return;
     activeIndex = index;
-    const project = featuredProjects[index];
+    const project = data[index];
 
-    // Crossfade images
-    layers.forEach((layer, i) => {
+    // Show container
+    if (floatContainer) floatContainer.style.opacity = '1';
+    if (floatLabel) floatLabel.textContent = project.role;
+    if (floatYear) floatYear.textContent = project.year;
+
+    // Swap image
+    floatLayers.forEach((layer, i) => {
       layer.style.opacity = i === index ? '1' : '0';
     });
 
-    // Dim other rows, highlight active
+    // Dim others, highlight active
+    list?.classList.add('has-hover');
     rows.forEach((row, i) => {
-      row.classList.toggle('active', i === index);
-      row.classList.toggle('other', i !== index);
+      row.classList.toggle('is-hovered', i === index);
     });
 
-    // Update panel detail
-    if (panelTitle) panelTitle.textContent = project.title;
-    if (panelDesc) panelDesc.textContent = project.description;
-    if (panelRole) panelRole.textContent = project.role ?? '';
-    if (panelLink) panelLink.href = `/projects/${project.id}`;
-    if (panelNumber) panelNumber.textContent = `0${index + 1}`;
-    if (panelYear) panelYear.textContent = project.year ?? '';
-
-    if (panelDefault) panelDefault.style.opacity = '0';
-    if (panelDetail) {
-      panelDetail.style.opacity = '1';
-      panelDetail.style.pointerEvents = 'auto';
+    // Scramble title
+    const titleEl = rows[index]?.querySelector<HTMLElement>('.row-title');
+    const originalText = project.title;
+    if (titleEl) {
+      if (scrambleTimer) clearInterval(scrambleTimer);
+      scrambleTimer = scramble(titleEl, originalText, 500);
     }
-    if (panelCorners) panelCorners.classList.add('active');
   }
 
-  function deactivate() {
+  function hideProject() {
     activeIndex = -1;
-
-    rows.forEach((row) => {
-      row.classList.remove('active', 'other');
+    if (floatContainer) floatContainer.style.opacity = '0';
+    list?.classList.remove('has-hover');
+    rows.forEach(row => row.classList.remove('is-hovered'));
+    if (scrambleTimer) { clearInterval(scrambleTimer); scrambleTimer = null; }
+    // Restore all titles
+    rows.forEach((row, i) => {
+      const titleEl = row.querySelector<HTMLElement>('.row-title');
+      if (titleEl && data[i]) titleEl.textContent = data[i].title;
     });
-
-    // reset image transforms
-    layers.forEach((layer) => {
-      const img = layer.querySelector('img') as HTMLImageElement | null;
-      if (img) img.style.transform = 'scale(1.1) translate(0px, 0px)';
-    });
-
-    if (panelDefault) panelDefault.style.opacity = '1';
-    if (panelDetail) {
-      panelDetail.style.opacity = '0';
-      panelDetail.style.pointerEvents = 'none';
-    }
-    if (panelCorners) panelCorners.classList.remove('active');
   }
 
   rows.forEach((row) => {
     const index = parseInt(row.dataset.index ?? '0', 10);
-
-    row.addEventListener('mouseenter', () => activateProject(index));
-    row.addEventListener('mouseleave', deactivate);
+    row.addEventListener('mouseenter', () => showProject(index));
+    row.addEventListener('mouseleave', hideProject);
   });
 </script>
