@@ -81,7 +81,7 @@ const featuredProjects = projects.filter(p => p.featured);
         class="fixed top-0 left-0 pointer-events-none z-[60] opacity-0 transition-opacity duration-400"
         style="will-change: transform;"
       >
-        <div id="float-img-inner" class="relative w-[380px] md:w-[480px] aspect-video overflow-hidden shadow-2xl bg-[var(--bg-secondary)]">
+        <div id="float-img-inner" class="relative w-[380px] md:w-[480px] aspect-[3/2] overflow-hidden shadow-2xl bg-[var(--bg-secondary)]">
           {featuredProjects.map((project, index) => (
             <img
               src={project.image}
@@ -145,29 +145,47 @@ const featuredProjects = projects.filter(p => p.featured);
   // --- Cursor tracking with lerp ---
   let targetX = 0, targetY = 0;
   let currentX = 0, currentY = 0;
-  let isVisible = false;
+  let rawMouseX = 0, rawMouseY = 0;
   let rafId: number;
 
-  const OFFSET_X = 30;
-  const OFFSET_Y = -60;
+  const IMG_W = 480;
+  const IMG_H = Math.round(IMG_W * (2 / 3));
+  const GAP = 24;
 
   function lerp(a: number, b: number, t: number) {
     return a + (b - a) * t;
+  }
+
+  function computeTarget(mx: number, my: number) {
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    // Flip horizontal if too close to right edge
+    const x = mx + GAP + IMG_W > vw ? mx - IMG_W - GAP : mx + GAP;
+    // Flip vertical if too close to bottom edge
+    const y = my - IMG_H / 2 < 0
+      ? GAP
+      : my + IMG_H / 2 > vh
+        ? vh - IMG_H - GAP
+        : my - IMG_H / 2;
+    return { x, y };
   }
 
   function tick() {
     currentX = lerp(currentX, targetX, 0.1);
     currentY = lerp(currentY, targetY, 0.1);
     if (floatContainer) {
-      floatContainer.style.transform = `translate(${currentX + OFFSET_X}px, ${currentY + OFFSET_Y}px)`;
+      floatContainer.style.transform = `translate(${currentX}px, ${currentY}px)`;
     }
     rafId = requestAnimationFrame(tick);
   }
   tick();
 
   document.addEventListener('mousemove', (e: MouseEvent) => {
-    targetX = e.clientX;
-    targetY = e.clientY;
+    rawMouseX = e.clientX;
+    rawMouseY = e.clientY;
+    const { x, y } = computeTarget(rawMouseX, rawMouseY);
+    targetX = x;
+    targetY = y;
   });
 
   // --- Text scramble ---
