@@ -1,284 +1,265 @@
 ---
 import { projects } from '../../data/portfolio';
-import ParallaxImage from '../ParallaxImage.astro';
 
 const featuredProjects = projects.filter(p => p.featured);
 ---
 
-<section id="work" class="py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]" data-total-projects={featuredProjects.length}>
+<section id="work" class="relative py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)] overflow-hidden">
   <div class="max-w-[1600px] mx-auto">
+
     <!-- Section Label -->
-    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-        02
-      </span>
+    <div class="flex items-center gap-4 mb-16 md:mb-20 reveal">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">02</span>
       <div class="h-px w-8 bg-[var(--border-color)]"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-        Selected Work
-      </span>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">Selected Work</span>
     </div>
 
-    <!-- Section Title with Navigation -->
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16 md:mb-24">
-      <h2 class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] max-w-3xl text-[var(--text-primary)] reveal-fade-up">
-        Featured
-        <span class="italic text-[var(--accent)]">Projects</span>
-      </h2>
-      
-      <!-- Carousel Navigation -->
-      <div class="flex items-center gap-4 reveal-fade-up" style="transition-delay: 100ms;">
-        <span id="carousel-counter" class="text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">
-          01 / {String(featuredProjects.length).padStart(2, '0')}
-        </span>
-        <div class="flex gap-2">
-          <button 
-            id="prev-btn"
-            class="w-12 h-12 md:w-10 md:h-10 border border-[var(--border-strong)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
-            aria-label="Previous project"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M19 12H5M12 19l-7-7 7-7"/>
-            </svg>
-          </button>
-          <button 
-            id="next-btn"
-            class="w-12 h-12 md:w-10 md:h-10 border border-[var(--border-strong)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-[var(--accent)] hover:border-[var(--accent)] hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed"
-            aria-label="Next project"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
+    <!-- Main Split Layout -->
+    <div class="flex flex-col lg:flex-row gap-0 lg:gap-16 items-start">
 
-    <!-- Projects Carousel -->
-    <div class="carousel-container overflow-hidden">
-      <div id="carousel-track" class="carousel-track flex transition-transform duration-700 ease-out">
-        {featuredProjects.map((project, index) => (
-          <a
-            href={`/projects/${project.id}`}
-            class="project-card group block flex-shrink-0 w-[85vw] md:w-1/2 pr-6 md:pr-16"
-            data-index={index}
-            data-cursor-text="View"
-          >
-            <!-- Project Image with Parallax -->
-            <div class="image-container aspect-video mb-6 overflow-hidden relative bg-[var(--bg-secondary)]">
-              <ParallaxImage
-                src={project.image}
-                alt={project.title}
-                speed={0.5}
-                class="w-full h-full project-image group-hover:scale-105 transition-transform duration-700"
-              />
-              
-              <!-- Hover Overlay -->
-              <div class="image-overlay absolute inset-0 bg-black/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500">
-                <div class="text-center transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                  <span class="inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-white border border-white/30 px-6 py-3">
-                    <span>View Project</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                      <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                  </span>
-                </div>
-              </div>
-            </div>
+      <!-- LEFT: Project List -->
+      <div class="w-full lg:w-[45%] flex flex-col justify-center">
 
-            <!-- Project Info -->
-            <div class="border-t border-[var(--border-strong)] pt-6">
-              <div class="flex items-start justify-between mb-4">
-                <h3 class="text-xl md:text-2xl lg:text-3xl text-[var(--text-primary)] group-hover:text-[var(--accent)] transition-colors duration-500">
+        <!-- Title -->
+        <h2 class="text-4xl md:text-5xl lg:text-6xl leading-[0.95] mb-12 md:mb-16 text-[var(--text-primary)] reveal-fade-up">
+          Featured<br/>
+          <span class="italic text-[var(--accent)]">Projects</span>
+        </h2>
+
+        <!-- Project Rows -->
+        <div id="project-list" class="flex flex-col">
+          {featuredProjects.map((project, index) => (
+            <a
+              href={`/projects/${project.id}`}
+              class="project-row group relative flex items-center gap-6 py-7 border-t border-[var(--border-color)] cursor-pointer transition-all duration-500"
+              data-index={index}
+              data-image={project.image}
+            >
+              <!-- Number -->
+              <span class="project-num text-[11px] uppercase tracking-[0.25em] text-[var(--text-secondary)] transition-colors duration-500 min-w-[2rem]">
+                0{index + 1}
+              </span>
+
+              <!-- Title & Tags -->
+              <div class="flex-1 min-w-0">
+                <h3 class="project-title text-xl md:text-2xl lg:text-3xl text-[var(--text-primary)] leading-tight mb-2 transition-all duration-500">
                   {project.title}
                 </h3>
-                <span class="text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)]">
-                  0{index + 1}
-                </span>
+                <div class="flex flex-wrap gap-2 overflow-hidden max-h-0 group-hover:max-h-10 transition-all duration-500 opacity-0 group-hover:opacity-100">
+                  {project.tags.slice(0, 3).map(tag => (
+                    <span class="text-[9px] uppercase tracking-[0.2em] text-[var(--accent)] border border-[var(--accent)]/30 px-2 py-0.5">{tag}</span>
+                  ))}
+                </div>
               </div>
-              
-              <p class="text-sm md:text-base text-[var(--text-secondary)] mb-4 leading-relaxed">
-                {project.description}
-              </p>
 
-              <!-- Tags -->
-              <div class="flex flex-wrap gap-2">
-                {project.tags.map((tag) => (
-                  <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] px-2 md:px-3 py-1 border border-[var(--border-color)]">
-                    {tag}
-                  </span>
-                ))}
+              <!-- Year + Arrow -->
+              <div class="flex items-center gap-4 shrink-0">
+                <span class="text-[10px] uppercase tracking-[0.2em] text-[var(--text-secondary)] opacity-0 group-hover:opacity-100 transition-opacity duration-300">{project.year}</span>
+                <svg class="project-arrow w-5 h-5 text-[var(--text-secondary)] group-hover:text-[var(--accent)] transition-all duration-500 -translate-x-2 group-hover:translate-x-0 opacity-0 group-hover:opacity-100" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
               </div>
-            </div>
+
+              <!-- Active indicator line -->
+              <div class="project-line absolute bottom-0 left-0 h-px w-0 bg-[var(--accent)] group-hover:w-full transition-all duration-700 ease-out"></div>
+            </a>
+          ))}
+
+          <!-- Last border -->
+          <div class="border-t border-[var(--border-color)]"></div>
+        </div>
+
+        <!-- View All -->
+        <div class="mt-10">
+          <a href="/projects" class="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)] hover:text-[var(--accent)] transition-colors duration-300 group">
+            <span>View All Projects</span>
+            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
           </a>
-        ))}
+        </div>
       </div>
-    </div>
 
-    <!-- View All Link -->
-    <div class="mt-16 md:mt-24 text-center reveal-fade">
-      <a href="/projects" class="view-all-btn inline-flex items-center justify-center gap-4 text-xs uppercase tracking-[0.2em] text-[var(--text-secondary)] transition-all duration-500 group">
-        <span class="wave-text">
-          <span style="--i:0">V</span><span style="--i:1">i</span><span style="--i:2">e</span><span style="--i:3">w</span><span style="--i:4">&nbsp;</span><span style="--i:5">A</span><span style="--i:6">l</span><span style="--i:7">l</span><span style="--i:8">&nbsp;</span><span style="--i:9">P</span><span style="--i:10">r</span><span style="--i:11">o</span><span style="--i:12">j</span><span style="--i:13">e</span><span style="--i:14">c</span><span style="--i:15">t</span><span style="--i:16">s</span>
-        </span>
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="arrow-animate group-hover:text-[var(--accent)]">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      </a>
+      <!-- RIGHT: Image Panel -->
+      <div class="hidden lg:block lg:w-[55%] sticky top-24 h-[70vh]"
+        id="image-panel-wrapper"
+        data-projects={JSON.stringify(featuredProjects.map(p => ({
+          title: p.title,
+          description: p.description,
+          role: p.role ?? '',
+          year: p.year ?? '',
+          id: p.id,
+        })))}
+      >
+        <div id="image-panel" class="relative w-full h-full overflow-hidden bg-[var(--bg-secondary)]">
+
+          <!-- Image layers (one per project, crossfade) -->
+          {featuredProjects.map((project, index) => (
+            <div
+              class="project-image-layer absolute inset-0 transition-opacity duration-700 ease-in-out"
+              data-layer={index}
+              style={index === 0 ? "opacity:1" : "opacity:0"}
+            >
+              <img
+                src={project.image}
+                alt={project.title}
+                class="w-full h-full object-cover scale-110"
+                style="transform-origin: center center;"
+                loading={index === 0 ? "eager" : "lazy"}
+              />
+              <!-- Dark overlay -->
+              <div class="absolute inset-0 bg-black/40"></div>
+            </div>
+          ))}
+
+          <!-- Default state overlay (no project hovered) -->
+          <div id="panel-default" class="absolute inset-0 flex flex-col justify-end p-10 transition-opacity duration-500">
+            <p class="text-[10px] uppercase tracking-[0.3em] text-white/50">Hover a project</p>
+          </div>
+
+          <!-- Project detail overlay -->
+          <div id="panel-detail" class="absolute inset-0 flex flex-col justify-end p-10 opacity-0 transition-opacity duration-500 pointer-events-none">
+            <p id="panel-role" class="text-[9px] uppercase tracking-[0.3em] text-white/60 mb-3"></p>
+            <h4 id="panel-title" class="text-2xl md:text-3xl text-white mb-4 leading-tight"></h4>
+            <p id="panel-desc" class="text-sm text-white/70 leading-relaxed max-w-sm mb-6"></p>
+            <a id="panel-link" href="#" class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white border border-white/30 px-5 py-3 w-fit hover:bg-white hover:text-black transition-all duration-300 pointer-events-auto">
+              <span>View Project</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Large background number -->
+          <div id="panel-number" class="absolute top-6 right-8 text-[120px] leading-none font-bold text-white/5 select-none transition-all duration-500 pointer-events-none">
+            01
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
 <style>
-  /* Image Container with Lift Effect */
-  .image-container {
-    transition: transform 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-                box-shadow 500ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  .project-row {
+    will-change: opacity;
   }
-  
-  .project-card:hover .image-container {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+  .project-row.other {
+    opacity: 0.35;
   }
-  
-  .carousel-container {
-    margin-right: -1.5rem;
+
+  .project-row.active .project-title {
+    color: var(--accent);
   }
-  
-  @media (min-width: 768px) {
-    .carousel-container {
-      margin-right: -4rem;
-    }
-  }
-  
-  /* Arrow animation */
-  .arrow-animate {
-    animation: arrow-bounce 1.5s ease-in-out infinite;
-  }
-  
-  .view-all-btn:hover .arrow-animate {
-    animation: none;
-    transform: translateX(4px);
-  }
-  
-  @keyframes arrow-bounce {
-    0%, 100% {
-      transform: translateX(0);
-    }
-    50% {
-      transform: translateX(6px);
-    }
-  }
-  
-  /* Wave text animation */
-  .wave-text span {
-    display: inline-block;
-    transition: color 0.2s ease;
-  }
-  
-  .view-all-btn:hover .wave-text span {
-    animation: wave-color 0.6s ease forwards;
-    animation-delay: calc(var(--i) * 0.03s);
-  }
-  
-  @keyframes wave-color {
-    0% {
-      color: var(--text-primary);
-    }
-    50% {
-      color: var(--accent);
-    }
-    100% {
-      color: var(--accent);
-    }
+
+  .project-image-layer img {
+    will-change: transform;
   }
 </style>
 
 <script>
-  function initCarousel() {
-    const section = document.getElementById('work');
-    const track = document.getElementById('carousel-track');
-    const prevBtn = document.getElementById('prev-btn') as HTMLButtonElement | null;
-    const nextBtn = document.getElementById('next-btn') as HTMLButtonElement | null;
-    const counter = document.getElementById('carousel-counter');
+  const rows = document.querySelectorAll<HTMLElement>('.project-row');
+  const layers = document.querySelectorAll<HTMLElement>('.project-image-layer');
+  const panelDefault = document.getElementById('panel-default');
+  const panelDetail = document.getElementById('panel-detail');
+  const panelTitle = document.getElementById('panel-title');
+  const panelDesc = document.getElementById('panel-desc');
+  const panelRole = document.getElementById('panel-role');
+  const panelLink = document.getElementById('panel-link') as HTMLAnchorElement | null;
+  const panelNumber = document.getElementById('panel-number');
+  const imagePanel = document.getElementById('image-panel');
 
-    if (!section || !track || !prevBtn || !nextBtn || !counter) return;
+  const wrapper = document.getElementById('image-panel-wrapper');
+  const featuredProjects: { title: string; description: string; role: string; year: string; id: number }[] =
+    JSON.parse(wrapper?.dataset.projects ?? '[]');
 
-    const totalProjects = parseInt(section.dataset.totalProjects || '0', 10);
-    let currentIndex = 0;
+  let activeIndex = -1;
+  let mouseX = 0;
+  let mouseY = 0;
+  let rafId: number;
 
-    function getItemsPerView() {
-      return window.innerWidth < 768 ? 1 : 2;
-    }
-
-    function getMaxIndex() {
-      return Math.max(0, totalProjects - getItemsPerView());
-    }
-
-    function updateCarousel() {
-      if (!track || !counter || !prevBtn || !nextBtn) return;
-      // Use actual pixel width of the first card to account for w-[85vw] dynamically
-      const card = track.children[0] as HTMLElement;
-      if (!card) return;
-      const slideWidthPx = card.offsetWidth;
-      
-      track.style.transform = `translateX(-${currentIndex * slideWidthPx}px)`;
-      counter.textContent = `${String(currentIndex + 1).padStart(2, '0')} / ${String(totalProjects).padStart(2, '0')}`;
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex >= getMaxIndex();
-    }
-
-    prevBtn.addEventListener('click', () => {
-      if (currentIndex > 0) {
-        currentIndex--;
-        updateCarousel();
-      }
-    });
-
-    nextBtn.addEventListener('click', () => {
-      if (currentIndex < getMaxIndex()) {
-        currentIndex++;
-        updateCarousel();
-      }
-    });
-
-    // Mobile Swipe Support
-    let touchStartX = 0;
-    
-    track.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    track.addEventListener('touchend', (e) => {
-      const touchEndX = e.changedTouches[0].screenX;
-      if (touchStartX - touchEndX > 50) {
-        // Swipe Left -> Next
-        nextBtn.click();
-      } else if (touchEndX - touchStartX > 50) {
-        // Swipe Right -> Prev
-        prevBtn.click();
-      }
-    }, { passive: true });
-
-    // Initial state
-    // Timeout to ensure actual pixel width is computed properly
-    setTimeout(updateCarousel, 50);
-
-    // Handle resize
-    let resizeTimer: ReturnType<typeof setTimeout>;
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(() => {
-        currentIndex = Math.min(currentIndex, getMaxIndex());
-        updateCarousel();
-      }, 250);
+  // Parallax on mouse move
+  if (imagePanel) {
+    imagePanel.addEventListener('mousemove', (e: MouseEvent) => {
+      const rect = imagePanel.getBoundingClientRect();
+      mouseX = (e.clientX - rect.left) / rect.width - 0.5;
+      mouseY = (e.clientY - rect.top) / rect.height - 0.5;
     });
   }
 
-  // Run when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCarousel);
-  } else {
-    initCarousel();
+  function animateParallax() {
+    if (activeIndex >= 0) {
+      const activeLayer = layers[activeIndex];
+      if (activeLayer) {
+        const img = activeLayer.querySelector('img') as HTMLImageElement | null;
+        if (img) {
+          const tx = mouseX * 20;
+          const ty = mouseY * 15;
+          img.style.transform = `scale(1.1) translate(${tx}px, ${ty}px)`;
+        }
+      }
+    }
+    rafId = requestAnimationFrame(animateParallax);
   }
+
+  animateParallax();
+
+  function activateProject(index: number) {
+    if (index === activeIndex) return;
+    activeIndex = index;
+    const project = featuredProjects[index];
+
+    // Crossfade images
+    layers.forEach((layer, i) => {
+      layer.style.opacity = i === index ? '1' : '0';
+    });
+
+    // Dim other rows, highlight active
+    rows.forEach((row, i) => {
+      row.classList.toggle('active', i === index);
+      row.classList.toggle('other', i !== index);
+    });
+
+    // Update panel detail
+    if (panelTitle) panelTitle.textContent = project.title;
+    if (panelDesc) panelDesc.textContent = project.description;
+    if (panelRole) panelRole.textContent = project.role ?? '';
+    if (panelLink) panelLink.href = `/projects/${project.id}`;
+    if (panelNumber) panelNumber.textContent = `0${index + 1}`;
+
+    if (panelDefault) panelDefault.style.opacity = '0';
+    if (panelDetail) {
+      panelDetail.style.opacity = '1';
+      panelDetail.style.pointerEvents = 'auto';
+    }
+  }
+
+  function deactivate() {
+    activeIndex = -1;
+
+    rows.forEach((row) => {
+      row.classList.remove('active', 'other');
+    });
+
+    // reset image transforms
+    layers.forEach((layer) => {
+      const img = layer.querySelector('img') as HTMLImageElement | null;
+      if (img) img.style.transform = 'scale(1.1) translate(0px, 0px)';
+    });
+
+    if (panelDefault) panelDefault.style.opacity = '1';
+    if (panelDetail) {
+      panelDetail.style.opacity = '0';
+      panelDetail.style.pointerEvents = 'none';
+    }
+  }
+
+  rows.forEach((row) => {
+    const index = parseInt(row.dataset.index ?? '0', 10);
+
+    row.addEventListener('mouseenter', () => activateProject(index));
+    row.addEventListener('mouseleave', deactivate);
+  });
 </script>
