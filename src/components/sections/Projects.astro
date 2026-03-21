@@ -81,12 +81,12 @@ const featuredProjects = projects.filter(p => p.featured);
         class="fixed top-0 left-0 pointer-events-none z-[60] opacity-0 transition-opacity duration-400"
         style="will-change: transform;"
       >
-        <div id="float-img-inner" class="relative w-[340px] md:w-[420px] aspect-[4/3] overflow-hidden shadow-2xl">
+        <div id="float-img-inner" class="relative w-[380px] md:w-[480px] aspect-video overflow-hidden shadow-2xl bg-[var(--bg-secondary)]">
           {featuredProjects.map((project, index) => (
             <img
               src={project.image}
               alt={project.title}
-              class="float-img-layer absolute inset-0 w-full h-full object-cover transition-opacity duration-500"
+              class="float-img-layer absolute inset-0 w-full h-full object-contain transition-opacity duration-500"
               style={index === 0 ? "opacity:1" : "opacity:0"}
               data-layer={index}
               loading={index === 0 ? "eager" : "lazy"}
