@@ -91,6 +91,9 @@ const featuredProjects = projects.filter(p => p.featured);
           id: p.id,
         })))}
       >
+        <!-- Accent bar kiri -->
+        <div class="absolute left-0 top-0 w-[3px] h-full bg-[var(--accent)] z-20 origin-top panel-accent-bar"></div>
+
         <div id="image-panel" class="relative w-full h-full overflow-hidden bg-[var(--bg-secondary)]">
 
           <!-- Image layers (one per project, crossfade) -->
@@ -103,36 +106,54 @@ const featuredProjects = projects.filter(p => p.featured);
               <img
                 src={project.image}
                 alt={project.title}
-                class="w-full h-full object-cover scale-110"
+                class="w-full h-full object-cover object-center scale-110"
                 style="transform-origin: center center;"
                 loading={index === 0 ? "eager" : "lazy"}
               />
-              <!-- Dark overlay -->
-              <div class="absolute inset-0 bg-black/40"></div>
+              <!-- Gradient overlay — halus dari tengah ke bawah -->
+              <div class="absolute inset-0" style="background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.85) 100%);"></div>
             </div>
           ))}
 
-          <!-- Default state overlay (no project hovered) -->
-          <div id="panel-default" class="absolute inset-0 flex flex-col justify-end p-10 transition-opacity duration-500">
-            <p class="text-[10px] uppercase tracking-[0.3em] text-white/50">Hover a project</p>
+          <!-- Corner brackets (crop marks) -->
+          <div class="panel-corners absolute inset-5 pointer-events-none z-10">
+            <!-- Top Left -->
+            <div class="absolute top-0 left-0 w-6 h-6 border-t border-l border-white/40"></div>
+            <!-- Top Right -->
+            <div class="absolute top-0 right-0 w-6 h-6 border-t border-r border-white/40"></div>
+            <!-- Bottom Left -->
+            <div class="absolute bottom-0 left-0 w-6 h-6 border-b border-l border-white/40"></div>
+            <!-- Bottom Right -->
+            <div class="absolute bottom-0 right-0 w-6 h-6 border-b border-r border-white/40"></div>
+          </div>
+
+          <!-- Default state (no hover) -->
+          <div id="panel-default" class="absolute inset-0 flex flex-col justify-end px-10 pb-10 transition-opacity duration-500 z-10">
+            <p class="text-[10px] uppercase tracking-[0.4em] text-white/40">— Hover a project</p>
           </div>
 
           <!-- Project detail overlay -->
-          <div id="panel-detail" class="absolute inset-0 flex flex-col justify-end p-10 opacity-0 transition-opacity duration-500 pointer-events-none">
-            <p id="panel-role" class="text-[9px] uppercase tracking-[0.3em] text-white/60 mb-3"></p>
-            <h4 id="panel-title" class="text-2xl md:text-3xl text-white mb-4 leading-tight"></h4>
-            <p id="panel-desc" class="text-sm text-white/70 leading-relaxed max-w-sm mb-6"></p>
-            <a id="panel-link" href="#" class="inline-flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white border border-white/30 px-5 py-3 w-fit hover:bg-white hover:text-black transition-all duration-300 pointer-events-auto">
+          <div id="panel-detail" class="absolute inset-0 flex flex-col justify-end px-10 pb-10 opacity-0 transition-opacity duration-500 pointer-events-none z-10">
+            <p id="panel-role" class="text-[9px] uppercase tracking-[0.35em] text-[var(--accent)] mb-3"></p>
+            <h4 id="panel-title" class="text-2xl md:text-3xl text-white mb-3 leading-tight font-light"></h4>
+            <p id="panel-desc" class="text-[13px] text-white/60 leading-relaxed max-w-xs mb-7"></p>
+            <a id="panel-link" href="#" class="inline-flex items-center gap-3 text-[10px] uppercase tracking-[0.25em] text-white border border-white/25 px-5 py-3 w-fit hover:bg-[var(--accent)] hover:border-[var(--accent)] transition-all duration-300 pointer-events-auto">
               <span>View Project</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
             </a>
           </div>
 
           <!-- Large background number -->
-          <div id="panel-number" class="absolute top-6 right-8 text-[120px] leading-none font-bold text-white/5 select-none transition-all duration-500 pointer-events-none">
+          <div id="panel-number" class="absolute top-8 right-10 text-[100px] leading-none font-bold text-white/[0.06] select-none transition-all duration-700 pointer-events-none tracking-tight z-10">
             01
+          </div>
+
+          <!-- Top meta bar -->
+          <div class="absolute top-8 left-10 z-10 flex items-center gap-3">
+            <div class="w-1.5 h-1.5 rounded-full bg-[var(--accent)]"></div>
+            <span id="panel-year" class="text-[9px] uppercase tracking-[0.35em] text-white/40 transition-opacity duration-500"></span>
           </div>
         </div>
       </div>
@@ -157,6 +178,29 @@ const featuredProjects = projects.filter(p => p.featured);
   .project-image-layer img {
     will-change: transform;
   }
+
+  /* Accent bar */
+  .panel-accent-bar {
+    transform: scaleY(1);
+    transform-origin: top;
+  }
+
+  /* Corner brackets animation */
+  .panel-corners > div {
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .panel-corners.active > div {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .panel-corners.active > div:nth-child(1) { transition-delay: 0ms; }
+  .panel-corners.active > div:nth-child(2) { transition-delay: 60ms; }
+  .panel-corners.active > div:nth-child(3) { transition-delay: 120ms; }
+  .panel-corners.active > div:nth-child(4) { transition-delay: 180ms; }
 </style>
 
 <script>
@@ -169,6 +213,8 @@ const featuredProjects = projects.filter(p => p.featured);
   const panelRole = document.getElementById('panel-role');
   const panelLink = document.getElementById('panel-link') as HTMLAnchorElement | null;
   const panelNumber = document.getElementById('panel-number');
+  const panelYear = document.getElementById('panel-year');
+  const panelCorners = document.querySelector('.panel-corners') as HTMLElement | null;
   const imagePanel = document.getElementById('image-panel');
 
   const wrapper = document.getElementById('image-panel-wrapper');
@@ -228,12 +274,14 @@ const featuredProjects = projects.filter(p => p.featured);
     if (panelRole) panelRole.textContent = project.role ?? '';
     if (panelLink) panelLink.href = `/projects/${project.id}`;
     if (panelNumber) panelNumber.textContent = `0${index + 1}`;
+    if (panelYear) panelYear.textContent = project.year ?? '';
 
     if (panelDefault) panelDefault.style.opacity = '0';
     if (panelDetail) {
       panelDetail.style.opacity = '1';
       panelDetail.style.pointerEvents = 'auto';
     }
+    if (panelCorners) panelCorners.classList.add('active');
   }
 
   function deactivate() {
@@ -254,6 +302,7 @@ const featuredProjects = projects.filter(p => p.featured);
       panelDetail.style.opacity = '0';
       panelDetail.style.pointerEvents = 'none';
     }
+    if (panelCorners) panelCorners.classList.remove('active');
   }
 
   rows.forEach((row) => {
