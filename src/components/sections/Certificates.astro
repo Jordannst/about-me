@@ -2,10 +2,33 @@
 import { certificates } from '../../data/portfolio';
 import TextReveal from '../TextReveal.astro';
 
-const years = certificates.map(c => parseInt(c.date)).filter(Boolean);
-const yearMin = Math.min(...years);
-const yearMax = Math.max(...years);
+const years = certificates.map(c => parseInt(c.date)).filter(n => !isNaN(n) && n > 0);
+const yearMin = years.length > 0 ? Math.min(...years) : new Date().getFullYear();
+const yearMax = years.length > 0 ? Math.max(...years) : new Date().getFullYear();
 const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`;
+
+const competitionCount = certificates.filter(c => c.type === 'competition').length;
+
+const placements: Record<string, number> = {
+  '1st': 1, 'first': 1,
+  '2nd': 2, 'second': 2,
+  '3rd': 3, 'third': 3,
+  'honorable': 99,
+};
+function parsePlacement(title: string): number {
+  const lower = title.toLowerCase();
+  for (const [key, rank] of Object.entries(placements)) {
+    if (lower.includes(key)) return rank;
+  }
+  return 999;
+}
+const bestPlacement = certificates.length > 0
+  ? Math.min(...certificates.map(c => parsePlacement(c.title)))
+  : 999;
+const bestPlacementLabel = bestPlacement === 1 ? '#1'
+  : bestPlacement === 2 ? '#2'
+  : bestPlacement === 3 ? '#3'
+  : 'Top';
 ---
 
 <section id="certificates" class="relative py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]">
@@ -32,7 +55,7 @@ const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`
     <!-- Stats Block -->
     <div class="cert-stats reveal-fade-up mb-16 md:mb-24">
       <div class="stat-item">
-        <span class="stat-number">{certificates.length}</span>
+        <span class="stat-number">{competitionCount}</span>
         <span class="stat-label">Competition Wins</span>
       </div>
       <div class="stat-item">
@@ -40,7 +63,7 @@ const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`
         <span class="stat-label">Years Active</span>
       </div>
       <div class="stat-item">
-        <span class="stat-number">#1</span>
+        <span class="stat-number">{bestPlacementLabel}</span>
         <span class="stat-label">Best Placement</span>
       </div>
     </div>
@@ -106,7 +129,7 @@ const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`
                 href={cert.credentialUrl}
                 target="_blank"
                 rel="noopener"
-                class="cert-arrow w-8 h-8 md:w-9 md:h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300"
+                class="cert-arrow w-8 h-8 md:w-9 md:h-9 border border-[var(--accent)] text-[var(--accent)] flex items-center justify-center md:opacity-0 md:border-[var(--border-color)] md:text-[var(--text-primary)] group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300"
                 onclick="event.stopPropagation()"
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -114,7 +137,7 @@ const yearRange = yearMin === yearMax ? `${yearMin}` : `${yearMin}–${yearMax}`
                 </svg>
               </a>
             ) : (
-              <div class="cert-arrow w-8 h-8 md:w-9 md:h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300">
+              <div class="cert-arrow w-8 h-8 md:w-9 md:h-9 border border-[var(--border-color)] flex items-center justify-center opacity-0 md:opacity-0 group-hover:opacity-100 group-hover:border-[var(--accent)] group-hover:text-[var(--accent)] transition-all duration-300">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                   <path d="M12 5l7 7-7 7M5 12h14"/>
                 </svg>
