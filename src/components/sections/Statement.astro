@@ -1,120 +1,611 @@
 ---
-// Statement.astro - Scrollytelling cinematic massive scale text section
+// Statement.astro — Code As Manifesto v3
+// Editor-style section that boots up to reveal Jordan's principles
+// Replaces the previous "I believe in crafting" zoom-scrolly section
 ---
 
-<section id="statement-scrolly" class="relative h-[300vh] bg-[var(--bg-primary)]">
-  <div class="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
-    
-    <!-- Background Blob (retained but subtle) -->
-    <div class="statement-blob absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] rounded-full pointer-events-none opacity-50 mix-blend-screen" style="background: radial-gradient(circle, rgba(212, 175, 55, 0.08) 0%, transparent 70%);"></div>
+<section id="statement" class="relative bg-[var(--bg-primary)] py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]">
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Section Label -->
+    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">*</span>
+      <div class="h-px w-8 bg-[var(--border-color)]"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">Manifesto</span>
+    </div>
 
-    <!-- The Text that will be scaled massively -->
-    <div class="zoom-text-container absolute inset-0 flex flex-col items-center justify-center font-[family-name:var(--font-serif)] text-[var(--accent)] pointer-events-none z-10 mix-blend-difference">
-      <div class="zoom-target text-center">
-        <div class="zoom-word text-[12vw] md:text-[8vw] lg:text-[7vw] leading-[0.85] tracking-tight whitespace-nowrap">
-          Digital
+    <!-- Editor Card -->
+    <div class="editor-wrapper">
+      <div class="editor-window">
+        <div class="editor-chrome">
+          <div class="window-buttons">
+            <span class="red"></span>
+            <span class="yellow"></span>
+            <span class="green"></span>
+          </div>
+          <div class="filename">jordan/<span class="accent">manifesto.js</span></div>
+          <span class="run-badge">live</span>
         </div>
-        <div class="zoom-word text-[12vw] md:text-[8vw] lg:text-[7vw] leading-[0.85] tracking-tight whitespace-nowrap italic text-[var(--text-primary)]">
-          Experiences
+
+        <div class="editor-body" id="codeBody">
+          <div class="line"><span class="tk-comment">// Hi. This is me — read it like a letter, not a function.</span></div>
+          <div class="line">&nbsp;</div>
+          <div class="line"><span class="tk-keyword">const</span> <span class="tk-fn">me</span> <span class="tk-op">=</span> <span class="tk-pn">&#123;</span></div>
+          <div class="line indent-1"><span class="tk-prop">name</span><span class="tk-op">:</span> <span class="tk-string">'Jordan'</span><span class="tk-pn">,</span></div>
+          <div class="line indent-1"><span class="tk-prop">role</span><span class="tk-op">:</span> <span class="tk-string">'Fullstack &amp; AI Enthusiast'</span><span class="tk-pn">,</span></div>
+          <div class="line indent-1"><span class="tk-prop">from</span><span class="tk-op">:</span> <span class="tk-string">'Indonesia'</span><span class="tk-pn">,</span></div>
+          <div class="line indent-1"><span class="tk-prop">shipping</span><span class="tk-op">:</span> <span class="tk-num">true</span><span class="tk-pn">,</span></div>
+          <div class="line"><span class="tk-pn">&#125;;</span></div>
+          <div class="line">&nbsp;</div>
+          <div class="line"><span class="tk-keyword">const</span> <span class="tk-fn">myPrinciples</span> <span class="tk-op">=</span> <span class="tk-pn">[</span></div>
+          <div class="line">&nbsp;</div>
+
+          <div class="line indent-1 principle" data-idx="0">
+            <span class="tk-string">"Detail matters."</span><span class="tk-pn">,</span>
+          </div>
+          <div class="line indent-1 belief-comment">
+            <span class="tk-comment">// I notice the gradient, the curve, the timing.</span>
+          </div>
+          <div class="line indent-1 belief-comment">
+            <span class="tk-comment">// They all add up, into trust or into unease.</span>
+          </div>
+          <div class="line">&nbsp;</div>
+
+          <div class="line indent-1 principle" data-idx="1">
+            <span class="tk-string">"Ship over perfect."</span><span class="tk-pn">,</span>
+          </div>
+          <div class="line indent-1 belief-comment">
+            <span class="tk-comment">// Done today beats brilliant in six months.</span>
+          </div>
+          <div class="line indent-1 belief-comment">
+            <span class="tk-comment">// The internet is a graveyard of unshipped masterpieces.</span>
+          </div>
+          <div class="line">&nbsp;</div>
+
+          <div class="line indent-1 principle" data-idx="2">
+            <span class="tk-string">"Code is honest."</span><span class="tk-pn">,</span>
+          </div>
+          <div class="line indent-1 belief-comment">
+            <span class="tk-comment">// Algorithms reveal your assumptions.</span>
+          </div>
+          <div class="line indent-1 belief-comment">
+            <span class="tk-comment">// Models reveal your data's bias. Nowhere to hide.</span>
+          </div>
+          <div class="line">&nbsp;</div>
+
+          <div class="line indent-1 principle" data-idx="3">
+            <span class="tk-string">"Curiosity compounds."</span><span class="tk-pn">,</span>
+          </div>
+          <div class="line indent-1 belief-comment">
+            <span class="tk-comment">// Today's "useless" rabbit hole becomes tomorrow's edge.</span>
+          </div>
+          <div class="line indent-1 belief-comment">
+            <span class="tk-comment">// I follow them, on principle.</span>
+          </div>
+          <div class="line">&nbsp;</div>
+
+          <div class="line"><span class="tk-pn">];</span></div>
+          <div class="line">&nbsp;</div>
+          <div class="line"><span class="tk-comment">// What I tell every visitor:</span></div>
+          <div class="line"><span class="tk-fn">console</span><span class="tk-op">.</span><span class="tk-fn">log</span><span class="tk-pn">(</span><span class="tk-string">`Hi, I'm $&#123;</span><span class="tk-prop">me.name</span><span class="tk-string">&#125; from $&#123;</span><span class="tk-prop">me.from</span><span class="tk-string">&#125;.`</span><span class="tk-pn">);</span></div>
+          <div class="line"><span class="tk-fn">console</span><span class="tk-op">.</span><span class="tk-fn">log</span><span class="tk-pn">(</span><span class="tk-string">`Guided by $&#123;</span><span class="tk-prop">myPrinciples.length</span><span class="tk-string">&#125; principles.`</span><span class="tk-pn">);</span></div>
+          <div class="line"><span class="tk-fn">console</span><span class="tk-op">.</span><span class="tk-fn">log</span><span class="tk-pn">(</span><span class="tk-prop">me.shipping</span> <span class="tk-op">?</span> <span class="tk-string">'Currently shipping.'</span> <span class="tk-op">:</span> <span class="tk-string">'Currently dreaming.'</span><span class="tk-pn">);</span></div>
+          <div class="line">&nbsp;</div>
+          <div class="line"><span class="tk-comment">// — Jordan, 2026</span></div>
+        </div>
+
+        <div class="editor-console" id="consoleBody">
+          <div class="console-header">
+            <span>OUTPUT — node manifesto.js</span>
+            <span class="console-status"><span class="status-dot"></span>running</span>
+          </div>
+          <div class="console-body">
+            <div class="console-line"><span class="prompt">$</span>node manifesto.js</div>
+            <div class="console-line console-out">→ Hi, I'm <em>Jordan</em> from <em>Indonesia</em>.</div>
+            <div class="console-line console-out">→ Guided by <em>4</em> principles.</div>
+            <div class="console-line console-out">→ Currently shipping.</div>
+            <div class="console-line console-cursor"><span class="prompt">$</span><span class="caret"></span></div>
+          </div>
         </div>
       </div>
     </div>
-
-    <!-- Intro Text (fades out as scroll starts) -->
-    <div class="intro-text absolute top-[25%] left-1/2 -translate-x-1/2 -translate-y-1/2 text-center w-full px-6">
-      <p class="text-xs uppercase tracking-[0.4em] text-[var(--text-secondary)]">I believe in crafting</p>
-    </div>
-
-    <!-- Outro Text (fades in when scale is huge) -->
-    <div class="outro-text absolute inset-0 flex items-center justify-center opacity-0 z-0 px-6 text-center">
-       <p class="font-[family-name:var(--font-serif)] text-2xl md:text-5xl lg:text-6xl text-[var(--text-primary)] leading-[1.2]">
-         That are both beautiful<br/>
-         <span class="italic text-[var(--accent)]">and purposeful.</span>
-       </p>
-    </div>
-
   </div>
 </section>
 
-<script>
-  import { gsap, ScrollTrigger } from '../../lib/gsap-setup';
-  import SplitType from 'split-type';
-
-  function initScrollytelling() {
-
-    const section = document.getElementById('statement-scrolly');
-    const zoomTarget = section?.querySelector('.zoom-target');
-    const introText = section?.querySelector('.intro-text');
-    const outroText = section?.querySelector('.outro-text');
-    const words = section?.querySelectorAll('.zoom-word');
-
-    if (!section || !zoomTarget || !words || words.length === 0) return;
-
-    // Prepare Outro Text Staggered Reveal
-    let outroSplit: SplitType | null = null;
-    let outroWords: HTMLElement[] | null = null;
-    if (outroText) {
-      const p = outroText.querySelector('p');
-      if (p) {
-        outroSplit = new SplitType(p as HTMLElement, { types: 'words' });
-        if (outroSplit.words) {
-          outroWords = outroSplit.words;
-          gsap.set(outroWords, { opacity: 0, y: 40 }); // Initial hidden state
-        }
-      }
-    }
-
-    // Create a timeline mapped to the scroll progress of the section
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: section,
-        start: "top top",
-        end: "bottom bottom",
-        scrub: 1, // Smooth scrubbing
-      }
-    });
-
-    // Animate Introduction fading out
-    if (introText) {
-      tl.to(introText, {
-        opacity: 0,
-        y: -50,
-        ease: "power2.out",
-        duration: 0.1
-      }, 0);
-    }
-
-    // Phase 1: Mild scale and letter-spacing separation
-    tl.to(words, {
-      letterSpacing: "0.2em",
-      duration: 0.2,
-      ease: "power1.inOut"
-    }, 0);
-
-    // Phase 2: Massive Scale Up
-    // Using a large scale value to fill the screen
-    tl.to(zoomTarget, {
-      scale: 150,
-      opacity: 0, // Fade out the massive text at the very end
-      transformOrigin: "center center",
-      ease: "power3.in",
-      duration: 0.8
-    }, 0.1);
-
-    // Phase 3: Fade in the Outro Text inside the "hole" or after fade out
-    if (outroText && outroWords) {
-      tl.to(outroText, { opacity: 1, duration: 0.01 }, 0.6); // Reveal wrapper instantly
-      tl.to(outroWords, {
-        opacity: 1,
-        y: 0,
-        stagger: 0.05,
-        duration: 0.4,
-        ease: "power3.out"
-      }, 0.6); 
-    }
+<style>
+  /* =====================================================
+     EDITOR CARD — base shell
+     ===================================================== */
+  .editor-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .editor-window {
+    width: 100%;
+    max-width: 920px;
+    background: #0d1117;
+    border-radius: 10px;
+    box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(212, 175, 55, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    overflow: hidden;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+    position: relative;
+    color: #f9f8f6;
+  }
+  .editor-window::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top, rgba(212, 175, 55, 0.05), transparent 60%);
+    pointer-events: none;
   }
 
-  // Initialize on load and after Astro swaps
-  document.addEventListener('DOMContentLoaded', initScrollytelling);
-  document.addEventListener('astro:after-swap', initScrollytelling);
+  .editor-chrome {
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  .window-buttons { display: flex; gap: 0.4rem; }
+  .window-buttons span {
+    width: 11px; height: 11px; border-radius: 50%;
+    display: block;
+  }
+  .window-buttons .red { background: #ff5f57; }
+  .window-buttons .yellow { background: #febc2e; }
+  .window-buttons .green { background: #28c840; }
+  .filename {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: 1rem;
+    letter-spacing: 0.05em;
+  }
+  .filename .accent { color: #d4af37; }
+
+  /* =====================================================
+     EDITOR BODY — code lines
+     ===================================================== */
+  .editor-body {
+    padding: 2rem 2.5rem 2.5rem;
+    font-size: 15px;
+    line-height: 1.85;
+    position: relative;
+    counter-reset: line;
+  }
+  .editor-body .line {
+    display: flex;
+    align-items: baseline;
+    counter-increment: line;
+    position: relative;
+    padding: 0 0.5rem;
+    margin: 0 -0.5rem;
+    border-radius: 3px;
+  }
+  .editor-body .line::before {
+    content: counter(line);
+    display: inline-block;
+    width: 2.5rem;
+    color: rgba(255, 255, 255, 0.18);
+    font-size: 12px;
+    text-align: right;
+    padding-right: 1.2rem;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  /* Syntax tokens */
+  .tk-keyword { color: #d4af37; font-weight: 500; }
+  .tk-comment { color: rgba(255, 255, 255, 0.35); font-style: italic; }
+  .tk-string  { color: #b8a882; }
+  .tk-prop    { color: #c8d8e8; }
+  .tk-fn      { color: #f9f8f6; font-weight: 500; }
+  .tk-num     { color: #d4af37; font-weight: 700; }
+  .tk-op      { color: rgba(255, 255, 255, 0.5); }
+  .tk-pn      { color: rgba(255, 255, 255, 0.4); }
+
+  .indent-1 { padding-left: 1.5rem; }
+
+  /* Principle highlight (auto-cycle) */
+  .principle {
+    border-radius: 4px;
+    transition:
+      background 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  .principle.active {
+    background: linear-gradient(
+      90deg,
+      rgba(212, 175, 55, 0.10),
+      rgba(212, 175, 55, 0.03) 60%,
+      transparent 90%
+    );
+    box-shadow: inset 3px 0 0 #d4af37;
+  }
+  .principle .tk-string {
+    color: #d4af37;
+    font-weight: 500;
+  }
+  .principle.active .tk-string {
+    color: #f5d76b;
+    text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+  }
+
+  /* Belief comments — always visible, dimmed */
+  .belief-comment .tk-comment {
+    color: rgba(220, 215, 200, 0.5);
+    font-style: italic;
+  }
+
+  /* Run badge */
+  .run-badge {
+    margin-left: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(40, 200, 64, 0.85);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.7rem;
+    background: rgba(40, 200, 64, 0.06);
+    border: 1px solid rgba(40, 200, 64, 0.2);
+    border-radius: 999px;
+  }
+  .run-badge::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #28c840;
+    box-shadow: 0 0 6px #28c840;
+  }
+
+  /* =====================================================
+     CONSOLE OUTPUT PANEL
+     ===================================================== */
+  .editor-console {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(0, 0, 0, 0.45);
+    padding: 1rem 2.5rem 1.4rem;
+    font-family: 'JetBrains Mono', 'Fira Code', monospace;
+    font-size: 13px;
+  }
+  .console-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.4);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  }
+  .console-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: rgba(40, 200, 64, 0.85);
+    font-weight: 500;
+  }
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #28c840;
+    box-shadow: 0 0 8px #28c840;
+    animation: pulse-dot-statement 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot-statement {
+    0%, 100% { opacity: 0.4; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+  .console-line {
+    padding: 0.18rem 0;
+    color: rgba(249, 248, 246, 0.85);
+    line-height: 1.6;
+  }
+  .console-line .prompt {
+    color: #d4af37;
+    margin-right: 0.6rem;
+    user-select: none;
+  }
+  .console-out {
+    color: rgba(212, 175, 55, 0.9);
+  }
+  .console-out em {
+    font-style: italic;
+    color: #f9f8f6;
+    font-weight: 500;
+  }
+  .console-cursor .caret {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: #d4af37;
+    vertical-align: text-bottom;
+    margin-left: 0.4rem;
+    animation: blink-statement 1s steps(2) infinite;
+  }
+  @keyframes blink-statement { 50% { opacity: 0; } }
+
+  /* =====================================================
+     BOOT SEQUENCE — multi-stage entrance animation
+     Triggered by JS (.pre-boot added on init, .boot-* added on intersect)
+     Graceful degrade: no JS = card visible immediately
+     ===================================================== */
+
+  /* Phase 1: Window initially hidden */
+  .editor-window.pre-boot {
+    opacity: 0;
+    transform: scale(0.95) translateY(24px);
+    filter: blur(3px);
+  }
+  .editor-window.pre-boot.boot-shown {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+    transition:
+      opacity 0.6s ease,
+      transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
+      filter 0.5s ease;
+  }
+
+  /* Phase 2: Chrome elements initially dim/scaled */
+  .editor-window.pre-boot .window-buttons span {
+    background: rgba(255, 255, 255, 0.08) !important;
+    transform: scale(0.5);
+    transition: background 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .editor-window.pre-boot .filename {
+    opacity: 0;
+    clip-path: inset(0 100% 0 0);
+    -webkit-clip-path: inset(0 100% 0 0);
+    transition:
+      opacity 0.35s ease,
+      clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+      -webkit-clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .editor-window.pre-boot .run-badge {
+    opacity: 0;
+    transform: scale(0.6);
+    transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Phase 2 active: chrome activates with stagger */
+  .editor-window.boot-chrome .window-buttons .red {
+    background: #ff5f57 !important;
+    transform: scale(1);
+  }
+  .editor-window.boot-chrome .window-buttons .yellow {
+    background: #febc2e !important;
+    transform: scale(1);
+    transition-delay: 0.1s;
+  }
+  .editor-window.boot-chrome .window-buttons .green {
+    background: #28c840 !important;
+    transform: scale(1);
+    transition-delay: 0.2s;
+  }
+  .editor-window.boot-chrome .filename {
+    opacity: 1;
+    clip-path: inset(0 0% 0 0);
+    -webkit-clip-path: inset(0 0% 0 0);
+    transition-delay: 0.4s;
+  }
+  .editor-window.boot-chrome .run-badge {
+    opacity: 1;
+    transform: scale(1);
+    transition-delay: 0.95s;
+  }
+
+  /* Phase 3: code lines initial state */
+  .editor-body .line.pre-anim {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  .editor-body .line.anim-in {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+  }
+
+  /* Phase 4: console panel slides in */
+  .editor-console.pre-boot {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    overflow: hidden;
+    border-top-color: transparent;
+  }
+  .editor-console.pre-boot.boot-shown {
+    max-height: 240px;
+    opacity: 1;
+    padding-top: 1rem;
+    padding-bottom: 1.4rem;
+    border-top-color: rgba(255, 255, 255, 0.06);
+    transition:
+      max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 0.45s ease 0.1s,
+      padding 0.7s cubic-bezier(0.4, 0, 0.2, 1),
+      border-top-color 0.4s ease 0.2s;
+  }
+  .console-line.pre-anim {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  .console-line.anim-in {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+
+  /* Subtle ambient glow on boot */
+  @keyframes ambient-glow-statement {
+    0% { box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(212, 175, 55, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03); }
+    40% { box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      0 0 60px rgba(212, 175, 55, 0.18),
+      0 0 0 1px rgba(212, 175, 55, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03); }
+    100% { box-shadow:
+      0 30px 80px rgba(0, 0, 0, 0.5),
+      0 0 0 1px rgba(212, 175, 55, 0.12),
+      inset 0 1px 0 rgba(255, 255, 255, 0.03); }
+  }
+  .editor-window.pre-boot.boot-shown {
+    animation: ambient-glow-statement 1.6s ease-out 0.2s;
+  }
+
+  /* =====================================================
+     RESPONSIVE
+     ===================================================== */
+  @media (max-width: 768px) {
+    .editor-body {
+      padding: 1.25rem 1rem 1.5rem;
+      font-size: 13px;
+    }
+    .editor-body .line::before {
+      width: 1.8rem;
+      padding-right: 0.6rem;
+      font-size: 10px;
+    }
+    .editor-console {
+      padding: 0.8rem 1rem 1rem;
+      font-size: 11px;
+    }
+    .filename { font-size: 10px; margin-left: 0.5rem; }
+    .run-badge { font-size: 8px; padding: 0.2rem 0.5rem; }
+    .indent-1 { padding-left: 1rem; }
+  }
+
+  /* =====================================================
+     REDUCED MOTION — respect user preference
+     ===================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    .editor-window.pre-boot,
+    .editor-window.pre-boot .window-buttons span,
+    .editor-window.pre-boot .filename,
+    .editor-window.pre-boot .run-badge,
+    .editor-console.pre-boot,
+    .editor-body .line.pre-anim,
+    .console-line.pre-anim {
+      opacity: 1 !important;
+      transform: none !important;
+      filter: none !important;
+      clip-path: none !important;
+      -webkit-clip-path: none !important;
+      max-height: none !important;
+      padding-top: 1rem !important;
+      padding-bottom: 1.4rem !important;
+      border-top-color: rgba(255, 255, 255, 0.06) !important;
+    }
+    .editor-window.pre-boot.boot-shown {
+      animation: none !important;
+    }
+    .principle.active {
+      background: linear-gradient(
+        90deg,
+        rgba(212, 175, 55, 0.10),
+        rgba(212, 175, 55, 0.03) 60%,
+        transparent 90%
+      ) !important;
+    }
+  }
+</style>
+
+<script>
+  // Statement.astro — Code Manifesto boot sequence + auto-highlight cycle
+  function initStatementBoot() {
+    const codeBody = document.getElementById('codeBody');
+    const consoleBody = document.getElementById('consoleBody');
+    const editorWindow = document.querySelector('#statement .editor-window');
+
+    if (!codeBody || !editorWindow) return;
+
+    const codeLines = Array.from(codeBody.querySelectorAll('.line'));
+    const consoleLines = consoleBody
+      ? Array.from(consoleBody.querySelectorAll('.console-line'))
+      : [];
+    const principles = Array.from(
+      document.querySelectorAll('#statement .principle')
+    );
+
+    // Set initial hidden states (graceful degrade: if JS fails, all visible)
+    editorWindow.classList.add('pre-boot');
+    if (consoleBody) consoleBody.classList.add('pre-boot');
+    codeLines.forEach((line) => line.classList.add('pre-anim'));
+    consoleLines.forEach((line) => line.classList.add('pre-anim'));
+
+    let booted = false;
+    const bootObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && !booted) {
+          booted = true;
+
+          // Phase 1 (80ms): Editor window opens
+          setTimeout(() => editorWindow.classList.add('boot-shown'), 80);
+
+          // Phase 2 (700ms): Chrome activates
+          setTimeout(() => editorWindow.classList.add('boot-chrome'), 700);
+
+          // Phase 3 (1750ms): Code lines type in
+          const codeStart = 1750;
+          codeLines.forEach((line, i) => {
+            setTimeout(() => {
+              line.classList.remove('pre-anim');
+              line.classList.add('anim-in');
+            }, codeStart + i * 55);
+          });
+
+          // Phase 4 (after code typed): Console panel slides up
+          const codeEnd = codeStart + codeLines.length * 55;
+          setTimeout(() => {
+            if (consoleBody) consoleBody.classList.add('boot-shown');
+          }, codeEnd + 250);
+
+          // Phase 5 (after panel opens): Console lines reveal
+          const consoleStart = codeEnd + 850;
+          consoleLines.forEach((line, i) => {
+            setTimeout(() => {
+              line.classList.remove('pre-anim');
+              line.classList.add('anim-in');
+            }, consoleStart + i * 200);
+          });
+
+          // Phase 6 (everything settled): Auto-highlight cycle starts
+          const highlightStart = consoleStart + consoleLines.length * 200 + 600;
+          if (principles.length > 0) {
+            let activeIdx = 0;
+            const cyclePrinciple = () => {
+              principles.forEach((p, i) =>
+                p.classList.toggle('active', i === activeIdx)
+              );
+              activeIdx = (activeIdx + 1) % principles.length;
+            };
+            setTimeout(() => {
+              cyclePrinciple();
+              setInterval(cyclePrinciple, 3500);
+            }, highlightStart);
+          }
+        }
+      },
+      { threshold: 0.15 }
+    );
+    bootObserver.observe(editorWindow);
+  }
+
+  // Initialize on load and after Astro view transitions
+  document.addEventListener('DOMContentLoaded', initStatementBoot);
+  document.addEventListener('astro:after-swap', initStatementBoot);
 </script>
