@@ -2,22 +2,24 @@
 import { certificates } from '../../data/portfolio';
 import TextReveal from '../TextReveal.astro';
 
-// Icons for each certificate type
-const typeIcons = {
-  organization: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
-  competition: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>`,
-  course: `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+const typeMarks: Record<string, string> = {
+  organization: "▣",
+  competition: "▲",
+  course: "▽",
 };
 
-const typeLabels = {
+const typeLabels: Record<string, string> = {
   organization: "Organization",
   competition: "Competition",
   course: "Course",
 };
+
+const currentYear = new Date().getFullYear();
+const editionNumber = String(currentYear).slice(-2);
 ---
 
-<section id="certificates" class="py-20 md:py-32 px-6 md:px-16 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">
-  <div class="max-w-[1600px] mx-auto">
+<section id="certificates" class="py-20 md:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">
+  <div class="max-w-[1600px] mx-auto px-6 md:px-16">
     <!-- Section Label -->
     <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
       <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
@@ -30,413 +32,566 @@ const typeLabels = {
     </div>
 
     <!-- Section Title -->
-    <TextReveal tag="h2" animation="words" stagger={0.08} class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl">
+    <TextReveal tag="h2" animation="words" stagger={0.08} class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-12 md:mb-16 max-w-3xl">
       Certificates &
       <span class="italic text-[var(--accent)]">Awards</span>
     </TextReveal>
+  </div>
 
-    <!-- Horizontal Scroll Container -->
-    <div class="certificates-scroll-container">
-      <div class="certificates-track">
-        {certificates.map((cert, index) => (
-          <div 
-            class="certificate-card group"
-            style={`--delay: ${index * 100}ms`}
-          >
-            <!-- Certificate Image -->
-            <div class="card-image">
-              {cert.image ? (
-                <img 
-                  src={cert.image} 
-                  alt={cert.title}
-                  loading="lazy"
-                  decoding="async"
-                  class="w-full h-full object-cover"
-                />
-              ) : (
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <div class="text-center opacity-40">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="0.5" class="mx-auto mb-2">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                      <circle cx="8.5" cy="8.5" r="1.5"/>
-                      <path d="m21 15-5-5L5 21"/>
-                    </svg>
-                    <span class="text-[10px] uppercase tracking-[0.2em]">Certificate</span>
-                  </div>
-                </div>
+  <!-- Newspaper Editorial Spread (full-width) -->
+  <div class="newspaper">
+      <div class="newspaper-inner">
+
+        <!-- Masthead -->
+        <header class="masthead">
+          <div class="masthead-meta">
+            <span>Vol. 04 · Edition {editionNumber}</span>
+            <span class="masthead-divider" aria-hidden="true">·</span>
+            <span>Indonesia · {currentYear}</span>
+          </div>
+          <h3 class="masthead-title">The Editorial</h3>
+          <p class="masthead-subtitle">
+            — Featuring Selected Recognitions in Design &amp; Development —
+          </p>
+        </header>
+
+        <!-- Articles -->
+        <div class="articles">
+          {certificates.map((cert) => (
+            <article class="article">
+              <div class="article-meta">
+                <span class="article-type">
+                  <span class="article-type-mark" aria-hidden="true">{typeMarks[cert.type]}</span>
+                  {typeLabels[cert.type]}
+                </span>
+                <span class="article-date">{cert.date}</span>
+              </div>
+
+              <h4 class="article-headline">{cert.title}</h4>
+              <p class="article-subhead">{cert.issuer}</p>
+
+              {cert.image && (
+                <figure class="article-photo">
+                  <img
+                    src={cert.image}
+                    alt={cert.title}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <figcaption>
+                    <em>{cert.title}</em> — {cert.date}
+                  </figcaption>
+                </figure>
               )}
-              
-              <!-- Year Tag -->
-              <div class="year-tag">
-                <span>{cert.date}</span>
-              </div>
-            </div>
-            
-            <!-- Certificate Info -->
-            <div class="card-content">
-              <!-- Type Badge -->
-              <div class="type-badge">
-                <span class="type-icon" set:html={typeIcons[cert.type]} />
-                <span>{typeLabels[cert.type]}</span>
-              </div>
-              
-              <!-- Title -->
-              <h3 class="card-title">
-                {cert.title}
-              </h3>
-              
-              <!-- Issuer -->
-              <p class="card-issuer">
-                {cert.issuer}
-              </p>
-              
-              <!-- Description -->
+
               {cert.description && (
-                <p class="card-description">
-                  {cert.description}
-                </p>
+                <p class="article-body">{cert.description}</p>
               )}
-              
-              <!-- Credential Link -->
-              {cert.credentialUrl && cert.credentialUrl !== "#" && (
-                <a 
+
+              {cert.credentialUrl && cert.credentialUrl !== '#' && (
+                <a
                   href={cert.credentialUrl}
                   target="_blank"
                   rel="noopener"
-                  class="credential-link"
+                  class="article-link"
                 >
-                  <span>View Credential</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <span>Read Full Story</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
                     <path d="M5 12h14M12 5l7 7-7 7"/>
                   </svg>
                 </a>
               )}
-            </div>
-          </div>
-        ))}
+            </article>
+          ))}
 
-        <!-- Coming Soon Card -->
-        <div class="certificate-card coming-soon-card" style={`--delay: ${certificates.length * 100}ms`}>
-          <div class="coming-soon-content">
-            <div class="coming-soon-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 8v8M8 12h8"/>
-              </svg>
+          <!-- Continued / Coming Soon Article -->
+          <article class="article article-continued">
+            <div class="article-meta">
+              <span class="article-type">— Coming Soon —</span>
+              <span class="article-date">Next Edition</span>
             </div>
-            <p class="coming-soon-title">More on the way</p>
-            <p class="coming-soon-subtitle">Stay tuned for upcoming achievements</p>
-          </div>
+            <h4 class="article-headline">Stay Tuned</h4>
+            <p class="article-subhead">More achievements on the horizon</p>
+            <p class="article-body">
+              Continued in the next edition of <em>The Editorial</em>.
+            </p>
+          </article>
         </div>
+
+        <!-- Newspaper Footer Bar -->
+        <footer class="newspaper-footer" aria-hidden="true">
+          <span>※</span>
+          <span class="newspaper-footer-divider"></span>
+          <span class="newspaper-footer-text">Printed with passion · Indonesia</span>
+          <span class="newspaper-footer-divider"></span>
+          <span>※</span>
+        </footer>
+
       </div>
     </div>
 
-    <!-- Scroll Hint - Only visible on mobile -->
-    <div class="scroll-hint sm:hidden">
-      <span>Scroll to explore</span>
-      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
-      </svg>
-    </div>
-  </div>
 </section>
 
 <style>
-  .certificates-scroll-container {
-    overflow-x: auto;
-    overflow-y: visible;
-    margin: 0 -1.5rem;
-    padding: 0.5rem 1.5rem 1.5rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
+  /* ============================================
+     NEWSPAPER SPREAD — Editorial Print Layout
+     A deliberate cream-paper interlude that
+     stays consistent in light and dark themes.
+     ============================================ */
 
-  .certificates-scroll-container::-webkit-scrollbar {
-    display: none;
-  }
-
-  .certificates-track {
-    display: flex;
-    gap: 1rem;
-    /* Don't center on mobile - allows natural scroll start */
-    justify-content: flex-start;
-  }
-
-  .certificate-card {
-    flex-shrink: 0;
-    width: 80vw;
-    max-width: 320px;
-    border-radius: 12px;
-    overflow: hidden;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color, rgba(0,0,0,0.1));
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-    animation: fadeIn 0.5s ease forwards;
-    animation-delay: var(--delay);
-    opacity: 0;
-  }
-
-  .certificate-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-  }
-
-  /* Coming Soon Card */
-  .coming-soon-card {
-    border-style: dashed !important;
-    border-width: 2px !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 280px;
-  }
-
-  .coming-soon-card:hover {
-    border-color: var(--accent) !important;
-    box-shadow: none !important;
-  }
-
-  .coming-soon-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 2rem;
-    gap: 0.75rem;
-  }
-
-  .coming-soon-icon {
-    opacity: 0.3;
-    color: var(--accent);
-    transition: opacity 0.3s ease;
-  }
-
-  .coming-soon-card:hover .coming-soon-icon {
-    opacity: 0.6;
-  }
-
-  .coming-soon-title {
-    font-family: var(--font-serif);
-    font-size: 1.25rem;
-    font-style: italic;
-    opacity: 0.5;
-    color: var(--text-primary);
-  }
-
-  .coming-soon-subtitle {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.15em;
-    opacity: 0.3;
-  }
-
-  .card-image {
+  .newspaper {
+    background: linear-gradient(180deg, #f4ecd8 0%, #ede2c4 100%);
+    color: #1a1a1a;
     position: relative;
-    aspect-ratio: 4/3;
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.25),
+      inset 0 0 80px rgba(120, 100, 60, 0.12);
     overflow: hidden;
-    background: var(--bg-tertiary, rgba(0,0,0,0.05));
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 
-  .card-image img {
-    transition: transform 0.3s ease;
-  }
-
-  .certificate-card:hover .card-image img {
-    transform: scale(1.03);
-  }
-
-  .year-tag {
+  /* Subtle vertical paper grain */
+  .newspaper::before {
+    content: '';
     position: absolute;
-    bottom: 10px;
-    left: 10px;
-    background: #1a1a1a;
-    color: #fff;
-    font-size: 10px;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 0, 0, 0.014) 2px,
+        rgba(0, 0, 0, 0.014) 4px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Aged corners */
+  .newspaper::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at top left, transparent 80%, rgba(120, 100, 60, 0.1)),
+      radial-gradient(ellipse at bottom right, transparent 80%, rgba(120, 100, 60, 0.08));
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .newspaper-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 768px) {
+    .newspaper-inner {
+      padding: 4rem 3rem;
+    }
+  }
+
+  /* ============================================
+     MASTHEAD
+     ============================================ */
+
+  .masthead {
+    border-top: 4px double #1a1a1a;
+    border-bottom: 4px double #1a1a1a;
+    text-align: center;
+    padding: 1.25rem 0;
+    margin-bottom: 2.5rem;
+  }
+
+  .masthead-meta {
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0 0.5rem 0.85rem;
+    border-bottom: 1px solid rgba(26, 26, 26, 0.7);
+    margin-bottom: 0.85rem;
+    flex-wrap: wrap;
+  }
+
+  .masthead-divider {
+    opacity: 0.45;
+  }
+
+  .masthead-title {
+    font-family: 'Playfair Display', Georgia, serif;
     font-weight: 600;
-    padding: 5px 10px;
-    border-radius: 5px;
-    letter-spacing: 0.05em;
+    font-style: italic;
+    font-size: clamp(2rem, 8vw, 4.5rem);
+    letter-spacing: -0.015em;
+    line-height: 0.95;
+    margin: 0.5rem 0;
+    color: #1a1a1a;
   }
 
-  .card-content {
-    padding: 1rem 1.25rem 1.25rem;
+  .masthead-subtitle {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    padding-top: 0.6rem;
+    margin: 0;
+    color: #1a1a1a;
   }
 
-  .type-badge {
+  @media (min-width: 768px) {
+    .masthead-subtitle {
+      font-size: 1rem;
+    }
+  }
+
+  /* ============================================
+     ARTICLES — Multi-column flow
+     ============================================ */
+
+  .articles {
+    columns: 1;
+    column-gap: 3rem;
+    column-rule: 1px solid rgba(26, 26, 26, 0.2);
+  }
+
+  @media (min-width: 768px) {
+    .articles {
+      columns: 2;
+    }
+  }
+
+  .article {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    -webkit-column-break-inside: avoid;
+    margin-bottom: 2.5rem;
+  }
+
+  .article:last-child {
+    margin-bottom: 0;
+  }
+
+  .article-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(26, 26, 26, 0.7);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid rgba(26, 26, 26, 0.5);
+  }
+
+  .article-type {
+    color: #b8941f;
+    font-weight: 600;
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    opacity: 0.7;
-    margin-bottom: 10px;
+    gap: 0.4rem;
   }
 
-  .type-icon {
-    color: var(--accent);
+  .article-type-mark {
+    font-size: 11px;
   }
 
-  .card-title {
-    font-size: 1.1rem;
+  .article-date {
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+  }
+
+  .article-headline {
+    font-family: 'Playfair Display', Georgia, serif;
     font-weight: 600;
-    line-height: 1.3;
-    margin-bottom: 6px;
-    color: var(--text-primary);
-    transition: color 0.3s ease;
+    font-size: 1.4rem;
+    line-height: 1.15;
+    margin: 0.5rem 0 0.5rem;
+    color: #1a1a1a;
+    transition: color 0.4s ease;
   }
 
-  .certificate-card:hover .card-title {
-    color: var(--accent);
+  @media (min-width: 768px) {
+    .article-headline {
+      font-size: 1.65rem;
+    }
   }
 
-  .card-issuer {
-    font-size: 0.8rem;
-    opacity: 0.6;
-    margin-bottom: 10px;
+  .article-subhead {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    font-size: 0.92rem;
+    margin: 0 0 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(26, 26, 26, 0.4);
+    opacity: 0.85;
+    color: #1a1a1a;
+  }
+
+  .article-photo {
+    margin: 1rem 0 1.25rem;
+    border: 1px solid #1a1a1a;
+    background: #1a1a1a;
+    transition:
+      transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+      box-shadow 0.6s ease;
+    will-change: transform;
+  }
+
+  .article-photo img {
+    width: 100%;
+    display: block;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    filter: contrast(1.12) brightness(0.95) saturate(0.55);
+    transition: filter 0.6s ease;
+  }
+
+  .article:hover .article-photo img {
+    filter: contrast(1.05) brightness(1) saturate(0.85);
+  }
+
+  /* Paper "lift" effect on hover (desktop only) */
+  @media (hover: hover) and (pointer: fine) {
+    .article:not(.article-continued):hover .article-photo {
+      transform: translateY(-5px);
+      box-shadow:
+        0 12px 28px rgba(0, 0, 0, 0.22),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .article:not(.article-continued):hover .article-headline {
+      color: var(--accent);
+    }
+  }
+
+  .article-photo figcaption {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 9px;
+    text-align: center;
+    padding: 0.5rem 0.75rem;
+    border-top: 1px solid rgba(26, 26, 26, 0.3);
+    background: #f4ecd8;
+    letter-spacing: 0.1em;
+    color: #1a1a1a;
     line-height: 1.4;
   }
 
-  .card-description {
-    font-size: 0.75rem;
-    opacity: 0.5;
-    line-height: 1.5;
-    margin-bottom: 12px;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  .article-body {
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.7;
+    text-align: justify;
+    color: #2a2a2a;
+    margin: 0 0 1rem;
+    hyphens: auto;
   }
 
-  .credential-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+  /* Drop cap on first letter — gold accent */
+  .article-body::first-letter {
+    float: left;
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 3.25rem;
+    line-height: 0.85;
+    margin-right: 0.4rem;
+    margin-top: 0.2rem;
     font-weight: 600;
     color: var(--accent);
-    transition: gap 0.2s ease;
   }
 
-  .credential-link:hover {
-    gap: 8px;
+  .article-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: #b8941f;
+    border-bottom: 1px solid #b8941f;
+    padding-bottom: 2px;
+    transition: gap 0.3s ease, color 0.3s ease;
+    text-decoration: none;
   }
 
-  .scroll-hint {
+  .article-link:hover {
+    gap: 0.85rem;
+    color: var(--accent);
+  }
+
+  /* ===== Continued / Coming Soon Article ===== */
+
+  .article-continued .article-meta {
+    border-color: rgba(26, 26, 26, 0.3);
+  }
+
+  .article-continued .article-type {
+    color: rgba(26, 26, 26, 0.5);
+  }
+
+  .article-continued .article-headline,
+  .article-continued .article-subhead {
+    opacity: 0.55;
+  }
+
+  .article-continued .article-body {
+    text-align: center;
+    color: rgba(26, 26, 26, 0.55);
+    font-style: italic;
+    border: 1px dashed rgba(26, 26, 26, 0.25);
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .article-continued .article-body::first-letter {
+    float: none;
+    font-size: inherit;
+    line-height: inherit;
+    margin: 0;
+    color: inherit;
+    font-weight: inherit;
+    font-style: italic;
+  }
+
+  /* ============================================
+     FOOTER ORNAMENT
+     ============================================ */
+
+  .newspaper-footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    margin-top: 1.25rem;
+    gap: 0.85rem;
+    padding-top: 2rem;
+    margin-top: 1rem;
+    border-top: 1px solid rgba(26, 26, 26, 0.4);
+    font-family: 'Playfair Display', Georgia, serif;
+    color: rgba(26, 26, 26, 0.55);
+    font-size: 0.9rem;
+  }
+
+  .newspaper-footer-divider {
+    flex: 0 0 60px;
+    height: 1px;
+    background: rgba(26, 26, 26, 0.3);
+  }
+
+  .newspaper-footer-text {
     font-size: 9px;
+    letter-spacing: 0.3em;
     text-transform: uppercase;
-    letter-spacing: 0.2em;
-    opacity: 0.4;
+    font-style: italic;
   }
 
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(16px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
+  /* ============================================
+     RESPONSIVE
+     ============================================ */
 
-  /* Small phones */
-  @media (max-width: 375px) {
-    .certificate-card {
-      width: 85vw;
-      max-width: 300px;
+  @media (max-width: 480px) {
+    .masthead-meta {
+      flex-direction: column;
+      gap: 0.4rem;
+      padding-bottom: 0.75rem;
     }
 
-    .card-content {
-      padding: 1rem 1.25rem 1.25rem;
+    .masthead-divider {
+      display: none;
     }
 
-    .card-title {
-      font-size: 1.1rem;
+    .article-meta {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.35rem;
     }
   }
 
-  /* Tablets */
-  @media (min-width: 640px) {
-    .certificates-track {
-      gap: 2rem;
-      justify-content: center;
-    }
+  /* ============================================
+     REDUCED MOTION
+     ============================================ */
 
-    .certificate-card {
-      width: 400px;
-      max-width: 420px;
-      border-radius: 16px;
-    }
-
-    .card-content {
-      padding: 1.5rem;
-    }
-
-    .card-title {
-      font-size: 1.35rem;
-    }
-
-    .year-tag {
-      font-size: 12px;
-      padding: 6px 14px;
-    }
-  }
-
-  /* Desktop */
-  @media (min-width: 1024px) {
-    .certificates-scroll-container {
-      margin: 0 -4rem 0 0;
-      padding: 1rem 4rem 2rem 0;
-    }
-
-    .certificates-track {
-      gap: 2.5rem;
-    }
-
-    .certificate-card {
-      width: 450px;
-      max-width: 500px;
-      border-radius: 20px;
-    }
-
-    .card-content {
-      padding: 1.75rem 2rem 2rem;
-    }
-
-    .certificate-card:hover {
-      transform: translateY(-8px);
-    }
-
-    .card-title {
-      font-size: 1.5rem;
-      margin-bottom: 10px;
-    }
-
-    .card-issuer {
-      font-size: 1rem;
-      margin-bottom: 14px;
-    }
-
-    .card-description {
-      font-size: 0.9rem;
-      margin-bottom: 20px;
-      -webkit-line-clamp: 4;
-    }
-    
-    .credential-link {
-      font-size: 12px;
+  @media (prefers-reduced-motion: reduce) {
+    .article-photo img,
+    .article-photo,
+    .article-headline,
+    .article-link {
+      transition: none;
     }
   }
 </style>
+
+<script>
+  import { gsap, ScrollTrigger } from '../../lib/gsap-setup';
+
+  function initCertificatesAnimation() {
+    const newspaper = document.querySelector('.newspaper') as HTMLElement | null;
+    const masthead = document.querySelector('.newspaper .masthead') as HTMLElement | null;
+    const articles = document.querySelectorAll<HTMLElement>('.newspaper .article');
+
+    if (!newspaper || !articles.length) return;
+    if (newspaper.dataset.animated === 'true') return;
+
+    // Respect reduced motion preference
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    newspaper.dataset.animated = 'true';
+
+    // Initial hidden states
+    gsap.set(newspaper, { opacity: 0, y: 60 });
+    if (masthead) gsap.set(masthead, { opacity: 0, y: 20 });
+    gsap.set(articles, { opacity: 0, y: 30 });
+
+    // Timeline anchored to ScrollTrigger
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: newspaper,
+        start: 'top 85%',
+        toggleActions: 'play none none none',
+      },
+    });
+
+    // 1. Paper fades in & slides up
+    tl.to(newspaper, {
+      opacity: 1,
+      y: 0,
+      duration: 1,
+      ease: 'power3.out',
+    });
+
+    // 2. Masthead reveals slightly after
+    if (masthead) {
+      tl.to(masthead, {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+      }, '-=0.6');
+    }
+
+    // 3. Articles stagger in
+    tl.to(articles, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.15,
+      ease: 'power3.out',
+    }, '-=0.4');
+  }
+
+  // Initial load
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(initCertificatesAnimation, 150);
+  });
+
+  // For Astro page transitions (SPA mode)
+  document.addEventListener('astro:after-swap', () => {
+    setTimeout(initCertificatesAnimation, 150);
+  });
+</script>
