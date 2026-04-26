@@ -2,6 +2,16 @@
 import { personal, meta } from '../../data/portfolio';
 import TextReveal from '../TextReveal.astro';
 import BlurText from '../BlurText.astro';
+
+// Rotating greeting languages — cycles via blur swap above the name.
+// Order matters: starts on English, loops through to Mandarin, then back.
+const greetings = [
+  { lang: 'en', text: "Hello, I'm" },
+  { lang: 'id', text: 'Halo, saya' },
+  { lang: 'ja', text: 'こんにちは、私は' },
+  { lang: 'es', text: 'Hola, soy' },
+  { lang: 'zh', text: '你好，我是' },
+];
 ---
 
 <section class="min-h-screen flex items-center md:items-end pb-16 md:pb-32 pt-24 md:pt-32 px-8 md:px-16 relative overflow-hidden">
@@ -13,11 +23,19 @@ import BlurText from '../BlurText.astro';
   </div>
 
   <div class="max-w-[1600px] mx-auto w-full">
-    <!-- Decorative Line -->
+    <!-- Decorative Line + Rotating Greeting -->
     <div class="flex items-center gap-4 mb-8 hero-line">
       <div class="h-px w-8 md:w-12 bg-[var(--border-strong)]"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-        Welcome
+      <span class="hello-rotator" id="helloRotator" aria-live="polite" aria-atomic="true">
+        {greetings.map((g, i) => (
+          <span
+            class:list={['hello-lang', i === 0 && 'active']}
+            lang={g.lang}
+            aria-hidden={i === 0 ? 'false' : 'true'}
+          >
+            {g.text}
+          </span>
+        ))}
       </span>
     </div>
 
@@ -46,6 +64,59 @@ import BlurText from '../BlurText.astro';
 </section>
 
 <style>
+  /* ============================================
+     Rotating Greeting (Hello, I'm — multilingual)
+     Stacked grid: all langs share one cell, only
+     .active is visible. Container auto-sizes to
+     longest greeting so the line on the left
+     never shifts position.
+     ============================================ */
+  .hello-rotator {
+    display: inline-grid;
+    grid-template-areas: 'stack';
+    align-items: center;
+  }
+
+  .hello-lang {
+    grid-area: stack;
+    /* Latin default — conversational italic, brighter than utilitarian label.
+       Bigger than the original 10px "Welcome" so the rotating phrase actually
+       gets noticed, italic to feel personal/spoken rather than a static badge. */
+    font-size: 16px;
+    font-style: italic;
+    letter-spacing: 0.02em;
+    color: var(--text-primary);
+    white-space: nowrap;
+    /* Hidden state */
+    opacity: 0;
+    filter: blur(8px);
+    transition: opacity 0.5s ease, filter 0.5s ease;
+    pointer-events: none;
+    /* Don't let inactive langs push container width via baseline */
+    line-height: 1.2;
+  }
+
+  .hello-lang.active {
+    opacity: 1;
+    filter: blur(0);
+  }
+
+  /* CJK rendering tweak — italic doesn't apply meaningfully to CJK glyphs
+     and tracking should stay tight. Slight size bump for legibility parity. */
+  .hello-lang[lang='ja'],
+  .hello-lang[lang='ko'],
+  .hello-lang[lang='zh'] {
+    font-size: 18px;
+    font-style: normal;
+    letter-spacing: 0.04em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hello-lang {
+      transition: none;
+    }
+  }
+
   .scroll-indicator {
     opacity: 0;
     animation: fadeInDelayed 1s ease forwards;
@@ -113,4 +184,64 @@ import BlurText from '../BlurText.astro';
     }
   }
   window.addEventListener('scroll', handleHeroScroll, { passive: true });
+
+  // ============================================
+  // Rotating Greeting — blur swap between languages
+  // 2.5s display per language, 0.5s transition (CSS).
+  // Pauses when tab hidden, respects prefers-reduced-motion,
+  // re-inits cleanly on Astro view transitions.
+  // ============================================
+  let helloIntervalId: ReturnType<typeof setInterval> | null = null;
+
+  function initHelloRotator() {
+    // Clear any previous interval (Astro view transitions may re-run init)
+    if (helloIntervalId !== null) {
+      clearInterval(helloIntervalId);
+      helloIntervalId = null;
+    }
+
+    const rotator = document.getElementById('helloRotator');
+    if (!rotator) return;
+
+    const items = Array.from(rotator.querySelectorAll('.hello-lang'));
+    if (items.length < 2) return;
+
+    // Respect reduced motion: stay frozen on first language
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    let idx = 0;
+
+    const advance = () => {
+      const current = items[idx];
+      current.classList.remove('active');
+      current.setAttribute('aria-hidden', 'true');
+
+      idx = (idx + 1) % items.length;
+
+      const next = items[idx];
+      next.classList.add('active');
+      next.setAttribute('aria-hidden', 'false');
+    };
+
+    helloIntervalId = setInterval(advance, 2500);
+  }
+
+  // Pause cycling when tab is hidden, resume when visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      if (helloIntervalId !== null) {
+        clearInterval(helloIntervalId);
+        helloIntervalId = null;
+      }
+    } else {
+      // Resume only if we were running before (rotator exists & not in reduced-motion)
+      const rotator = document.getElementById('helloRotator');
+      if (rotator && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        if (helloIntervalId === null) initHelloRotator();
+      }
+    }
+  });
+
+  document.addEventListener('DOMContentLoaded', initHelloRotator);
+  document.addEventListener('astro:after-swap', initHelloRotator);
 </script>
