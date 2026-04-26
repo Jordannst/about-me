@@ -148,6 +148,10 @@ const editionNumber = String(currentYear).slice(-2);
       inset 0 0 80px rgba(120, 100, 60, 0.12);
     overflow: hidden;
     border: 1px solid rgba(0, 0, 0, 0.08);
+    /* Perf: localize paint invalidation to this subtree so the heavy
+       paper grain + radial gradients + 80px inset shadow don't trigger
+       repaints in surrounding sections. Visual change: none. */
+    contain: paint;
   }
 
   /* Subtle vertical paper grain */
@@ -343,7 +347,10 @@ const editionNumber = String(currentYear).slice(-2);
     transition:
       transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
       box-shadow 0.6s ease;
-    will-change: transform;
+    /* Perf: removed always-on will-change. It was promoting every photo
+       to a permanent GPU compositor layer, multiplying paint cost during
+       the section entrance animation. The browser still composites the
+       transform on hover smoothly without the hint. Visual change: none. */
   }
 
   .article-photo img {
@@ -543,8 +550,13 @@ const editionNumber = String(currentYear).slice(-2);
 
     newspaper.dataset.animated = 'true';
 
-    // Initial hidden states
-    gsap.set(newspaper, { opacity: 0, y: 60 });
+    // Initial hidden states.
+    // Perf: hint will-change BEFORE the animation so the browser allocates
+    // one retained GPU layer for the whole newspaper subtree. The 80px inset
+    // shadow + paper grain pseudos + radial gradient corners get rasterized
+    // ONCE into that layer, then opacity/transform animate at the compositor
+    // level (no per-frame repaint). Cleared on complete to release memory.
+    gsap.set(newspaper, { opacity: 0, y: 60, willChange: 'opacity, transform' });
     if (masthead) gsap.set(masthead, { opacity: 0, y: 20 });
     gsap.set(articles, { opacity: 0, y: 30 });
 
@@ -554,6 +566,10 @@ const editionNumber = String(currentYear).slice(-2);
         trigger: newspaper,
         start: 'top 85%',
         toggleActions: 'play none none none',
+      },
+      onComplete: () => {
+        // Release the GPU-layer hint after entrance settles.
+        newspaper.style.willChange = 'auto';
       },
     });
 
