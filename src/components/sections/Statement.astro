@@ -1,611 +1,431 @@
 ---
-// Statement.astro — Code As Manifesto v3
-// Editor-style section that boots up to reveal Jordan's principles
-// Replaces the previous "I believe in crafting" zoom-scrolly section
+import { projects } from '../../data/portfolio';
+
+const archiveProjects = projects.filter((project) => project.featured).slice(0, 3);
+const archiveCopy = {
+  first: 'Craft stays quiet.',
+  second: 'The work answers.',
+};
 ---
 
-<section id="statement" class="relative bg-[var(--bg-primary)] py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]">
-  <div class="max-w-[1600px] mx-auto">
-    <!-- Section Label -->
-    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">*</span>
-      <div class="h-px w-8 bg-[var(--border-color)]"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">Manifesto</span>
+<section id="statement" class="manifesto-archive relative bg-[var(--bg-primary)]">
+  <div class="manifesto-archive__scene" id="manifestoArchiveScene">
+    <div class="manifesto-archive__ambient" aria-hidden="true"></div>
+    <div class="manifesto-archive__grid" aria-hidden="true"></div>
+    <div class="manifesto-archive__rail" aria-hidden="true"></div>
+
+    <div class="manifesto-archive__copy" aria-label="Manifesto transition">
+      <p class="manifesto-archive__eyebrow">Manifesto becomes evidence</p>
+      <p class="manifesto-archive__line manifesto-archive__line--first">{archiveCopy.first}</p>
+      <p class="manifesto-archive__line manifesto-archive__line--second">{archiveCopy.second}</p>
     </div>
 
-    <!-- Editor Card -->
-    <div class="editor-wrapper">
-      <div class="editor-window">
-        <div class="editor-chrome">
-          <div class="window-buttons">
-            <span class="red"></span>
-            <span class="yellow"></span>
-            <span class="green"></span>
-          </div>
-          <div class="filename">jordan/<span class="accent">manifesto.js</span></div>
-          <span class="run-badge">live</span>
-        </div>
-
-        <div class="editor-body" id="codeBody">
-          <div class="line"><span class="tk-comment">// Hi. This is me — read it like a letter, not a function.</span></div>
-          <div class="line">&nbsp;</div>
-          <div class="line"><span class="tk-keyword">const</span> <span class="tk-fn">me</span> <span class="tk-op">=</span> <span class="tk-pn">&#123;</span></div>
-          <div class="line indent-1"><span class="tk-prop">name</span><span class="tk-op">:</span> <span class="tk-string">'Jordan'</span><span class="tk-pn">,</span></div>
-          <div class="line indent-1"><span class="tk-prop">role</span><span class="tk-op">:</span> <span class="tk-string">'Fullstack &amp; AI Enthusiast'</span><span class="tk-pn">,</span></div>
-          <div class="line indent-1"><span class="tk-prop">from</span><span class="tk-op">:</span> <span class="tk-string">'Indonesia'</span><span class="tk-pn">,</span></div>
-          <div class="line indent-1"><span class="tk-prop">shipping</span><span class="tk-op">:</span> <span class="tk-num">true</span><span class="tk-pn">,</span></div>
-          <div class="line"><span class="tk-pn">&#125;;</span></div>
-          <div class="line">&nbsp;</div>
-          <div class="line"><span class="tk-keyword">const</span> <span class="tk-fn">myPrinciples</span> <span class="tk-op">=</span> <span class="tk-pn">[</span></div>
-          <div class="line">&nbsp;</div>
-
-          <div class="line indent-1 principle" data-idx="0">
-            <span class="tk-string">"Detail matters."</span><span class="tk-pn">,</span>
-          </div>
-          <div class="line indent-1 belief-comment">
-            <span class="tk-comment">// I notice the gradient, the curve, the timing.</span>
-          </div>
-          <div class="line indent-1 belief-comment">
-            <span class="tk-comment">// They all add up, into trust or into unease.</span>
-          </div>
-          <div class="line">&nbsp;</div>
-
-          <div class="line indent-1 principle" data-idx="1">
-            <span class="tk-string">"Ship over perfect."</span><span class="tk-pn">,</span>
-          </div>
-          <div class="line indent-1 belief-comment">
-            <span class="tk-comment">// Done today beats brilliant in six months.</span>
-          </div>
-          <div class="line indent-1 belief-comment">
-            <span class="tk-comment">// The internet is a graveyard of unshipped masterpieces.</span>
-          </div>
-          <div class="line">&nbsp;</div>
-
-          <div class="line indent-1 principle" data-idx="2">
-            <span class="tk-string">"Code is honest."</span><span class="tk-pn">,</span>
-          </div>
-          <div class="line indent-1 belief-comment">
-            <span class="tk-comment">// Algorithms reveal your assumptions.</span>
-          </div>
-          <div class="line indent-1 belief-comment">
-            <span class="tk-comment">// Models reveal your data's bias. Nowhere to hide.</span>
-          </div>
-          <div class="line">&nbsp;</div>
-
-          <div class="line indent-1 principle" data-idx="3">
-            <span class="tk-string">"Curiosity compounds."</span><span class="tk-pn">,</span>
-          </div>
-          <div class="line indent-1 belief-comment">
-            <span class="tk-comment">// Today's "useless" rabbit hole becomes tomorrow's edge.</span>
-          </div>
-          <div class="line indent-1 belief-comment">
-            <span class="tk-comment">// I follow them, on principle.</span>
-          </div>
-          <div class="line">&nbsp;</div>
-
-          <div class="line"><span class="tk-pn">];</span></div>
-          <div class="line">&nbsp;</div>
-          <div class="line"><span class="tk-comment">// What I tell every visitor:</span></div>
-          <div class="line"><span class="tk-fn">console</span><span class="tk-op">.</span><span class="tk-fn">log</span><span class="tk-pn">(</span><span class="tk-string">`Hi, I'm $&#123;</span><span class="tk-prop">me.name</span><span class="tk-string">&#125; from $&#123;</span><span class="tk-prop">me.from</span><span class="tk-string">&#125;.`</span><span class="tk-pn">);</span></div>
-          <div class="line"><span class="tk-fn">console</span><span class="tk-op">.</span><span class="tk-fn">log</span><span class="tk-pn">(</span><span class="tk-string">`Guided by $&#123;</span><span class="tk-prop">myPrinciples.length</span><span class="tk-string">&#125; principles.`</span><span class="tk-pn">);</span></div>
-          <div class="line"><span class="tk-fn">console</span><span class="tk-op">.</span><span class="tk-fn">log</span><span class="tk-pn">(</span><span class="tk-prop">me.shipping</span> <span class="tk-op">?</span> <span class="tk-string">'Currently shipping.'</span> <span class="tk-op">:</span> <span class="tk-string">'Currently dreaming.'</span><span class="tk-pn">);</span></div>
-          <div class="line">&nbsp;</div>
-          <div class="line"><span class="tk-comment">// — Jordan, 2026</span></div>
-        </div>
-
-        <div class="editor-console" id="consoleBody">
-          <div class="console-header">
-            <span>OUTPUT — node manifesto.js</span>
-            <span class="console-status"><span class="status-dot"></span>running</span>
-          </div>
-          <div class="console-body">
-            <div class="console-line"><span class="prompt">$</span>node manifesto.js</div>
-            <div class="console-line console-out">→ Hi, I'm <em>Jordan</em> from <em>Indonesia</em>.</div>
-            <div class="console-line console-out">→ Guided by <em>4</em> principles.</div>
-            <div class="console-line console-out">→ Currently shipping.</div>
-            <div class="console-line console-cursor"><span class="prompt">$</span><span class="caret"></span></div>
-          </div>
-        </div>
-      </div>
+    <div class="manifesto-archive__cards" aria-label="Project archive preview">
+      {archiveProjects.map((project, index) => (
+        <a
+          href={`/projects/${project.id}`}
+          class={`manifesto-card manifesto-card--${index + 1}`}
+          data-archive-card
+          aria-label={`Open ${project.title}`}
+        >
+          <img
+            src={project.image}
+            alt={project.title}
+            loading={index === 0 ? 'eager' : 'lazy'}
+            decoding="async"
+          />
+          <span class="manifesto-card__meta">
+            <span>{project.year}</span>
+            <span>{project.title}</span>
+          </span>
+        </a>
+      ))}
     </div>
+
+    <div class="manifesto-archive__meter" aria-hidden="true"></div>
   </div>
 </section>
 
 <style>
-  /* =====================================================
-     EDITOR CARD — base shell
-     ===================================================== */
-  .editor-wrapper {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-  .editor-window {
-    width: 100%;
-    max-width: 920px;
-    background: #0d1117;
-    border-radius: 10px;
-    box-shadow:
-      0 30px 80px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(212, 175, 55, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03);
-    overflow: hidden;
-    font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+  .manifesto-archive {
     position: relative;
-    color: #f9f8f6;
+    height: 210dvh;
+    margin-top: -1px;
+    overflow: clip;
+    background: var(--bg-primary);
+    color: var(--text-primary);
   }
-  .editor-window::before {
+
+  .manifesto-archive__scene {
+    position: sticky;
+    top: 0;
+    height: 100dvh;
+    min-height: 42rem;
+    overflow: hidden;
+    isolation: isolate;
+    display: grid;
+    align-items: center;
+    padding: clamp(5rem, 9vw, 8rem) clamp(1.5rem, 5vw, 6rem);
+    background:
+      linear-gradient(180deg, var(--bg-primary) 0%, color-mix(in srgb, var(--bg-primary) 92%, transparent) 16%, transparent 38%),
+      radial-gradient(circle at 18% 28%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 30rem),
+      radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--bg-secondary) 46%, transparent), transparent 26rem),
+      radial-gradient(circle at 72% 78%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 24rem),
+      var(--bg-primary);
+  }
+
+  .manifesto-archive__scene::before,
+  .manifesto-archive__scene::after {
     content: '';
     position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at top, rgba(212, 175, 55, 0.05), transparent 60%);
     pointer-events: none;
   }
 
-  .editor-chrome {
-    padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.02);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
+  .manifesto-archive__scene::before {
+    inset: 0 0 auto;
+    height: clamp(8rem, 18vh, 14rem);
+    background: linear-gradient(180deg, var(--bg-primary), color-mix(in srgb, var(--bg-primary) 68%, transparent), transparent);
+    z-index: 3;
   }
-  .window-buttons { display: flex; gap: 0.4rem; }
-  .window-buttons span {
-    width: 11px; height: 11px; border-radius: 50%;
-    display: block;
-  }
-  .window-buttons .red { background: #ff5f57; }
-  .window-buttons .yellow { background: #febc2e; }
-  .window-buttons .green { background: #28c840; }
-  .filename {
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.5);
-    margin-left: 1rem;
-    letter-spacing: 0.05em;
-  }
-  .filename .accent { color: #d4af37; }
 
-  /* =====================================================
-     EDITOR BODY — code lines
-     ===================================================== */
-  .editor-body {
-    padding: 2rem 2.5rem 2.5rem;
-    font-size: 15px;
-    line-height: 1.85;
+  .manifesto-archive__scene::after {
+    width: 160%;
+    height: 1px;
+    top: 57%;
+    left: -30%;
+    background: linear-gradient(90deg, transparent, var(--border-strong), var(--accent), var(--border-strong), transparent);
+    opacity: 0.34;
+    transform: rotate(-17deg);
+    box-shadow: 0 0 3rem color-mix(in srgb, var(--accent) 12%, transparent);
+    z-index: -1;
+  }
+
+  .manifesto-archive__grid {
+    position: absolute;
+    inset: -20% -12%;
+    opacity: 0.42;
+    background-image:
+      linear-gradient(color-mix(in srgb, var(--border-color) 72%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in srgb, var(--border-color) 72%, transparent) 1px, transparent 1px);
+    background-size: 4.25rem 4.25rem;
+    transform: perspective(58rem) rotateX(62deg) translateY(18rem) scale(1.18);
+    transform-origin: 50% 100%;
+    mask-image: linear-gradient(to top, black 8%, transparent 72%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .manifesto-archive__ambient,
+  .manifesto-archive__rail,
+  .manifesto-archive__copy,
+  .manifesto-archive__cards,
+  .manifesto-archive__meter {
     position: relative;
-    counter-reset: line;
-  }
-  .editor-body .line {
-    display: flex;
-    align-items: baseline;
-    counter-increment: line;
-    position: relative;
-    padding: 0 0.5rem;
-    margin: 0 -0.5rem;
-    border-radius: 3px;
-  }
-  .editor-body .line::before {
-    content: counter(line);
-    display: inline-block;
-    width: 2.5rem;
-    color: rgba(255, 255, 255, 0.18);
-    font-size: 12px;
-    text-align: right;
-    padding-right: 1.2rem;
-    flex-shrink: 0;
-    user-select: none;
+    z-index: 1;
   }
 
-  /* Syntax tokens */
-  .tk-keyword { color: #d4af37; font-weight: 500; }
-  .tk-comment { color: rgba(255, 255, 255, 0.35); font-style: italic; }
-  .tk-string  { color: #b8a882; }
-  .tk-prop    { color: #c8d8e8; }
-  .tk-fn      { color: #f9f8f6; font-weight: 500; }
-  .tk-num     { color: #d4af37; font-weight: 700; }
-  .tk-op      { color: rgba(255, 255, 255, 0.5); }
-  .tk-pn      { color: rgba(255, 255, 255, 0.4); }
-
-  .indent-1 { padding-left: 1.5rem; }
-
-  /* Principle highlight (auto-cycle) */
-  .principle {
-    border-radius: 4px;
-    transition:
-      background 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      box-shadow 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  }
-  .principle.active {
-    background: linear-gradient(
-      90deg,
-      rgba(212, 175, 55, 0.10),
-      rgba(212, 175, 55, 0.03) 60%,
-      transparent 90%
-    );
-    box-shadow: inset 3px 0 0 #d4af37;
-  }
-  .principle .tk-string {
-    color: #d4af37;
-    font-weight: 500;
-  }
-  .principle.active .tk-string {
-    color: #f5d76b;
-    text-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
-  }
-
-  /* Belief comments — always visible, dimmed */
-  .belief-comment .tk-comment {
-    color: rgba(220, 215, 200, 0.5);
-    font-style: italic;
-  }
-
-  /* Run badge */
-  .run-badge {
-    margin-left: auto;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: rgba(40, 200, 64, 0.85);
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.25rem 0.7rem;
-    background: rgba(40, 200, 64, 0.06);
-    border: 1px solid rgba(40, 200, 64, 0.2);
+  .manifesto-archive__ambient {
+    position: absolute;
+    inset: 9% 8% auto auto;
+    width: min(34rem, 44vw);
+    aspect-ratio: 1;
     border-radius: 999px;
-  }
-  .run-badge::before {
-    content: '';
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #28c840;
-    box-shadow: 0 0 6px #28c840;
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 10%, transparent), transparent 68%);
+    filter: blur(1.5rem);
+    opacity: 0.7;
+    z-index: 0;
   }
 
-  /* =====================================================
-     CONSOLE OUTPUT PANEL
-     ===================================================== */
-  .editor-console {
-    border-top: 1px solid rgba(255, 255, 255, 0.06);
-    background: rgba(0, 0, 0, 0.45);
-    padding: 1rem 2.5rem 1.4rem;
-    font-family: 'JetBrains Mono', 'Fira Code', monospace;
-    font-size: 13px;
+  .manifesto-archive__rail {
+    position: absolute;
+    inset: 14% auto auto 7%;
+    width: min(44rem, 58vw);
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-strong), transparent);
+    transform: rotate(-28deg);
+    transform-origin: left center;
+    opacity: 0.55;
   }
-  .console-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 9px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.4);
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+
+  .manifesto-archive__copy {
+    max-width: min(48rem, 58vw);
   }
-  .console-status {
+
+  .manifesto-archive__eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 0.4rem;
-    color: rgba(40, 200, 64, 0.85);
-    font-weight: 500;
-  }
-  .status-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #28c840;
-    box-shadow: 0 0 8px #28c840;
-    animation: pulse-dot-statement 2s ease-in-out infinite;
-  }
-  @keyframes pulse-dot-statement {
-    0%, 100% { opacity: 0.4; transform: scale(0.8); }
-    50% { opacity: 1; transform: scale(1.1); }
-  }
-  .console-line {
-    padding: 0.18rem 0;
-    color: rgba(249, 248, 246, 0.85);
-    line-height: 1.6;
-  }
-  .console-line .prompt {
-    color: #d4af37;
-    margin-right: 0.6rem;
-    user-select: none;
-  }
-  .console-out {
-    color: rgba(212, 175, 55, 0.9);
-  }
-  .console-out em {
-    font-style: italic;
-    color: #f9f8f6;
-    font-weight: 500;
-  }
-  .console-cursor .caret {
-    display: inline-block;
-    width: 8px;
-    height: 1em;
-    background: #d4af37;
-    vertical-align: text-bottom;
-    margin-left: 0.4rem;
-    animation: blink-statement 1s steps(2) infinite;
-  }
-  @keyframes blink-statement { 50% { opacity: 0; } }
-
-  /* =====================================================
-     BOOT SEQUENCE — multi-stage entrance animation
-     Triggered by JS (.pre-boot added on init, .boot-* added on intersect)
-     Graceful degrade: no JS = card visible immediately
-     ===================================================== */
-
-  /* Phase 1: Window initially hidden */
-  .editor-window.pre-boot {
-    opacity: 0;
-    transform: scale(0.95) translateY(24px);
-    filter: blur(3px);
-  }
-  .editor-window.pre-boot.boot-shown {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-    filter: blur(0);
-    transition:
-      opacity 0.6s ease,
-      transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1),
-      filter 0.5s ease;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
   }
 
-  /* Phase 2: Chrome elements initially dim/scaled */
-  .editor-window.pre-boot .window-buttons span {
-    background: rgba(255, 255, 255, 0.08) !important;
-    transform: scale(0.5);
-    transition: background 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .editor-window.pre-boot .filename {
-    opacity: 0;
-    clip-path: inset(0 100% 0 0);
-    -webkit-clip-path: inset(0 100% 0 0);
-    transition:
-      opacity 0.35s ease,
-      clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-      -webkit-clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .editor-window.pre-boot .run-badge {
-    opacity: 0;
-    transform: scale(0.6);
-    transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+  .manifesto-archive__eyebrow::before {
+    content: '';
+    width: 2.5rem;
+    height: 1px;
+    background: var(--border-strong);
   }
 
-  /* Phase 2 active: chrome activates with stagger */
-  .editor-window.boot-chrome .window-buttons .red {
-    background: #ff5f57 !important;
-    transform: scale(1);
-  }
-  .editor-window.boot-chrome .window-buttons .yellow {
-    background: #febc2e !important;
-    transform: scale(1);
-    transition-delay: 0.1s;
-  }
-  .editor-window.boot-chrome .window-buttons .green {
-    background: #28c840 !important;
-    transform: scale(1);
-    transition-delay: 0.2s;
-  }
-  .editor-window.boot-chrome .filename {
-    opacity: 1;
-    clip-path: inset(0 0% 0 0);
-    -webkit-clip-path: inset(0 0% 0 0);
-    transition-delay: 0.4s;
-  }
-  .editor-window.boot-chrome .run-badge {
-    opacity: 1;
-    transform: scale(1);
-    transition-delay: 0.95s;
+  .manifesto-archive__line {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: clamp(3.3rem, 8.4vw, 9.5rem);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.065em;
+    color: var(--text-primary);
+    text-wrap: balance;
   }
 
-  /* Phase 3: code lines initial state */
-  .editor-body .line.pre-anim {
-    opacity: 0;
-    transform: translateY(4px);
-  }
-  .editor-body .line.anim-in {
-    opacity: 1;
-    transform: translateY(0);
-    transition: opacity 0.35s ease, transform 0.35s ease;
+  .manifesto-archive__line--second {
+    color: var(--accent);
   }
 
-  /* Phase 4: console panel slides in */
-  .editor-console.pre-boot {
-    max-height: 0;
-    opacity: 0;
-    padding-top: 0;
-    padding-bottom: 0;
+
+  .manifesto-archive__cards {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    perspective: 72rem;
+    pointer-events: none;
+  }
+
+  .manifesto-card {
+    position: absolute;
+    display: grid;
+    width: clamp(13rem, 20vw, 20rem);
+    aspect-ratio: 4 / 3;
     overflow: hidden;
-    border-top-color: transparent;
-  }
-  .editor-console.pre-boot.boot-shown {
-    max-height: 240px;
-    opacity: 1;
-    padding-top: 1rem;
-    padding-bottom: 1.4rem;
-    border-top-color: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    text-decoration: none;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 1.35rem;
+    box-shadow: var(--shadow-card);
+    filter: grayscale(0.9) contrast(0.96) brightness(0.82);
+    transform-style: preserve-3d;
+    pointer-events: auto;
     transition:
-      max-height 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-      opacity 0.45s ease 0.1s,
-      padding 0.7s cubic-bezier(0.4, 0, 0.2, 1),
-      border-top-color 0.4s ease 0.2s;
-  }
-  .console-line.pre-anim {
-    opacity: 0;
-    transform: translateX(-6px);
-  }
-  .console-line.anim-in {
-    opacity: 1;
-    transform: translateX(0);
-    transition: opacity 0.4s ease, transform 0.4s ease;
+      border-color 0.7s var(--ease-luxury),
+      box-shadow 0.7s var(--ease-luxury),
+      filter 0.7s var(--ease-luxury);
   }
 
-  /* Subtle ambient glow on boot */
-  @keyframes ambient-glow-statement {
-    0% { box-shadow:
-      0 30px 80px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(212, 175, 55, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03); }
-    40% { box-shadow:
-      0 30px 80px rgba(0, 0, 0, 0.5),
-      0 0 60px rgba(212, 175, 55, 0.18),
-      0 0 0 1px rgba(212, 175, 55, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03); }
-    100% { box-shadow:
-      0 30px 80px rgba(0, 0, 0, 0.5),
-      0 0 0 1px rgba(212, 175, 55, 0.12),
-      inset 0 1px 0 rgba(255, 255, 255, 0.03); }
-  }
-  .editor-window.pre-boot.boot-shown {
-    animation: ambient-glow-statement 1.6s ease-out 0.2s;
+  .manifesto-card--1 {
+    top: 16%;
+    right: 12%;
+    transform: rotate(4deg);
   }
 
-  /* =====================================================
-     RESPONSIVE
-     ===================================================== */
-  @media (max-width: 768px) {
-    .editor-body {
-      padding: 1.25rem 1rem 1.5rem;
-      font-size: 13px;
-    }
-    .editor-body .line::before {
-      width: 1.8rem;
-      padding-right: 0.6rem;
-      font-size: 10px;
-    }
-    .editor-console {
-      padding: 0.8rem 1rem 1rem;
-      font-size: 11px;
-    }
-    .filename { font-size: 10px; margin-left: 0.5rem; }
-    .run-badge { font-size: 8px; padding: 0.2rem 0.5rem; }
-    .indent-1 { padding-left: 1rem; }
+  .manifesto-card--2 {
+    right: 30%;
+    bottom: 13%;
+    transform: rotate(-6deg);
   }
 
-  /* =====================================================
-     REDUCED MOTION — respect user preference
-     ===================================================== */
+  .manifesto-card--3 {
+    right: 5%;
+    bottom: 24%;
+    transform: rotate(8deg);
+  }
+
+  .manifesto-card:hover,
+  .manifesto-card:focus-visible {
+    border-color: var(--border-strong);
+    box-shadow: 0 1.5rem 5rem color-mix(in srgb, var(--text-primary) 14%, transparent);
+    filter: grayscale(0) contrast(1) brightness(1);
+  }
+
+  .manifesto-card:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  .manifesto-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .manifesto-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 20%, transparent, color-mix(in srgb, var(--bg-primary) 58%, transparent));
+    pointer-events: none;
+  }
+
+  .manifesto-card__meta {
+    position: absolute;
+    inset: auto 1rem 1rem;
+    display: grid;
+    gap: 0.25rem;
+    color: var(--text-primary);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    line-height: 1.45;
+    text-transform: uppercase;
+  }
+
+  .manifesto-card__meta span:first-child {
+    color: var(--accent);
+  }
+
+  .manifesto-archive__meter {
+    position: absolute;
+    right: clamp(1.25rem, 3vw, 3rem);
+    top: 50%;
+    width: 2px;
+    height: min(38rem, 58vh);
+    transform: translateY(-50%);
+    background: var(--border-color);
+    overflow: hidden;
+  }
+
+  .manifesto-archive__meter::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: var(--archive-progress, 0%);
+    background: linear-gradient(to bottom, var(--accent), var(--border-strong));
+  }
+
+  @media (max-width: 900px) {
+    .manifesto-archive {
+      height: auto;
+      overflow: visible;
+    }
+
+    .manifesto-archive__scene {
+      position: relative;
+      height: auto;
+      min-height: 0;
+      overflow: visible;
+      display: block;
+      padding: 4.5rem 1.25rem;
+    }
+
+    .manifesto-archive__scene::before,
+    .manifesto-archive__scene::after,
+    .manifesto-archive__ambient,
+    .manifesto-archive__grid,
+    .manifesto-archive__rail,
+    .manifesto-archive__meter {
+      display: none;
+    }
+
+    .manifesto-archive__copy {
+      max-width: none;
+    }
+
+    .manifesto-archive__line {
+      font-size: clamp(3rem, 17vw, 5.8rem);
+    }
+
+    .manifesto-archive__cards {
+      position: relative;
+      inset: auto;
+      display: grid;
+      gap: 1rem;
+      margin-top: 2rem;
+      perspective: none;
+      pointer-events: auto;
+    }
+
+    .manifesto-card,
+    .manifesto-card--1,
+    .manifesto-card--2,
+    .manifesto-card--3 {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      max-width: none;
+      aspect-ratio: 16 / 10;
+      transform: none;
+      filter: grayscale(0.25) contrast(1) brightness(0.92);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .editor-window.pre-boot,
-    .editor-window.pre-boot .window-buttons span,
-    .editor-window.pre-boot .filename,
-    .editor-window.pre-boot .run-badge,
-    .editor-console.pre-boot,
-    .editor-body .line.pre-anim,
-    .console-line.pre-anim {
-      opacity: 1 !important;
+    .manifesto-card {
+      transition: none;
       transform: none !important;
-      filter: none !important;
-      clip-path: none !important;
-      -webkit-clip-path: none !important;
-      max-height: none !important;
-      padding-top: 1rem !important;
-      padding-bottom: 1.4rem !important;
-      border-top-color: rgba(255, 255, 255, 0.06) !important;
-    }
-    .editor-window.pre-boot.boot-shown {
-      animation: none !important;
-    }
-    .principle.active {
-      background: linear-gradient(
-        90deg,
-        rgba(212, 175, 55, 0.10),
-        rgba(212, 175, 55, 0.03) 60%,
-        transparent 90%
-      ) !important;
     }
   }
 </style>
 
 <script>
-  // Statement.astro — Code Manifesto boot sequence + auto-highlight cycle
-  function initStatementBoot() {
-    const codeBody = document.getElementById('codeBody');
-    const consoleBody = document.getElementById('consoleBody');
-    const editorWindow = document.querySelector('#statement .editor-window');
+  import { gsap, ScrollTrigger } from '../../lib/gsap-setup';
 
-    if (!codeBody || !editorWindow) return;
+  let archiveTimeline: gsap.core.Timeline | null = null;
 
-    const codeLines = Array.from(codeBody.querySelectorAll('.line'));
-    const consoleLines = consoleBody
-      ? Array.from(consoleBody.querySelectorAll('.console-line'))
-      : [];
-    const principles = Array.from(
-      document.querySelectorAll('#statement .principle')
-    );
+  function initManifestoArchive() {
+    archiveTimeline?.kill();
+    archiveTimeline = null;
 
-    // Set initial hidden states (graceful degrade: if JS fails, all visible)
-    editorWindow.classList.add('pre-boot');
-    if (consoleBody) consoleBody.classList.add('pre-boot');
-    codeLines.forEach((line) => line.classList.add('pre-anim'));
-    consoleLines.forEach((line) => line.classList.add('pre-anim'));
+    ScrollTrigger.getAll()
+      .filter((trigger) => trigger.vars.id === 'manifesto-archive')
+      .forEach((trigger) => trigger.kill());
 
-    let booted = false;
-    const bootObserver = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !booted) {
-          booted = true;
+    const section = document.querySelector<HTMLElement>('.manifesto-archive');
+    const scene = document.querySelector<HTMLElement>('.manifesto-archive__scene');
+    const grid = document.querySelector<HTMLElement>('.manifesto-archive__grid');
+    const rail = document.querySelector<HTMLElement>('.manifesto-archive__rail');
+    const firstLine = document.querySelector<HTMLElement>('.manifesto-archive__line--first');
+    const secondLine = document.querySelector<HTMLElement>('.manifesto-archive__line--second');
+    const meter = document.querySelector<HTMLElement>('.manifesto-archive__meter');
+    const cards = gsap.utils.toArray<HTMLElement>('[data-archive-card]');
 
-          // Phase 1 (80ms): Editor window opens
-          setTimeout(() => editorWindow.classList.add('boot-shown'), 80);
+    if (!section || !scene || !grid || !rail || !firstLine || !secondLine || !meter || cards.length < 3) {
+      return;
+    }
 
-          // Phase 2 (700ms): Chrome activates
-          setTimeout(() => editorWindow.classList.add('boot-chrome'), 700);
+    if (window.matchMedia('(max-width: 900px), (prefers-reduced-motion: reduce)').matches) {
+      gsap.set([scene, grid, rail, firstLine, secondLine, meter, ...cards], { clearProps: 'all' });
+      return;
+    }
 
-          // Phase 3 (1750ms): Code lines type in
-          const codeStart = 1750;
-          codeLines.forEach((line, i) => {
-            setTimeout(() => {
-              line.classList.remove('pre-anim');
-              line.classList.add('anim-in');
-            }, codeStart + i * 55);
-          });
+    gsap.set(meter, { '--archive-progress': '0%' });
+    gsap.set(firstLine, { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)' });
+    gsap.set(secondLine, { autoAlpha: 0, y: 80, scale: 0.88, filter: 'blur(10px)' });
+    gsap.set(grid, { y: 220, rotateX: 62, scale: 1.15, autoAlpha: 0.22 });
+    gsap.set(rail, { scaleX: 0.34, rotate: -6, autoAlpha: 0.32 });
+    gsap.set(cards[0], { autoAlpha: 0, x: -180, y: 72, z: -260, rotateZ: -10, rotateY: -22, scale: 0.78 });
+    gsap.set(cards[1], { autoAlpha: 0, x: 210, y: 90, z: -300, rotateZ: 8, rotateY: 24, scale: 0.76 });
+    gsap.set(cards[2], { autoAlpha: 0, x: -120, y: -110, z: -220, rotateZ: 6, rotateX: 16, scale: 0.72 });
 
-          // Phase 4 (after code typed): Console panel slides up
-          const codeEnd = codeStart + codeLines.length * 55;
-          setTimeout(() => {
-            if (consoleBody) consoleBody.classList.add('boot-shown');
-          }, codeEnd + 250);
-
-          // Phase 5 (after panel opens): Console lines reveal
-          const consoleStart = codeEnd + 850;
-          consoleLines.forEach((line, i) => {
-            setTimeout(() => {
-              line.classList.remove('pre-anim');
-              line.classList.add('anim-in');
-            }, consoleStart + i * 200);
-          });
-
-          // Phase 6 (everything settled): Auto-highlight cycle starts
-          const highlightStart = consoleStart + consoleLines.length * 200 + 600;
-          if (principles.length > 0) {
-            let activeIdx = 0;
-            const cyclePrinciple = () => {
-              principles.forEach((p, i) =>
-                p.classList.toggle('active', i === activeIdx)
-              );
-              activeIdx = (activeIdx + 1) % principles.length;
-            };
-            setTimeout(() => {
-              cyclePrinciple();
-              setInterval(cyclePrinciple, 3500);
-            }, highlightStart);
-          }
-        }
+    archiveTimeline = gsap.timeline({
+      defaults: { ease: 'none' },
+      scrollTrigger: {
+        id: 'manifesto-archive',
+        trigger: section,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 0.85,
       },
-      { threshold: 0.15 }
-    );
-    bootObserver.observe(editorWindow);
+    });
+
+    archiveTimeline
+      .to(grid, { y: -160, rotateX: 50, scale: 1.28, autoAlpha: 0.42 }, 0)
+      .to(rail, { scaleX: 1, rotate: -2, autoAlpha: 0.72 }, 0.05)
+      .to(firstLine, { autoAlpha: 0, y: -90, scale: 0.86, filter: 'blur(10px)' }, 0.08)
+      .to(secondLine, { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)' }, 0.18)
+      .to(cards[0], { autoAlpha: 0.92, x: 0, y: 0, z: 80, rotateZ: -7, rotateY: -6, scale: 1 }, 0.2)
+      .to(cards[1], { autoAlpha: 0.94, x: 0, y: 0, z: 120, rotateZ: 5, rotateY: 5, scale: 1 }, 0.26)
+      .to(cards[2], { autoAlpha: 0.88, x: 0, y: 0, z: 70, rotateZ: 4, rotateX: 5, scale: 0.96 }, 0.32)
+      .to(cards, { filter: 'brightness(1)', stagger: 0.03 }, 0.45)
+      .to(secondLine, { autoAlpha: 0.08, y: -44, scale: 0.92, filter: 'blur(8px)' }, 0.68)
+      .to(cards[0], { x: -120, y: -38, rotateZ: -2, rotateY: 0, scale: 0.9 }, 0.7)
+      .to(cards[1], { x: 0, y: -64, rotateZ: 0, rotateY: 0, scale: 1.04 }, 0.7)
+      .to(cards[2], { x: 120, y: -30, rotateZ: 2, rotateX: 0, scale: 0.88 }, 0.7)
+      .to(meter, { '--archive-progress': '100%' }, 0)
+      .to(rail, { scaleX: 1.18, autoAlpha: 0.92 }, 0.82);
   }
 
-  // Initialize on load and after Astro view transitions
-  document.addEventListener('DOMContentLoaded', initStatementBoot);
-  document.addEventListener('astro:after-swap', initStatementBoot);
+  document.addEventListener('DOMContentLoaded', initManifestoArchive);
+  document.addEventListener('astro:after-swap', initManifestoArchive);
 </script>
