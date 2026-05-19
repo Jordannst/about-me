@@ -2,534 +2,783 @@
 import { certificates } from '../../data/portfolio';
 import TextReveal from '../TextReveal.astro';
 
-const typeMarks: Record<string, string> = {
-  organization: "▣",
-  competition: "▲",
-  course: "▽",
-};
+/* ============================================================
+   Helpers — derive display data from the certificates array.
+   Keeps the schema in portfolio.ts untouched while letting the
+   Table of Recognition render rich, editorial-style metadata.
+   ============================================================ */
 
 const typeLabels: Record<string, string> = {
-  organization: "Organization",
-  competition: "Competition",
-  course: "Course",
+  organization: 'Organization',
+  competition: 'Competition',
+  course: 'Course',
 };
 
-const currentYear = new Date().getFullYear();
-const editionNumber = String(currentYear).slice(-2);
+function toRoman(num: number): string {
+  const map: [number, string][] = [
+    [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'],
+    [5, 'V'],  [4, 'IV'],  [1, 'I'],
+  ];
+  let n = num;
+  let out = '';
+  for (const [val, sym] of map) {
+    while (n >= val) { out += sym; n -= val; }
+  }
+  return out || 'I';
+}
+
+function pad2(n: number): string {
+  return n < 10 ? `0${n}` : String(n);
+}
+
+function shortYear(year: string): string {
+  // "2024" -> "'24"; leaves anything else (e.g. "Present") as-is
+  return /^\d{4}$/.test(year) ? `'${year.slice(2)}` : year;
+}
+
+interface ParsedTitle {
+  category: string;   // e.g. "UI/UX Design"
+  rank: string;       // e.g. "1"
+  rankSuffix: string; // e.g. "st"
+  rankPhrase: string; // e.g. "Place" / "Honorable Mention"
+}
+
+function parseTitle(title: string): ParsedTitle {
+  // Matches "<category> <ordinal> <suffix> <phrase?>"
+  const m = title.match(/^(.*?)\s+(\d+)(st|nd|rd|th)\s*(.*?)$/i);
+  if (!m) return { category: title, rank: '', rankSuffix: '', rankPhrase: '' };
+  return {
+    category: m[1].trim(),
+    rank: m[2],
+    rankSuffix: m[3].toLowerCase(),
+    rankPhrase: (m[4] || '').trim(),
+  };
+}
+
+function shortIssuer(issuer: string): string {
+  // "Indoneris IT Competition - Universitas Amikom Purwokerto"
+  // → "Indoneris IT Competition"
+  return issuer.split(/[-–—]/)[0].trim();
+}
+
+function brandName(issuer: string): string {
+  // "Indoneris IT Competition - ..." → "Indoneris"
+  return shortIssuer(issuer).split(/\s+/)[0];
+}
+
+function shortRankLabel(p: ParsedTitle): string {
+  if (!p.rank) return '';
+  if (/honor/i.test(p.rankPhrase)) return `${p.rank}${p.rankSuffix} Honorable`;
+  if (p.rankPhrase) return `${p.rank}${p.rankSuffix} ${p.rankPhrase}`;
+  return `${p.rank}${p.rankSuffix}`;
+}
+
+const sortedCerts = [...certificates].sort((a, b) => {
+  // newest first
+  const ay = parseInt(a.date) || 0;
+  const by = parseInt(b.date) || 0;
+  return by - ay;
+});
+
+const total = sortedCerts.length;
+const totalPad = pad2(total);
+
+const rows = sortedCerts.map((cert, i) => {
+  const parsed = parseTitle(cert.title);
+  const hasCredential = !!(cert.credentialUrl && cert.credentialUrl !== '#');
+  return {
+    cert,
+    index: i,
+    chapter: toRoman(i + 1),
+    page: pad2(i + 1),
+    rank: parsed.rank,
+    rankSuffix: parsed.rankSuffix,
+    rankPhrase: parsed.rankPhrase,
+    rankLabel: shortRankLabel(parsed),
+    category: parsed.category || 'Recognition',
+    name: `${brandName(cert.issuer)} ${shortYear(cert.date)}`,
+    yearShort: shortYear(cert.date),
+    issuerShort: shortIssuer(cert.issuer),
+    typeLabel: typeLabels[cert.type] || cert.type,
+    certNo: `${(cert.type || 'cert').slice(0, 2).toUpperCase()}-${pad2(cert.id)}-${cert.date.slice(-2)}`,
+    hasCredential,
+  };
+});
 ---
 
-<section id="certificates" class="py-20 md:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden">
-  <div class="max-w-[1600px] mx-auto px-6 md:px-16">
-    <!-- Section Label -->
+<section
+  id="certificates"
+  class="py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]"
+>
+  <div class="max-w-[1600px] mx-auto">
+
+    <!-- Section Label (matches About / Projects / Skills) -->
     <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
-      <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
-        04
-      </span>
-      <div class="h-px w-8 bg-current opacity-30"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] opacity-60">
-        Achievements
-      </span>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">04</span>
+      <div class="h-px w-8 bg-[var(--border-color)]"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">Achievements</span>
     </div>
 
-    <!-- Section Title -->
-    <TextReveal tag="h2" animation="words" stagger={0.08} class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-12 md:mb-16 max-w-3xl">
-      Certificates &
+    <!-- Section Title (kept as original) -->
+    <TextReveal
+      tag="h2"
+      animation="words"
+      stagger={0.08}
+      class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-12 md:mb-16 max-w-3xl"
+    >
+      Certificates &amp;
       <span class="italic text-[var(--accent)]">Awards</span>
     </TextReveal>
-  </div>
 
-  <!-- Newspaper Editorial Spread (full-width) -->
-  <div class="newspaper">
-      <div class="newspaper-inner">
+    {total === 0 ? (
+      <p class="toc-empty">No recognitions on record yet — this chapter is still being written.</p>
+    ) : (
+      <ol class="toc-list" id="toc-list" role="list">
+        {rows.map((row, i) => (
+          <li class="toc-row" data-index={i} data-key={row.cert.id}>
+            <div
+              class="toc-line"
+              role="button"
+              tabindex="0"
+              aria-expanded="false"
+              aria-controls={`toc-body-${row.cert.id}`}
+            >
+              <svg
+                class="toc-marker"
+                viewBox="0 0 16 16"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M5 3 L11 8 L5 13"></path>
+              </svg>
 
-        <!-- Masthead -->
-        <header class="masthead">
-          <div class="masthead-meta">
-            <span>Vol. 04 · Edition {editionNumber}</span>
-            <span class="masthead-divider" aria-hidden="true">·</span>
-            <span>Indonesia · {currentYear}</span>
-          </div>
-          <h3 class="masthead-title">The Editorial</h3>
-          <p class="masthead-subtitle">
-            — Featuring Selected Recognitions in Design &amp; Development —
-          </p>
-        </header>
+              <span class="toc-chapter">Ch · <b>{row.chapter}</b></span>
 
-        <!-- Articles -->
-        <div class="articles">
-          {certificates.map((cert) => (
-            <article class="article">
-              <div class="article-meta">
-                <span class="article-type">
-                  <span class="article-type-mark" aria-hidden="true">{typeMarks[cert.type]}</span>
-                  {typeLabels[cert.type]}
-                </span>
-                <span class="article-date">{cert.date}</span>
+              <span class="toc-title-line">
+                {row.rank && (
+                  <span class="toc-rank">
+                    {row.rank}<sup>{row.rankSuffix}</sup>
+                  </span>
+                )}
+                <span class="toc-name">{row.name}</span>
+                <span class="toc-cat">{row.category}</span>
+              </span>
+
+              <span class="toc-dots" aria-hidden="true"></span>
+
+              <span class="toc-year">{row.yearShort}</span>
+
+              <span class="toc-paginate">P. <b>{row.page}</b> / {totalPad}</span>
+            </div>
+
+            <div
+              id={`toc-body-${row.cert.id}`}
+              class="toc-chapter-body"
+              role="region"
+              aria-label={`Chapter ${row.chapter} body`}
+            >
+              <div class="chapter-prose">
+                <div class="chapter-issuer">
+                  <span class="who">{row.issuerShort}</span>
+                  {row.cert.issuer.includes('-') && (
+                    <>
+                      <span class="em">—</span>
+                      <span>{row.cert.issuer.split(/[-–—]/).slice(1).join(' — ').trim()}</span>
+                    </>
+                  )}
+                  <span class="em">—</span>
+                  <span class="tier">{row.typeLabel}</span>
+                </div>
+
+                {row.cert.description && (
+                  <p class="chapter-quote">{row.cert.description}</p>
+                )}
+
+                <div class="chapter-tags">
+                  {row.rankLabel && <span class="chapter-tag">{row.rankLabel}</span>}
+                  {row.category && <span class="chapter-tag">{row.category}</span>}
+                  <span class="chapter-tag">{row.typeLabel}</span>
+                  <span class="chapter-tag">Cert · {row.certNo}</span>
+                </div>
+
+                <dl class="chapter-meta">
+                  {row.rankLabel && (
+                    <div><dt>Rank</dt><dd>{row.rankLabel}</dd></div>
+                  )}
+                  <div><dt>Class</dt><dd>{row.typeLabel}</dd></div>
+                  <div><dt>Category</dt><dd>{row.category}</dd></div>
+                  <div><dt>Year</dt><dd>{row.cert.date}</dd></div>
+                </dl>
+
+                {row.hasCredential && (
+                  <a
+                    class="chapter-cta"
+                    href={row.cert.credentialUrl}
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    View certificate
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </a>
+                )}
               </div>
 
-              <h4 class="article-headline">{cert.title}</h4>
-              <p class="article-subhead">{cert.issuer}</p>
-
-              {cert.image && (
-                <figure class="article-photo">
+              {row.cert.image && (
+                <figure class="chapter-proof">
                   <img
-                    src={cert.image}
-                    alt={cert.title}
+                    src={row.cert.image}
+                    alt={row.cert.title}
                     loading="lazy"
                     decoding="async"
                   />
                   <figcaption>
-                    <em>{cert.title}</em> — {cert.date}
+                    <span>{row.name} · {row.category}</span>
+                    {row.rankLabel && <b>{row.rankLabel}</b>}
                   </figcaption>
                 </figure>
               )}
-
-              {cert.description && (
-                <p class="article-body">{cert.description}</p>
-              )}
-
-              {cert.credentialUrl && cert.credentialUrl !== '#' && (
-                <a
-                  href={cert.credentialUrl}
-                  target="_blank"
-                  rel="noopener"
-                  class="article-link"
-                >
-                  <span>Read Full Story</span>
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </a>
-              )}
-            </article>
-          ))}
-
-          <!-- Continued / Coming Soon Article -->
-          <article class="article article-continued">
-            <div class="article-meta">
-              <span class="article-type">— Coming Soon —</span>
-              <span class="article-date">Next Edition</span>
             </div>
-            <h4 class="article-headline">Stay Tuned</h4>
-            <p class="article-subhead">More achievements on the horizon</p>
-            <p class="article-body">
-              Continued in the next edition of <em>The Editorial</em>.
-            </p>
-          </article>
-        </div>
+          </li>
+        ))}
+      </ol>
+    )}
 
-        <!-- Newspaper Footer Bar -->
-        <footer class="newspaper-footer" aria-hidden="true">
-          <span>※</span>
-          <span class="newspaper-footer-divider"></span>
-          <span class="newspaper-footer-text">Printed with passion · Indonesia</span>
-          <span class="newspaper-footer-divider"></span>
-          <span>※</span>
-        </footer>
-
+    <!-- Bookplate ornament -->
+    {total > 0 && (
+      <div class="toc-end reveal-fade-up">
+        <span class="rule"></span>
+        <span class="mark">※</span>
+        <span>End of recorded chapters · more to come</span>
+        <span class="mark">※</span>
+        <span class="rule"></span>
       </div>
-    </div>
-
+    )}
+  </div>
 </section>
 
 <style>
-  /* ============================================
-     NEWSPAPER SPREAD — Editorial Print Layout
-     A deliberate cream-paper interlude that
-     stays consistent in light and dark themes.
-     ============================================ */
-
-  .newspaper {
-    background: linear-gradient(180deg, #f4ecd8 0%, #ede2c4 100%);
-    color: #1a1a1a;
-    position: relative;
-    box-shadow:
-      0 16px 48px rgba(0, 0, 0, 0.25),
-      inset 0 0 80px rgba(120, 100, 60, 0.12);
-    overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    /* Perf: localize paint invalidation to this subtree so the heavy
-       paper grain + radial gradients + 80px inset shadow don't trigger
-       repaints in surrounding sections. Visual change: none. */
-    contain: paint;
+  /* ============================================================
+     Local easing not present in global.css
+     ============================================================ */
+  #certificates {
+    --ease-toc-expo: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* Subtle vertical paper grain */
-  .newspaper::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      repeating-linear-gradient(
-        90deg,
-        transparent,
-        transparent 2px,
-        rgba(0, 0, 0, 0.014) 2px,
-        rgba(0, 0, 0, 0.014) 4px
-      );
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Aged corners */
-  .newspaper::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-      radial-gradient(ellipse at top left, transparent 80%, rgba(120, 100, 60, 0.1)),
-      radial-gradient(ellipse at bottom right, transparent 80%, rgba(120, 100, 60, 0.08));
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .newspaper-inner {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 2.5rem 1.5rem;
-    position: relative;
-    z-index: 1;
-  }
-
-  @media (min-width: 768px) {
-    .newspaper-inner {
-      padding: 4rem 3rem;
-    }
-  }
-
-  /* ============================================
-     MASTHEAD
-     ============================================ */
-
-  .masthead {
-    border-top: 4px double #1a1a1a;
-    border-bottom: 4px double #1a1a1a;
+  /* ============================================================
+     EMPTY STATE
+     ============================================================ */
+  .toc-empty {
+    margin-top: 3rem;
+    padding: 2.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+    font-family: var(--font-serif);
+    font-style: italic;
+    color: var(--text-secondary);
     text-align: center;
-    padding: 1.25rem 0;
-    margin-bottom: 2.5rem;
   }
 
-  .masthead-meta {
+  /* ============================================================
+     TOC LIST
+     ============================================================ */
+  .toc-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .toc-row {
+    position: relative;
+    border-bottom: 1px solid var(--border-color);
+    transition: padding 0.6s var(--ease-toc-expo),
+                background-color var(--duration-normal) var(--ease-luxury);
+    /* GSAP entrance from-state — JS animates these to opacity:1, y:0 */
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  .toc-row:last-child { border-bottom: none; }
+
+  /* Gold underline that sweeps on hover/open */
+  .toc-row::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 0;
+    background: var(--accent);
+    transition: width 0.9s var(--ease-toc-expo);
+  }
+  .toc-row:hover::after,
+  .toc-row.is-open::after { width: 100%; }
+
+  .toc-row.is-open {
+    background: color-mix(in srgb, var(--accent) 4%, transparent);
+  }
+
+  /* ===== The clickable line ===== */
+  .toc-line {
+    display: grid;
+    grid-template-columns: auto auto auto 1fr auto auto;
+    align-items: baseline;
+    gap: 1.25rem;
+    padding: 2.25rem 0;
+    cursor: pointer;
+    transition: padding 0.55s var(--ease-toc-expo);
+    user-select: none;
+  }
+  .toc-line:focus-visible {
+    outline: 1px dashed var(--accent);
+    outline-offset: 4px;
+  }
+  .toc-row:hover .toc-line,
+  .toc-row.is-open .toc-line {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .toc-marker {
+    width: 14px; height: 14px;
+    flex-shrink: 0;
+    align-self: center;
+    color: var(--text-secondary);
+    transition: color 350ms var(--ease-luxury),
+                transform 0.55s var(--ease-toc-expo);
+  }
+  .toc-row:hover .toc-marker,
+  .toc-row.is-open .toc-marker { color: var(--accent); }
+  .toc-row.is-open .toc-marker { transform: rotate(90deg); }
+
+  .toc-chapter {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    align-self: center;
+    white-space: nowrap;
+  }
+  .toc-chapter b {
+    color: var(--text-primary);
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    transition: color 350ms var(--ease-luxury);
+  }
+  .toc-row:hover .toc-chapter b,
+  .toc-row.is-open .toc-chapter b { color: var(--accent); }
+
+  .toc-title-line {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.85rem;
+    font-family: var(--font-serif);
+    font-size: clamp(1.3rem, 2.7vw, 2.1rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    color: var(--text-primary);
+    align-self: center;
+  }
+  .toc-rank {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    font-size: 1.05em;
+  }
+  .toc-rank sup {
+    font-size: 0.42em;
+    font-style: normal;
+    letter-spacing: 0.05em;
+    color: color-mix(in srgb, var(--accent) 70%, transparent);
+    margin-left: 0.05em;
+  }
+  .toc-name { font-weight: 400; }
+  .toc-cat {
+    color: var(--text-secondary);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 0.78em;
+  }
+  .toc-cat::before {
+    content: "— ";
+    color: var(--accent);
+    font-style: normal;
+    margin-right: 0.05em;
+  }
+
+  /* ===== Leader dots — dual layer (base + gold fill) ===== */
+  .toc-dots {
+    position: relative;
+    align-self: flex-end;
+    margin-bottom: 0.55rem;
+    height: 8px;
+    min-width: 60px;
+    flex: 1;
+    overflow: hidden;
+  }
+  .toc-dots::before,
+  .toc-dots::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    background-image: radial-gradient(circle, currentColor 1.1px, transparent 1.4px);
+    background-size: 8px 2px;
+    background-repeat: repeat-x;
+  }
+  .toc-dots::before { color: var(--text-secondary); opacity: 0.45; }
+  .toc-dots::after {
+    color: var(--accent);
+    opacity: 0;
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left;
+    transition: transform 0.85s var(--ease-toc-expo),
+                opacity 350ms var(--ease-luxury);
+  }
+  .toc-row:hover .toc-dots::after,
+  .toc-row.is-open .toc-dots::after {
+    opacity: 1;
+    transform: translateY(-50%) scaleX(1);
+  }
+
+  /* ===== Year (page number) — outlined italic Playfair ===== */
+  .toc-year {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 600;
+    font-size: clamp(1.5rem, 3vw, 2.4rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--text-primary);
+    align-self: center;
+    text-align: right;
+    transition: color 0.4s var(--ease-luxury),
+                -webkit-text-stroke-color 0.4s var(--ease-luxury);
+  }
+  .toc-row:hover .toc-year,
+  .toc-row.is-open .toc-year {
+    color: var(--accent);
+    -webkit-text-stroke-color: var(--accent);
+  }
+
+  .toc-paginate {
     font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    align-self: center;
+    white-space: nowrap;
+  }
+  .toc-paginate b {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ============================================================
+     EXPANDED CHAPTER BODY
+     ============================================================ */
+  .toc-chapter-body {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 3rem;
+    padding: 0 0.75rem;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.9s var(--ease-toc-expo),
+                opacity 0.55s var(--ease-luxury),
+                padding 0.5s var(--ease-luxury);
+  }
+  .toc-row.is-open .toc-chapter-body {
+    max-height: 720px;
+    opacity: 1;
+    padding: 0.5rem 0.75rem 2.75rem;
+  }
+
+  .chapter-prose {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+  .chapter-issuer {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .chapter-issuer .who {
+    color: var(--text-primary);
+    font-weight: 500;
+    letter-spacing: 0.15em;
+  }
+  .chapter-issuer .em {
+    color: var(--accent);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    line-height: 0;
+    margin-top: -2px;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+  .chapter-issuer .tier {
+    color: var(--accent);
+  }
+
+  .chapter-quote {
+    position: relative;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.1rem;
+    line-height: 1.55;
+    color: var(--text-primary);
+    padding-left: 1.25rem;
+    max-width: 54ch;
+    margin: 0;
+  }
+  .chapter-quote::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0;
+    width: 2px; height: 0;
+    background: var(--accent);
+    transition: height 1s var(--ease-toc-expo) 150ms;
+  }
+  .toc-row.is-open .chapter-quote::before { height: 100%; }
+  .chapter-quote::after {
+    content: "”";
+    position: absolute;
+    left: 0.75rem;
+    top: -0.5rem;
+    font-size: 2.5rem;
+    color: var(--accent);
+    opacity: 0.18;
+    font-style: normal;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .chapter-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .chapter-tag {
+    font-size: 9px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    padding: 0.4rem 0.65rem;
+    transition: background var(--duration-fast) var(--ease-luxury),
+                color var(--duration-fast) var(--ease-luxury);
+  }
+  .chapter-tag:hover {
+    background: var(--accent);
+    color: var(--text-inverted);
+  }
+
+  .chapter-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    margin: 0.25rem 0 0;
+    border-top: 1px dashed var(--border-color);
+  }
+  .chapter-meta div {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 90px;
+  }
+  .chapter-meta dt {
+    font-size: 8.5px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0 0.5rem 0.85rem;
-    border-bottom: 1px solid rgba(26, 26, 26, 0.7);
-    margin-bottom: 0.85rem;
-    flex-wrap: wrap;
+    color: var(--accent);
+    font-weight: 500;
   }
-
-  .masthead-divider {
-    opacity: 0.45;
-  }
-
-  .masthead-title {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-weight: 600;
-    font-style: italic;
-    font-size: clamp(2rem, 8vw, 4.5rem);
-    letter-spacing: -0.015em;
-    line-height: 0.95;
-    margin: 0.5rem 0;
-    color: #1a1a1a;
-  }
-
-  .masthead-subtitle {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-style: italic;
-    font-size: 0.9rem;
-    opacity: 0.7;
-    padding-top: 0.6rem;
+  .chapter-meta dd {
     margin: 0;
-    color: #1a1a1a;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--text-primary);
   }
 
-  @media (min-width: 768px) {
-    .masthead-subtitle {
-      font-size: 1rem;
-    }
+  .chapter-cta {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    transition: gap 350ms var(--ease-luxury);
+    text-decoration: none;
   }
+  .chapter-cta:hover { gap: 1rem; }
+  .chapter-cta svg { width: 12px; height: 12px; }
 
-  /* ============================================
-     ARTICLES — Multi-column flow
-     ============================================ */
-
-  .articles {
-    columns: 1;
-    column-gap: 3rem;
-    column-rule: 1px solid rgba(26, 26, 26, 0.2);
+  /* Right column — proof image with luxury image treatment */
+  .chapter-proof {
+    position: relative;
+    align-self: start;
+    margin: 0;
+    border: 1px solid var(--accent);
+    background: var(--bg-secondary);
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.12),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    transform: translateX(24px);
+    opacity: 0.9;
+    transition: transform 0.9s var(--ease-toc-expo),
+                opacity 0.55s var(--ease-luxury),
+                box-shadow 0.5s var(--ease-luxury);
   }
-
-  @media (min-width: 768px) {
-    .articles {
-      columns: 2;
-    }
+  .toc-row.is-open .chapter-proof {
+    transform: translateX(0);
+    opacity: 1;
   }
-
-  .article {
-    break-inside: avoid;
-    page-break-inside: avoid;
-    -webkit-column-break-inside: avoid;
-    margin-bottom: 2.5rem;
+  .chapter-proof img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: grayscale(100%) contrast(1.05);
+    transition: filter 1.5s var(--ease-luxury),
+                transform 1.5s var(--ease-luxury);
   }
-
-  .article:last-child {
-    margin-bottom: 0;
+  .chapter-proof:hover img {
+    filter: grayscale(0%) contrast(1);
+    transform: scale(1.03);
   }
-
-  .article-meta {
+  .chapter-proof:hover {
+    box-shadow:
+      0 16px 48px rgba(0, 0, 0, 0.18),
+      inset 0 0 0 1px rgba(0, 0, 0, 0.06);
+  }
+  .chapter-proof figcaption {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0.6rem 0.85rem;
+    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.65) 100%);
+    color: #f9f8f6;
     font-size: 9px;
     letter-spacing: 0.25em;
     text-transform: uppercase;
-    color: rgba(26, 26, 26, 0.7);
-    margin-bottom: 0.75rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid rgba(26, 26, 26, 0.5);
+    pointer-events: none;
   }
+  .chapter-proof figcaption b { color: var(--accent); font-weight: 500; }
 
-  .article-type {
-    color: #b8941f;
-    font-weight: 600;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-  }
-
-  .article-type-mark {
-    font-size: 11px;
-  }
-
-  .article-date {
-    font-style: italic;
-    text-transform: none;
-    letter-spacing: 0.1em;
-    font-size: 10px;
-  }
-
-  .article-headline {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-weight: 600;
-    font-size: 1.4rem;
-    line-height: 1.15;
-    margin: 0.5rem 0 0.5rem;
-    color: #1a1a1a;
-    transition: color 0.4s ease;
-  }
-
-  @media (min-width: 768px) {
-    .article-headline {
-      font-size: 1.65rem;
-    }
-  }
-
-  .article-subhead {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-style: italic;
-    font-size: 0.92rem;
-    margin: 0 0 1rem;
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid rgba(26, 26, 26, 0.4);
-    opacity: 0.85;
-    color: #1a1a1a;
-  }
-
-  .article-photo {
-    margin: 1rem 0 1.25rem;
-    border: 1px solid #1a1a1a;
-    background: #1a1a1a;
-    transition:
-      transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-      box-shadow 0.6s ease;
-    /* Perf: removed always-on will-change. It was promoting every photo
-       to a permanent GPU compositor layer, multiplying paint cost during
-       the section entrance animation. The browser still composites the
-       transform on hover smoothly without the hint. Visual change: none. */
-  }
-
-  .article-photo img {
-    width: 100%;
-    display: block;
-    aspect-ratio: 4 / 3;
-    object-fit: cover;
-    filter: contrast(1.12) brightness(0.95) saturate(0.55);
-    transition: filter 0.6s ease;
-  }
-
-  .article:hover .article-photo img {
-    filter: contrast(1.05) brightness(1) saturate(0.85);
-  }
-
-  /* Paper "lift" effect on hover (desktop only) */
-  @media (hover: hover) and (pointer: fine) {
-    .article:not(.article-continued):hover .article-photo {
-      transform: translateY(-5px);
-      box-shadow:
-        0 12px 28px rgba(0, 0, 0, 0.22),
-        0 4px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .article:not(.article-continued):hover .article-headline {
-      color: var(--accent);
-    }
-  }
-
-  .article-photo figcaption {
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 9px;
-    text-align: center;
-    padding: 0.5rem 0.75rem;
-    border-top: 1px solid rgba(26, 26, 26, 0.3);
-    background: #f4ecd8;
-    letter-spacing: 0.1em;
-    color: #1a1a1a;
-    line-height: 1.4;
-  }
-
-  .article-body {
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 0.875rem;
-    line-height: 1.7;
-    text-align: justify;
-    color: #2a2a2a;
-    margin: 0 0 1rem;
-    hyphens: auto;
-  }
-
-  /* Drop cap on first letter — gold accent */
-  .article-body::first-letter {
-    float: left;
-    font-family: 'Playfair Display', Georgia, serif;
-    font-size: 3.25rem;
-    line-height: 0.85;
-    margin-right: 0.4rem;
-    margin-top: 0.2rem;
-    font-weight: 600;
-    color: var(--accent);
-  }
-
-  .article-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: #b8941f;
-    border-bottom: 1px solid #b8941f;
-    padding-bottom: 2px;
-    transition: gap 0.3s ease, color 0.3s ease;
-    text-decoration: none;
-  }
-
-  .article-link:hover {
-    gap: 0.85rem;
-    color: var(--accent);
-  }
-
-  /* ===== Continued / Coming Soon Article ===== */
-
-  .article-continued .article-meta {
-    border-color: rgba(26, 26, 26, 0.3);
-  }
-
-  .article-continued .article-type {
-    color: rgba(26, 26, 26, 0.5);
-  }
-
-  .article-continued .article-headline,
-  .article-continued .article-subhead {
-    opacity: 0.55;
-  }
-
-  .article-continued .article-body {
-    text-align: center;
-    color: rgba(26, 26, 26, 0.55);
-    font-style: italic;
-    border: 1px dashed rgba(26, 26, 26, 0.25);
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.2);
-  }
-
-  .article-continued .article-body::first-letter {
-    float: none;
-    font-size: inherit;
-    line-height: inherit;
-    margin: 0;
-    color: inherit;
-    font-weight: inherit;
-    font-style: italic;
-  }
-
-  /* ============================================
-     FOOTER ORNAMENT
-     ============================================ */
-
-  .newspaper-footer {
+  /* ============================================================
+     END BOOKPLATE
+     ============================================================ */
+  .toc-end {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.85rem;
-    padding-top: 2rem;
-    margin-top: 1rem;
-    border-top: 1px solid rgba(26, 26, 26, 0.4);
-    font-family: 'Playfair Display', Georgia, serif;
-    color: rgba(26, 26, 26, 0.55);
-    font-size: 0.9rem;
-  }
-
-  .newspaper-footer-divider {
-    flex: 0 0 60px;
-    height: 1px;
-    background: rgba(26, 26, 26, 0.3);
-  }
-
-  .newspaper-footer-text {
-    font-size: 9px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
+    gap: 1rem;
+    padding: 3rem 0 0.5rem;
+    color: var(--text-secondary);
+    font-family: var(--font-serif);
     font-style: italic;
+    font-size: 0.95rem;
+  }
+  .toc-end .rule { flex: 0 0 80px; height: 1px; background: var(--border-color); }
+  .toc-end .mark {
+    color: var(--accent);
+    font-style: normal;
+    letter-spacing: 0.4em;
+    font-size: 0.85rem;
   }
 
-  /* ============================================
+  /* ============================================================
      RESPONSIVE
-     ============================================ */
-
+     ============================================================ */
+  @media (max-width: 900px) {
+    .toc-chapter-body {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+    .chapter-proof {
+      order: -1;
+      max-width: 520px;
+    }
+    .toc-row.is-open .toc-chapter-body { max-height: 1100px; }
+  }
+  @media (max-width: 720px) {
+    .toc-line {
+      grid-template-columns: auto auto 1fr auto;
+      column-gap: 0.85rem;
+      row-gap: 0.45rem;
+      padding: 1.75rem 0;
+    }
+    .toc-chapter,
+    .toc-dots,
+    .toc-paginate { display: none; }
+    .toc-title-line { font-size: 1.15rem; }
+    .toc-rank { font-size: 1.5rem; }
+    .toc-marker { align-self: center; }
+    .toc-year { font-size: 1.4rem; align-self: center; }
+    .toc-row:hover .toc-line,
+    .toc-row.is-open .toc-line {
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+  }
   @media (max-width: 480px) {
-    .masthead-meta {
-      flex-direction: column;
-      gap: 0.4rem;
-      padding-bottom: 0.75rem;
-    }
-
-    .masthead-divider {
-      display: none;
-    }
-
-    .article-meta {
+    .toc-deck-row {
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.35rem;
+      gap: 1rem;
     }
   }
 
-  /* ============================================
+  /* ============================================================
      REDUCED MOTION
-     ============================================ */
-
+     ============================================================ */
   @media (prefers-reduced-motion: reduce) {
-    .article-photo img,
-    .article-photo,
-    .article-headline,
-    .article-link {
-      transition: none;
+    .toc-row {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+    .toc-row::after,
+    .toc-marker,
+    .toc-line,
+    .toc-dots::after,
+    .toc-year,
+    .chapter-proof,
+    .chapter-proof img,
+    .chapter-quote::before,
+    .toc-toggle-all .glyph::after {
+      transition: none !important;
     }
   }
 </style>
@@ -537,77 +786,84 @@ const editionNumber = String(currentYear).slice(-2);
 <script>
   import { gsap, ScrollTrigger } from '../../lib/gsap-setup';
 
-  function initCertificatesAnimation() {
-    const newspaper = document.querySelector('.newspaper') as HTMLElement | null;
-    const masthead = document.querySelector('.newspaper .masthead') as HTMLElement | null;
-    const articles = document.querySelectorAll<HTMLElement>('.newspaper .article');
+  function initTableOfRecognition() {
+    const section = document.getElementById('certificates');
+    if (!section) return;
+    if (section.dataset.tocInit === 'true') return;
+    section.dataset.tocInit = 'true';
 
-    if (!newspaper || !articles.length) return;
-    if (newspaper.dataset.animated === 'true') return;
+    const list = section.querySelector<HTMLOListElement>('#toc-list');
+    const rows = list ? Array.from(list.querySelectorAll<HTMLLIElement>('.toc-row')) : [];
+    const lines = rows.map(r => r.querySelector<HTMLDivElement>('.toc-line')).filter(Boolean) as HTMLDivElement[];
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Respect reduced motion preference
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    /* ============================================================
+       Open / close behavior
+       ============================================================ */
+    function setOpen(row: HTMLLIElement, open: boolean) {
+      row.classList.toggle('is-open', open);
+      const line = row.querySelector<HTMLDivElement>('.toc-line');
+      if (line) line.setAttribute('aria-expanded', open ? 'true' : 'false');
+      // Refresh ScrollTrigger so subsequent triggers re-measure positions
+      // after the drawer height changes.
+      if (typeof ScrollTrigger !== 'undefined') {
+        requestAnimationFrame(() => ScrollTrigger.refresh());
+      }
+    }
 
-    newspaper.dataset.animated = 'true';
+    lines.forEach((line) => {
+      const row = line.parentElement as HTMLLIElement | null;
+      if (!row) return;
+      line.addEventListener('click', () => {
+        setOpen(row, !row.classList.contains('is-open'));
+      });
+      line.addEventListener('keydown', (e: KeyboardEvent) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setOpen(row, !row.classList.contains('is-open'));
+        }
+      });
+    });
 
-    // Initial hidden states.
-    // Perf: hint will-change BEFORE the animation so the browser allocates
-    // one retained GPU layer for the whole newspaper subtree. The 80px inset
-    // shadow + paper grain pseudos + radial gradient corners get rasterized
-    // ONCE into that layer, then opacity/transform animate at the compositor
-    // level (no per-frame repaint). Cleared on complete to release memory.
-    gsap.set(newspaper, { opacity: 0, y: 60, willChange: 'opacity, transform' });
-    if (masthead) gsap.set(masthead, { opacity: 0, y: 20 });
-    gsap.set(articles, { opacity: 0, y: 30 });
+    // Default: open the most recent (first row, since list is sorted desc).
+    if (rows[0]) setOpen(rows[0], true);
 
-    // Timeline anchored to ScrollTrigger
-    const tl = gsap.timeline({
+    /* ============================================================
+       GSAP entrance — staggered row reveal
+       ============================================================ */
+    if (reduced) {
+      // Already handled by CSS reduced-motion override; nothing to animate.
+      return;
+    }
+
+    if (rows.length === 0 || !list) return;
+
+    gsap.to(rows, {
+      opacity: 1,
+      y: 0,
+      duration: 0.85,
+      ease: 'power3.out',
+      stagger: 0.12,
       scrollTrigger: {
-        trigger: newspaper,
-        start: 'top 85%',
+        trigger: list,
+        start: 'top 82%',
         toggleActions: 'play none none none',
       },
       onComplete: () => {
-        // Release the GPU-layer hint after entrance settles.
-        newspaper.style.willChange = 'auto';
+        // Release any per-row will-change hints if we'd added them.
+        rows.forEach(r => { r.style.willChange = 'auto'; });
       },
     });
-
-    // 1. Paper fades in & slides up
-    tl.to(newspaper, {
-      opacity: 1,
-      y: 0,
-      duration: 1,
-      ease: 'power3.out',
-    });
-
-    // 2. Masthead reveals slightly after
-    if (masthead) {
-      tl.to(masthead, {
-        opacity: 1,
-        y: 0,
-        duration: 0.7,
-        ease: 'power3.out',
-      }, '-=0.6');
-    }
-
-    // 3. Articles stagger in
-    tl.to(articles, {
-      opacity: 1,
-      y: 0,
-      duration: 0.8,
-      stagger: 0.15,
-      ease: 'power3.out',
-    }, '-=0.4');
   }
 
-  // Initial load
   document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initCertificatesAnimation, 150);
+    setTimeout(initTableOfRecognition, 120);
   });
-
-  // For Astro page transitions (SPA mode)
+  // For Astro page transitions
   document.addEventListener('astro:after-swap', () => {
-    setTimeout(initCertificatesAnimation, 150);
+    // Reset init flag on swap so the new section instance can animate
+    const sec = document.getElementById('certificates');
+    if (sec) delete sec.dataset.tocInit;
+    setTimeout(initTableOfRecognition, 120);
   });
 </script>
