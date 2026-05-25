@@ -6,6 +6,7 @@ import NoiseTexture from '../components/NoiseTexture.astro';
 import ScrollReveal from '../components/ScrollReveal.astro';
 import LoadingScreen from '../components/LoadingScreen.astro';
 import PageTransition from '../components/PageTransition.astro';
+import ThemeReveal from '../components/ThemeReveal.astro';
 import BackToTop from '../components/BackToTop.astro';
 import ScrollProgress from '../components/ScrollProgress.astro';
 import CustomCursor from '../components/CustomCursor.astro';
@@ -25,7 +26,6 @@ import SmoothScroll from '../components/SmoothScroll.astro';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
-    <link rel="preload" href="/logo.webp" as="image">
     
     <!-- SEO -->
     <title>{meta.title}</title>
@@ -56,11 +56,16 @@ import SmoothScroll from '../components/SmoothScroll.astro';
     <!-- Anti-Flash Script: Runs immediately before page renders -->
     <script is:inline>
       (function() {
-        const stored = localStorage.getItem('theme-preference');
-        // Default to dark theme, only use light if explicitly stored
-        const theme = stored || 'dark';
+        let stored = null;
+        try {
+          stored = localStorage.getItem('theme-preference');
+        } catch {}
+        const storedTheme = stored === 'light' || stored === 'dark' ? stored : null;
+        const theme = storedTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         if (theme === 'dark') {
           document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
         }
       })();
     </script>
@@ -77,6 +82,9 @@ import SmoothScroll from '../components/SmoothScroll.astro';
     
     <!-- Page Transition Overlay -->
     <PageTransition />
+
+    <!-- Theme Reveal Overlay -->
+    <ThemeReveal />
     
     <!-- Noise Texture Overlay -->
     <NoiseTexture />

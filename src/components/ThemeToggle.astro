@@ -29,49 +29,119 @@
 </button>
 
 <script>
-  // Theme Toggle Script
-  // Features:
-  // 1. Respects system preference on first visit
-  // 2. Allows manual toggle
-  // 3. Persists preference in localStorage
-  // 4. Prevents flash of wrong theme on page load
+  type ThemeName = 'light' | 'dark';
 
   const THEME_KEY = 'theme-preference';
-  
-  function getThemePreference(): 'light' | 'dark' {
-    // Check localStorage first
-    const stored = localStorage.getItem(THEME_KEY);
-    if (stored === 'light' || stored === 'dark') {
+
+  function readStoredTheme(): ThemeName | null {
+    try {
+      const stored = localStorage.getItem(THEME_KEY);
+      return stored === 'light' || stored === 'dark' ? stored : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function writeStoredTheme(theme: ThemeName) {
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      // Theme still changes even when storage is unavailable.
+    }
+  }
+
+  function getThemePreference(): ThemeName {
+    const stored = readStoredTheme();
+    if (stored) {
       return stored;
     }
-    // Fall back to system preference
+
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
 
-  function setTheme(theme: 'light' | 'dark') {
+  function applyTheme(theme: ThemeName, persist = true) {
     document.documentElement.classList.toggle('dark', theme === 'dark');
-    localStorage.setItem(THEME_KEY, theme);
+    if (persist) writeStoredTheme(theme);
   }
 
-  // Apply theme immediately to prevent flash
-  setTheme(getThemePreference());
+  function getOppositeTheme(): ThemeName {
+    return document.documentElement.classList.contains('dark') ? 'light' : 'dark';
+  }
 
-  // Set up toggle button
-  document.addEventListener('DOMContentLoaded', () => {
-    const toggle = document.getElementById('theme-toggle');
-    
+  function getRevealOrigin(toggle: HTMLElement) {
+    const rect = toggle.getBoundingClientRect();
+    return {
+      x: rect.left + rect.width / 2,
+      y: rect.top + rect.height / 2,
+    };
+  }
+
+  function requestThemeChange(toggle: HTMLElement, theme: ThemeName) {
+    const { x, y } = getRevealOrigin(toggle);
+
+    window.dispatchEvent(new CustomEvent('portfolio:theme-change-request', {
+      detail: { theme, x, y },
+    }));
+  }
+
+  function initThemeToggle() {
+    (window as any).__themeToggleCleanup?.();
+
+    const toggle = document.getElementById('theme-toggle') as HTMLButtonElement | null;
+    const controller = new AbortController();
+    const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    let switchingTimeout = 0;
+
+    (window as any).__portfolioTheme = {
+      applyTheme: (theme: ThemeName) => applyTheme(theme, true),
+    };
+    applyTheme(getThemePreference(), false);
+
+    const clearSwitchingState = () => {
+      if (switchingTimeout) window.clearTimeout(switchingTimeout);
+      switchingTimeout = 0;
+      if (toggle) {
+        toggle.disabled = false;
+        toggle.classList.remove('is-switching');
+      }
+    };
+
     toggle?.addEventListener('click', () => {
-      const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      setTheme(newTheme);
-    });
-  });
+      if (toggle.disabled) return;
 
-  // Listen for system preference changes
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-    // Only apply if user hasn't set a manual preference
-    if (!localStorage.getItem(THEME_KEY)) {
-      setTheme(e.matches ? 'dark' : 'light');
-    }
-  });
+      clearSwitchingState();
+      toggle.classList.add('is-switching');
+      toggle.disabled = true;
+      requestThemeChange(toggle, getOppositeTheme());
+      switchingTimeout = window.setTimeout(clearSwitchingState, 900);
+    }, { signal: controller.signal });
+
+    window.addEventListener('portfolio:theme-reveal-end', clearSwitchingState, { signal: controller.signal });
+
+    systemThemeQuery.addEventListener('change', (event) => {
+      if (!readStoredTheme()) {
+        applyTheme(event.matches ? 'dark' : 'light', false);
+      }
+    }, { signal: controller.signal });
+
+    const cleanup = () => {
+      controller.abort();
+      clearSwitchingState();
+      (window as any).__themeToggleCleanup = undefined;
+    };
+
+    (window as any).__themeToggleCleanup = cleanup;
+    document.addEventListener('astro:before-swap', cleanup, { once: true, signal: controller.signal });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeToggle, { once: true });
+  } else {
+    initThemeToggle();
+  }
+
+  if (!(window as any).__themeToggleAfterSwapBound) {
+    document.addEventListener('astro:after-swap', initThemeToggle);
+    (window as any).__themeToggleAfterSwapBound = true;
+  }
 </script>

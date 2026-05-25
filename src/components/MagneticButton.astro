@@ -23,28 +23,70 @@ const { strength = 0.5, class: className = '' } = Astro.props;
 
 <script>
   function initMagneticButtons() {
+    if (window.matchMedia('(hover: none), (pointer: coarse), (prefers-reduced-motion: reduce)').matches) return;
+
     const magneticElements = document.querySelectorAll('[data-magnetic]');
     
     magneticElements.forEach((element) => {
       const el = element as HTMLElement;
+      if (el.dataset.magneticInitialized === 'true') return;
+
       const strength = parseFloat(el.dataset.magnetic || '0.5');
+      const controller = new AbortController();
+      let rect: DOMRect | null = null;
+      let pointerX = 0;
+      let pointerY = 0;
+      let rafId = 0;
+
+      const resetTransform = () => {
+        el.style.transform = 'translate3d(0, 0, 0)';
+      };
+
+      const updateTransform = () => {
+        rafId = 0;
+        if (!rect) return;
+
+        const x = pointerX - rect.left - rect.width / 2;
+        const y = pointerY - rect.top - rect.height / 2;
+        el.style.transform = `translate3d(${x * strength}px, ${y * strength}px, 0)`;
+      };
+
+      el.dataset.magneticInitialized = 'true';
       
-      el.addEventListener('mousemove', (e) => {
-        const rect = el.getBoundingClientRect();
-        const x = e.clientX - rect.left - rect.width / 2;
-        const y = e.clientY - rect.top - rect.height / 2;
-        
-        el.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
-      });
+      el.addEventListener('pointerenter', () => {
+        rect = el.getBoundingClientRect();
+      }, { signal: controller.signal });
       
-      el.addEventListener('mouseleave', () => {
-        el.style.transform = 'translate(0, 0)';
-      });
+      el.addEventListener('pointermove', (e) => {
+        pointerX = e.clientX;
+        pointerY = e.clientY;
+        if (!rafId) rafId = requestAnimationFrame(updateTransform);
+      }, { signal: controller.signal });
+
+      el.addEventListener('pointerleave', () => {
+        rect = null;
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = 0;
+        resetTransform();
+      }, { signal: controller.signal });
+
+      document.addEventListener('astro:before-swap', () => {
+        controller.abort();
+        if (rafId) cancelAnimationFrame(rafId);
+        resetTransform();
+        delete el.dataset.magneticInitialized;
+      }, { once: true, signal: controller.signal });
     });
   }
 
-  // Initialize on DOM ready
-  document.addEventListener('DOMContentLoaded', initMagneticButtons);
-  // Re-initialize for Astro page transitions
-  document.addEventListener('astro:after-swap', initMagneticButtons);
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMagneticButtons, { once: true });
+  } else {
+    initMagneticButtons();
+  }
+
+  if (!(window as any).__magneticAfterSwapBound) {
+    document.addEventListener('astro:after-swap', initMagneticButtons);
+    (window as any).__magneticAfterSwapBound = true;
+  }
 </script>

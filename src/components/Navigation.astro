@@ -72,7 +72,7 @@ import ThemeToggle from './ThemeToggle.astro';
 
 <!-- Mobile Menu Overlay -->
 <div id="mobile-menu" class="fixed inset-0 z-20 bg-[var(--bg-primary)] opacity-0 pointer-events-none transition-opacity duration-500 md:hidden">
-  <div class="flex flex-col items-center justify-center h-full pt-16">
+  <div class="flex flex-col items-center justify-center min-h-[100dvh] pt-16">
     <!-- Mobile Nav Links -->
     <nav class="flex flex-col items-center gap-8">
       <a href="#about" class="mobile-nav-link text-2xl font-[family-name:var(--font-serif)] text-[var(--text-primary)] hover:text-[var(--accent)] transition-all duration-500" data-index="0">
@@ -122,6 +122,14 @@ import ThemeToggle from './ThemeToggle.astro';
     display: inline-block;
   }
 
+  #mobile-menu {
+    min-height: 100dvh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   .nav-link::after {
     content: '';
     position: absolute;
@@ -159,28 +167,33 @@ import ThemeToggle from './ThemeToggle.astro';
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function initNavigation() {
+    (window as any).__navigationCleanup?.();
+
     const menuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const menuIcon = document.getElementById('menu-icon');
     const closeIcon = document.getElementById('close-icon');
     const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
     const desktopNavLinks = document.querySelectorAll('.nav-link');
+    const controller = new AbortController();
     
     let isOpen = false;
+    let previousBodyOverflow = '';
+    const scrambleTimers = new Map<Element, number>();
 
     // Text scramble effect for desktop nav links
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     
     desktopNavLinks.forEach(link => {
       const originalText = link.getAttribute('data-text') || link.textContent?.trim() || '';
-      let animationFrame: number;
       
       link.addEventListener('mouseenter', () => {
         let iteration = 0;
-        clearInterval(animationFrame);
+        const existingTimer = scrambleTimers.get(link);
+        if (existingTimer) window.clearInterval(existingTimer);
         
-        animationFrame = window.setInterval(() => {
+        const timer = window.setInterval(() => {
           link.textContent = originalText
             .split('')
             .map((char, index) => {
@@ -190,45 +203,79 @@ import ThemeToggle from './ThemeToggle.astro';
             .join('');
           
           if (iteration >= originalText.length) {
-            clearInterval(animationFrame);
+            window.clearInterval(timer);
+            scrambleTimers.delete(link);
           }
           iteration += 1 / 2;
         }, 30);
-      });
+        scrambleTimers.set(link, timer);
+      }, { signal: controller.signal });
       
       link.addEventListener('mouseleave', () => {
-        clearInterval(animationFrame);
+        const existingTimer = scrambleTimers.get(link);
+        if (existingTimer) window.clearInterval(existingTimer);
+        scrambleTimers.delete(link);
         link.textContent = originalText;
-      });
+      }, { signal: controller.signal });
     });
     
-    function toggleMenu() {
-      isOpen = !isOpen;
-      
+    function setMenuOpen(nextOpen: boolean) {
+      if (isOpen === nextOpen) return;
+      isOpen = nextOpen;
+
       if (isOpen) {
         mobileMenu?.classList.remove('opacity-0', 'pointer-events-none');
         mobileMenu?.classList.add('opacity-100', 'pointer-events-auto', 'open');
         menuIcon?.classList.add('hidden');
         closeIcon?.classList.remove('hidden');
         menuBtn?.setAttribute('aria-expanded', 'true');
+        previousBodyOverflow = document.body.style.overflow;
         document.body.style.overflow = 'hidden';
+        (window as any).lenis?.stop?.();
       } else {
         mobileMenu?.classList.add('opacity-0', 'pointer-events-none');
         mobileMenu?.classList.remove('opacity-100', 'pointer-events-auto', 'open');
         menuIcon?.classList.remove('hidden');
         closeIcon?.classList.add('hidden');
         menuBtn?.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
+        document.body.style.overflow = previousBodyOverflow;
+        (window as any).lenis?.start?.();
       }
     }
+
+    function toggleMenu() {
+      setMenuOpen(!isOpen);
+    }
     
-    menuBtn?.addEventListener('click', toggleMenu);
+    menuBtn?.addEventListener('click', toggleMenu, { signal: controller.signal });
     
     // Close menu when clicking nav links
     mobileNavLinks.forEach(link => {
       link.addEventListener('click', () => {
-        if (isOpen) toggleMenu();
-      });
+        setMenuOpen(false);
+      }, { signal: controller.signal });
     });
-  });
+
+    const cleanup = () => {
+      setMenuOpen(false);
+      scrambleTimers.forEach((timer) => window.clearInterval(timer));
+      scrambleTimers.clear();
+      controller.abort();
+      (window as any).__navigationCleanup = null;
+    };
+
+    (window as any).__navigationCleanup = cleanup;
+    document.addEventListener('astro:before-swap', cleanup, { once: true, signal: controller.signal });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initNavigation, { once: true });
+  } else {
+    initNavigation();
+  }
+
+  if (!(window as any).__navigationAfterSwapBound) {
+    document.addEventListener('astro:after-swap', initNavigation);
+    (window as any).__navigationAfterSwapBound = true;
+  }
 </script>

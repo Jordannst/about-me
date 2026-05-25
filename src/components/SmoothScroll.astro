@@ -5,83 +5,161 @@
 
 <script>
   import Lenis from 'lenis';
-  
-  // Initialize Lenis smooth scroll
-  const lenis = new Lenis({
-    duration: 1.0, // Reduced from 1.2 for slightly snappier response
-    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-    orientation: 'vertical',
-    gestureOrientation: 'vertical',
-    smoothWheel: true,
-    wheelMultiplier: 1.2, // Increases scroll distance per notch for responsiveness
-    touchMultiplier: 2,
-  });
 
-  // Make lenis available globally for other components
-  (window as any).lenis = lenis;
+  type LenisInstance = InstanceType<typeof Lenis>;
 
-  // RAF loop
-  function raf(time: number) {
-    lenis.raf(time);
-    requestAnimationFrame(raf);
-  }
+  function getHashTarget(hash: string) {
+    if (!hash || hash === '#') return null;
 
-  requestAnimationFrame(raf);
-
-  // Handle anchor links on same page smoothly
-  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', (e) => {
-      e.preventDefault();
-      const href = anchor.getAttribute('href');
-      if (href && href !== '#') {
-        const target = document.querySelector(href);
-        if (target) {
-          lenis.scrollTo(target as HTMLElement, {
-            offset: 0,
-            duration: 1.5,
-          });
-        }
-      }
-    });
-  });
-
-  // Handle page load with hash in URL (e.g., from /#work navigation)
-  function scrollToHashOnLoad() {
-    const hash = window.location.hash;
-    if (hash && hash !== '#') {
-      const target = document.querySelector(hash);
-      if (target) {
-        // Small delay to ensure page is fully loaded
-        setTimeout(() => {
-          lenis.scrollTo(target as HTMLElement, {
-            offset: 0,
-            duration: 1.5,
-          });
-        }, 100);
-      }
+    try {
+      return document.querySelector<HTMLElement>(hash);
+    } catch {
+      return document.getElementById(decodeURIComponent(hash.slice(1)));
     }
   }
 
-  // Run on page load
-  if (document.readyState === 'complete') {
-    scrollToHashOnLoad();
-  } else {
-    window.addEventListener('load', scrollToHashOnLoad);
-  }
+  function initSmoothScroll() {
+    (window as any).__smoothScrollCleanup?.();
 
-  // Also handle hash changes
-  window.addEventListener('hashchange', () => {
-    const hash = window.location.hash;
-    if (hash && hash !== '#') {
-      const target = document.querySelector(hash);
-      if (target) {
-        lenis.scrollTo(target as HTMLElement, {
+    const controller = new AbortController();
+    const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const desktopPointerQuery = window.matchMedia('(hover: hover) and (pointer: fine) and (min-width: 768px)');
+    const reduceMotion = reduceMotionQuery.matches;
+    const canUseLenis = desktopPointerQuery.matches && !reduceMotion;
+    let lenis: LenisInstance | null = null;
+    let rafId = 0;
+    let hashTimeoutId = 0;
+
+    const startRaf = () => {
+      if (!lenis || rafId) return;
+
+      const raf = (time: number) => {
+        lenis?.raf(time);
+        rafId = requestAnimationFrame(raf);
+      };
+
+      rafId = requestAnimationFrame(raf);
+    };
+
+    const stopRaf = () => {
+      if (!rafId) return;
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    };
+
+    const scrollToTarget = (target: HTMLElement) => {
+      if (lenis) {
+        lenis.scrollTo(target, {
           offset: 0,
           duration: 1.5,
         });
+        return;
       }
+
+      target.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    };
+
+    if (canUseLenis) {
+      lenis = new Lenis({
+        duration: 1.0,
+        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        orientation: 'vertical',
+        gestureOrientation: 'vertical',
+        smoothWheel: true,
+        wheelMultiplier: 1.2,
+      });
+
+      (window as any).lenis = lenis;
+      startRaf();
+    } else {
+      (window as any).lenis = null;
     }
-  });
+
+    document.addEventListener(
+      'click',
+      (event) => {
+        const target = event.target as Element | null;
+        const anchor = target?.closest?.('a[href^="#"]') as HTMLAnchorElement | null;
+        const hash = anchor?.getAttribute('href');
+        if (!anchor || !hash || hash === '#') return;
+
+        const scrollTarget = getHashTarget(hash);
+        if (!scrollTarget) return;
+
+        event.preventDefault();
+        scrollToTarget(scrollTarget);
+      },
+      { signal: controller.signal },
+    );
+
+    const scrollToCurrentHash = () => {
+      const target = getHashTarget(window.location.hash);
+      if (!target) return;
+
+      if (hashTimeoutId) window.clearTimeout(hashTimeoutId);
+      hashTimeoutId = window.setTimeout(() => {
+        hashTimeoutId = 0;
+        scrollToTarget(target);
+      }, 100);
+    };
+
+    if (document.readyState === 'complete') {
+      scrollToCurrentHash();
+    } else {
+      window.addEventListener('load', scrollToCurrentHash, { once: true, signal: controller.signal });
+    }
+
+    window.addEventListener('hashchange', scrollToCurrentHash, { signal: controller.signal });
+
+    document.addEventListener(
+      'visibilitychange',
+      () => {
+        if (!lenis) return;
+
+        if (document.hidden) {
+          lenis.stop();
+          stopRaf();
+        } else {
+          lenis.start();
+          startRaf();
+        }
+      },
+      { signal: controller.signal },
+    );
+
+    const reinit = () => initSmoothScroll();
+    desktopPointerQuery.addEventListener('change', reinit, { signal: controller.signal });
+    reduceMotionQuery.addEventListener('change', reinit, { signal: controller.signal });
+
+    const cleanup = () => {
+      controller.abort();
+      if (hashTimeoutId) window.clearTimeout(hashTimeoutId);
+      stopRaf();
+      lenis?.destroy();
+      if ((window as any).lenis === lenis) {
+        (window as any).lenis = null;
+      }
+      lenis = null;
+      (window as any).__smoothScrollCleanup = null;
+    };
+
+    (window as any).__smoothScrollCleanup = cleanup;
+    document.addEventListener('astro:before-swap', cleanup, { once: true, signal: controller.signal });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSmoothScroll, { once: true });
+  } else {
+    initSmoothScroll();
+  }
+
+  if (!(window as any).__smoothScrollAfterSwapBound) {
+    document.addEventListener('astro:after-swap', initSmoothScroll);
+    (window as any).__smoothScrollAfterSwapBound = true;
+  }
 </script>
 
 <style is:global>

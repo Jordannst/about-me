@@ -106,7 +106,8 @@ const featuredProjects = projects.filter(p => p.featured);
               class="float-img-layer absolute inset-0 w-full h-full object-contain transition-opacity duration-500"
               style={index === 0 ? "opacity:1" : "opacity:0"}
               data-layer={index}
-              loading={index === 0 ? "eager" : "lazy"}
+              loading="lazy"
+              decoding="async"
             />
           ))}
           <!-- Subtle overlay -->
@@ -156,136 +157,197 @@ const featuredProjects = projects.filter(p => p.featured);
 </style>
 
 <script>
-  const list = document.getElementById('project-list');
-  const rows = document.querySelectorAll<HTMLElement>('.project-row');
-  const floatContainer = document.getElementById('float-img-container');
-  const floatLayers = document.querySelectorAll<HTMLElement>('.float-img-layer');
-  const floatLabel = document.getElementById('float-label');
-  const floatYear = document.getElementById('float-year');
-
-  const data: { title: string; image: string; year: string; role: string; id: number; tags: string[] }[] =
-    JSON.parse(list?.dataset.projects ?? '[]');
-
-  // --- Cursor tracking with lerp ---
-  let targetX = 0, targetY = 0;
-  let currentX = 0, currentY = 0;
-  let rawMouseX = 0, rawMouseY = 0;
-  let rafId: number;
-
-  const IMG_W = 480;
-  const IMG_H = Math.round(IMG_W * (2 / 3));
-  const GAP = 24;
-
-  function lerp(a: number, b: number, t: number) {
-    return a + (b - a) * t;
-  }
-
-  function computeTarget(mx: number, my: number) {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    // Flip horizontal if too close to right edge
-    const x = mx + GAP + IMG_W > vw ? mx - IMG_W - GAP : mx + GAP;
-    // Flip vertical if too close to bottom edge
-    const y = my - IMG_H / 2 < 0
-      ? GAP
-      : my + IMG_H / 2 > vh
-        ? vh - IMG_H - GAP
-        : my - IMG_H / 2;
-    return { x, y };
-  }
-
-  function tick() {
-    currentX = lerp(currentX, targetX, 0.1);
-    currentY = lerp(currentY, targetY, 0.1);
-    if (floatContainer) {
-      floatContainer.style.transform = `translate(${currentX}px, ${currentY}px)`;
-    }
-    rafId = requestAnimationFrame(tick);
-  }
-  tick();
-
-  document.addEventListener('mousemove', (e: MouseEvent) => {
-    rawMouseX = e.clientX;
-    rawMouseY = e.clientY;
-    const { x, y } = computeTarget(rawMouseX, rawMouseY);
-    targetX = x;
-    targetY = y;
-  });
-
-  // --- Text scramble ---
   const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&';
-  function scramble(el: HTMLElement, originalText: string, duration = 600) {
-    let frame = 0;
-    const totalFrames = Math.floor(duration / 40);
-    const interval = setInterval(() => {
-      const progress = frame / totalFrames;
-      el.textContent = originalText
-        .split('')
-        .map((char, i) => {
-          if (char === ' ') return ' ';
-          if (i < Math.floor(progress * originalText.length)) return char;
-          return CHARS[Math.floor(Math.random() * CHARS.length)];
-        })
-        .join('');
-      frame++;
-      if (frame > totalFrames) {
-        clearInterval(interval);
-        el.textContent = originalText;
-      }
-    }, 40);
-    return interval;
-  }
 
-  // --- Row hover ---
-  let activeIndex = -1;
-  let scrambleTimer: ReturnType<typeof setInterval> | null = null;
+  function initProjectPreview() {
+    (window as any).__projectPreviewCleanup?.();
 
-  function showProject(index: number) {
-    if (index === activeIndex) return;
-    activeIndex = index;
-    const project = data[index];
+    const list = document.getElementById('project-list');
+    const rows = document.querySelectorAll<HTMLElement>('.project-row');
+    const floatContainer = document.getElementById('float-img-container');
+    const floatInner = document.getElementById('float-img-inner');
+    const floatLayers = document.querySelectorAll<HTMLElement>('.float-img-layer');
+    const floatLabel = document.getElementById('float-label');
+    const floatYear = document.getElementById('float-year');
+    const canHoverPreview = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
-    // Show container
-    if (floatContainer) floatContainer.style.opacity = '1';
-    if (floatLabel) floatLabel.textContent = project.role;
-    if (floatYear) floatYear.textContent = project.year;
+    if (!list || !rows.length || !floatContainer || !floatInner || !canHoverPreview) return;
 
-    // Swap image
-    floatLayers.forEach((layer, i) => {
-      layer.style.opacity = i === index ? '1' : '0';
-    });
+    const controller = new AbortController();
+    const data: { title: string; image: string; year: string; role: string; id: number; tags: string[] }[] =
+      JSON.parse(list.dataset.projects ?? '[]');
 
-    // Dim others, highlight active
-    list?.classList.add('has-hover');
-    rows.forEach((row, i) => {
-      row.classList.toggle('is-hovered', i === index);
-    });
+    let targetX = 0;
+    let targetY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let rawMouseX = 0;
+    let rawMouseY = 0;
+    let rafId = 0;
+    let activeIndex = -1;
+    let scrambleTimer: ReturnType<typeof setInterval> | null = null;
 
-    // Scramble title
-    const titleEl = rows[index]?.querySelector<HTMLElement>('.row-title');
-    const originalText = project.title;
-    if (titleEl) {
-      if (scrambleTimer) clearInterval(scrambleTimer);
-      scrambleTimer = scramble(titleEl, originalText, 500);
+    const GAP = 24;
+
+    function lerp(a: number, b: number, t: number) {
+      return a + (b - a) * t;
     }
-  }
 
-  function hideProject() {
-    activeIndex = -1;
-    if (floatContainer) floatContainer.style.opacity = '0';
-    list?.classList.remove('has-hover');
-    rows.forEach(row => row.classList.remove('is-hovered'));
-    if (scrambleTimer) { clearInterval(scrambleTimer); scrambleTimer = null; }
-    // Restore all titles
-    rows.forEach((row, i) => {
-      const titleEl = row.querySelector<HTMLElement>('.row-title');
-      if (titleEl && data[i]) titleEl.textContent = data[i].title;
+    function getPreviewSize() {
+      const rect = floatInner.getBoundingClientRect();
+      return {
+        width: rect.width || 480,
+        height: rect.height || 320,
+      };
+    }
+
+    function computeTarget(mx: number, my: number) {
+      const { width, height } = getPreviewSize();
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const x = mx + GAP + width > vw ? mx - width - GAP : mx + GAP;
+      const y = my - height / 2 < 0
+        ? GAP
+        : my + height / 2 > vh
+          ? vh - height - GAP
+          : my - height / 2;
+      return { x, y };
+    }
+
+    function updateTarget() {
+      const { x, y } = computeTarget(rawMouseX, rawMouseY);
+      targetX = x;
+      targetY = y;
+    }
+
+    function tick() {
+      currentX = lerp(currentX, targetX, 0.1);
+      currentY = lerp(currentY, targetY, 0.1);
+      floatContainer.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function startTracking() {
+      if (rafId) return;
+      updateTarget();
+      currentX = targetX;
+      currentY = targetY;
+      floatContainer.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+      rafId = requestAnimationFrame(tick);
+    }
+
+    function stopTracking() {
+      if (!rafId) return;
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
+
+    document.addEventListener(
+      'mousemove',
+      (e: MouseEvent) => {
+        rawMouseX = e.clientX;
+        rawMouseY = e.clientY;
+        updateTarget();
+      },
+      { signal: controller.signal },
+    );
+
+    window.addEventListener('resize', updateTarget, { signal: controller.signal });
+
+    function scramble(el: HTMLElement, originalText: string, duration = 600) {
+      let frame = 0;
+      const totalFrames = Math.floor(duration / 40);
+      const interval = setInterval(() => {
+        const progress = frame / totalFrames;
+        el.textContent = originalText
+          .split('')
+          .map((char, i) => {
+            if (char === ' ') return ' ';
+            if (i < Math.floor(progress * originalText.length)) return char;
+            return CHARS[Math.floor(Math.random() * CHARS.length)];
+          })
+          .join('');
+        frame++;
+        if (frame > totalFrames) {
+          clearInterval(interval);
+          el.textContent = originalText;
+        }
+      }, 40);
+      return interval;
+    }
+
+    function showProject(index: number) {
+      if (index === activeIndex) return;
+      activeIndex = index;
+      const project = data[index];
+      if (!project) return;
+
+      floatContainer.style.opacity = '1';
+      if (floatLabel) floatLabel.textContent = project.role;
+      if (floatYear) floatYear.textContent = project.year;
+
+      floatLayers.forEach((layer, i) => {
+        layer.style.opacity = i === index ? '1' : '0';
+      });
+
+      list.classList.add('has-hover');
+      rows.forEach((row, i) => {
+        row.classList.toggle('is-hovered', i === index);
+      });
+
+      const titleEl = rows[index]?.querySelector<HTMLElement>('.row-title');
+      const originalText = project.title;
+      if (titleEl) {
+        if (scrambleTimer) clearInterval(scrambleTimer);
+        scrambleTimer = scramble(titleEl, originalText, 500);
+      }
+
+      startTracking();
+    }
+
+    function hideProject() {
+      activeIndex = -1;
+      floatContainer.style.opacity = '0';
+      list.classList.remove('has-hover');
+      rows.forEach(row => row.classList.remove('is-hovered'));
+      if (scrambleTimer) {
+        clearInterval(scrambleTimer);
+        scrambleTimer = null;
+      }
+      rows.forEach((row, i) => {
+        const titleEl = row.querySelector<HTMLElement>('.row-title');
+        if (titleEl && data[i]) titleEl.textContent = data[i].title;
+      });
+      stopTracking();
+    }
+
+    rows.forEach((row) => {
+      const index = parseInt(row.dataset.index ?? '0', 10);
+      row.addEventListener('mouseenter', () => showProject(index), { signal: controller.signal });
+      row.addEventListener('mouseleave', hideProject, { signal: controller.signal });
     });
+
+    list.addEventListener('mouseleave', hideProject, { signal: controller.signal });
+
+    const cleanup = () => {
+      hideProject();
+      controller.abort();
+      stopTracking();
+      (window as any).__projectPreviewCleanup = null;
+    };
+
+    (window as any).__projectPreviewCleanup = cleanup;
+    document.addEventListener('astro:before-swap', cleanup, { once: true, signal: controller.signal });
   }
 
-  rows.forEach((row) => {
-    const index = parseInt(row.dataset.index ?? '0', 10);
-    row.addEventListener('mouseenter', () => showProject(index));
-    row.addEventListener('mouseleave', hideProject);
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initProjectPreview, { once: true });
+  } else {
+    initProjectPreview();
+  }
+
+  if (!(window as any).__projectPreviewAfterSwapBound) {
+    document.addEventListener('astro:after-swap', initProjectPreview);
+    (window as any).__projectPreviewAfterSwapBound = true;
+  }
 </script>

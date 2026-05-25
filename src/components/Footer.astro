@@ -223,11 +223,25 @@ import { personal, meta, social } from '../data/portfolio';
 
 
   function initHandwritingAnimation() {
+    ScrollTrigger.getById('footer-handwriting')?.kill();
+
     const svg = document.getElementById('something-svg');
     if (!svg) return;
 
     const textEl = svg.querySelector('.something-text') as SVGTextElement;
     if (!textEl) return;
+
+    gsap.killTweensOf(textEl);
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.set(textEl, {
+        strokeDasharray: 'none',
+        strokeDashoffset: 0,
+        fillOpacity: 1,
+        strokeWidth: 0,
+      });
+      return;
+    }
 
     // Get the total length of the text path
     const length = (textEl as any).getComputedTextLength() * 3.5;
@@ -242,6 +256,7 @@ import { personal, meta, social } from '../data/portfolio';
     // Create the timeline
     const tl = gsap.timeline({
       scrollTrigger: {
+        id: 'footer-handwriting',
         trigger: svg,
         start: 'top 80%',
         toggleActions: 'play none none none',
@@ -268,12 +283,41 @@ import { personal, meta, social } from '../data/portfolio';
       duration: 0.5,
       ease: 'power1.out',
     }, '-=0.3');
+
+    document.addEventListener('astro:before-swap', () => {
+      ScrollTrigger.getById('footer-handwriting')?.kill();
+      tl.kill();
+      gsap.killTweensOf(textEl);
+    }, { once: true });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initHandwritingAnimation, 300);
-  });
-  document.addEventListener('astro:after-swap', () => {
-    setTimeout(initHandwritingAnimation, 300);
-  });
+  let handwritingTimeout = 0;
+  function scheduleHandwritingAnimation() {
+    if (handwritingTimeout) window.clearTimeout(handwritingTimeout);
+    handwritingTimeout = window.setTimeout(() => {
+      handwritingTimeout = 0;
+      initHandwritingAnimation();
+    }, 300);
+  }
+
+  function clearHandwritingSchedule() {
+    if (handwritingTimeout) window.clearTimeout(handwritingTimeout);
+    handwritingTimeout = 0;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', scheduleHandwritingAnimation, { once: true });
+  } else {
+    scheduleHandwritingAnimation();
+  }
+
+  if (!(window as any).__footerHandwritingAfterSwapBound) {
+    document.addEventListener('astro:after-swap', scheduleHandwritingAnimation);
+    (window as any).__footerHandwritingAfterSwapBound = true;
+  }
+
+  if (!(window as any).__footerHandwritingBeforeSwapBound) {
+    document.addEventListener('astro:before-swap', clearHandwritingSchedule);
+    (window as any).__footerHandwritingBeforeSwapBound = true;
+  }
 </script>

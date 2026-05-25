@@ -74,6 +74,18 @@
   color-scheme: dark;
 }
 
+/* Theme reveal runtime: overlay covers the page while colors flip underneath. */
+:root.theme-reveal-running *,
+:root.theme-reveal-running *::before,
+:root.theme-reveal-running *::after {
+  transition-property: none !important;
+}
+
+:root.theme-reveal-running .noise-overlay {
+  opacity: 0 !important;
+  mix-blend-mode: normal;
+}
+
 /* ================================
    BASE STYLES
    ================================ */
@@ -249,13 +261,49 @@ h6 {
 
 .theme-toggle {
   cursor: pointer;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
   padding: 0.5rem;
-  border-radius: 0;
+  border-radius: 999px;
   transition: color var(--duration-normal) var(--ease-luxury);
+  isolation: isolate;
+}
+
+.theme-toggle::before {
+  content: "";
+  position: absolute;
+  inset: 0.15rem;
+  border: 1px solid var(--border-color);
+  border-radius: inherit;
+  opacity: 0;
+  transform: scale(0.72);
+  z-index: -1;
+}
+
+.theme-toggle.is-switching::before {
+  animation: themeTogglePulse 620ms var(--ease-luxury) forwards;
+}
+
+.theme-toggle svg {
+  grid-area: 1 / 1;
+  transition:
+    opacity 220ms ease,
+    transform 320ms var(--ease-luxury);
+}
+
+.theme-toggle.is-switching svg {
+  transform: rotate(180deg) scale(0.82);
 }
 
 .theme-toggle:hover {
   color: var(--accent);
+}
+
+.theme-toggle:disabled {
+  cursor: wait;
 }
 
 .theme-toggle .icon-sun {
@@ -272,6 +320,21 @@ h6 {
 
 :root.dark .theme-toggle .icon-moon {
   display: none;
+}
+
+@keyframes themeTogglePulse {
+  0% {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.35);
+  }
 }
 
 /* ================================

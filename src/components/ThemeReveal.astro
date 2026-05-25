@@ -1,0 +1,192 @@
+---
+// ThemeReveal.astro - Radial theme transition overlay
+// Covers the page while global theme variables update.
+---
+
+<div id="theme-reveal-overlay" class="theme-reveal-overlay" aria-hidden="true"></div>
+
+<style>
+  .theme-reveal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 120;
+    pointer-events: none;
+    opacity: 0;
+    background: var(--theme-reveal-color, #1a1a1a);
+    clip-path: circle(0 at var(--theme-reveal-x, 50%) var(--theme-reveal-y, 50%));
+    contain: strict;
+    will-change: clip-path, opacity;
+  }
+
+  .theme-reveal-overlay.is-expanding {
+    opacity: 1;
+    pointer-events: auto;
+    animation: themeRevealExpand 620ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  }
+
+  .theme-reveal-overlay.is-fading {
+    pointer-events: auto;
+    clip-path: circle(
+      var(--theme-reveal-radius, 150vmax) at var(--theme-reveal-x, 50%)
+        var(--theme-reveal-y, 50%)
+    );
+    animation: themeRevealFade 180ms ease-out forwards;
+  }
+
+  @keyframes themeRevealExpand {
+    from {
+      clip-path: circle(0 at var(--theme-reveal-x, 50%) var(--theme-reveal-y, 50%));
+    }
+    to {
+      clip-path: circle(
+        var(--theme-reveal-radius, 150vmax) at var(--theme-reveal-x, 50%)
+          var(--theme-reveal-y, 50%)
+      );
+    }
+  }
+
+  @keyframes themeRevealFade {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .theme-reveal-overlay {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  type ThemeName = 'light' | 'dark';
+
+  interface ThemeRequestDetail {
+    theme: ThemeName;
+    x: number;
+    y: number;
+  }
+
+  type PortfolioThemeApi = {
+    applyTheme: (theme: ThemeName) => void;
+  };
+
+  function getTargetColor(theme: ThemeName) {
+    return theme === 'dark' ? '#1a1a1a' : '#f9f8f6';
+  }
+
+  function getRevealRadius(x: number, y: number) {
+    const corners = [
+      [0, 0],
+      [window.innerWidth, 0],
+      [0, window.innerHeight],
+      [window.innerWidth, window.innerHeight],
+    ];
+
+    return Math.ceil(
+      Math.max(
+        ...corners.map(([cornerX, cornerY]) => Math.hypot(cornerX - x, cornerY - y)),
+      ),
+    );
+  }
+
+  function initThemeReveal() {
+    (window as any).__themeRevealCleanup?.();
+
+    const overlay = document.getElementById('theme-reveal-overlay');
+    if (!overlay) return;
+
+    const controller = new AbortController();
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let cleanupTimer = 0;
+    let applyTimer = 0;
+    let isRunning = false;
+
+    const clearTimers = () => {
+      if (applyTimer) window.clearTimeout(applyTimer);
+      if (cleanupTimer) window.clearTimeout(cleanupTimer);
+      applyTimer = 0;
+      cleanupTimer = 0;
+    };
+
+    const finishReveal = () => {
+      clearTimers();
+      isRunning = false;
+      overlay.classList.remove('is-expanding', 'is-fading');
+      overlay.removeAttribute('style');
+      document.documentElement.classList.remove('theme-reveal-running');
+      window.dispatchEvent(new CustomEvent('portfolio:theme-reveal-end'));
+    };
+
+    const runReveal = (detail: ThemeRequestDetail) => {
+      const api = (window as any).__portfolioTheme as PortfolioThemeApi | undefined;
+      if (!api) return;
+
+      if (reduceMotion.matches) {
+        api.applyTheme(detail.theme);
+        window.dispatchEvent(new CustomEvent('portfolio:theme-reveal-end'));
+        return;
+      }
+
+      if (isRunning) {
+        return;
+      }
+
+      clearTimers();
+      isRunning = true;
+
+      const radius = getRevealRadius(detail.x, detail.y);
+      overlay.style.setProperty('--theme-reveal-x', `${detail.x}px`);
+      overlay.style.setProperty('--theme-reveal-y', `${detail.y}px`);
+      overlay.style.setProperty('--theme-reveal-radius', `${radius}px`);
+      overlay.style.setProperty('--theme-reveal-color', getTargetColor(detail.theme));
+
+      document.documentElement.classList.add('theme-reveal-running');
+      window.dispatchEvent(new CustomEvent('portfolio:theme-reveal-start'));
+
+      overlay.classList.remove('is-fading');
+      overlay.classList.add('is-expanding');
+
+      applyTimer = window.setTimeout(() => {
+        api.applyTheme(detail.theme);
+        overlay.classList.remove('is-expanding');
+        overlay.classList.add('is-fading');
+      }, 520);
+
+      cleanupTimer = window.setTimeout(finishReveal, 760);
+    };
+
+    window.addEventListener(
+      'portfolio:theme-change-request',
+      (event) => {
+        const customEvent = event as CustomEvent<ThemeRequestDetail>;
+        if (!customEvent.detail) return;
+        runReveal(customEvent.detail);
+      },
+      { signal: controller.signal },
+    );
+
+    const cleanup = () => {
+      controller.abort();
+      finishReveal();
+      (window as any).__themeRevealCleanup = undefined;
+    };
+
+    (window as any).__themeRevealCleanup = cleanup;
+    document.addEventListener('astro:before-swap', cleanup, { once: true, signal: controller.signal });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initThemeReveal, { once: true });
+  } else {
+    initThemeReveal();
+  }
+
+  if (!(window as any).__themeRevealAfterSwapBound) {
+    document.addEventListener('astro:after-swap', initThemeReveal);
+    (window as any).__themeRevealAfterSwapBound = true;
+  }
+</script>

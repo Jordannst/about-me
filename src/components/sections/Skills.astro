@@ -358,9 +358,19 @@ const skillsWithSize = skills.map((skill, index) => {
   function initSkillsAnimation() {
     const grid = document.getElementById('skills-grid');
     if (!grid) return;
+    if (grid.dataset.skillsAnimationInitialized === 'true') return;
 
     const items = grid.querySelectorAll('.skill-item');
     if (!items.length) return;
+
+    grid.dataset.skillsAnimationInitialized = 'true';
+    ScrollTrigger.getById('skills-grid-reveal')?.kill();
+    gsap.killTweensOf(items);
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.set(items, { opacity: 1, y: 0, scale: 1 });
+      return;
+    }
 
     // Block stacking animation
     gsap.to(items, {
@@ -374,11 +384,18 @@ const skillsWithSize = skills.map((skill, index) => {
       },
       ease: 'back.out(1.2)',
       scrollTrigger: {
+        id: 'skills-grid-reveal',
         trigger: grid,
         start: 'top 75%',
         toggleActions: 'play none none none',
       },
     });
+
+    document.addEventListener('astro:before-swap', () => {
+      ScrollTrigger.getById('skills-grid-reveal')?.kill();
+      gsap.killTweensOf(items);
+      delete grid.dataset.skillsAnimationInitialized;
+    }, { once: true });
   }
 
   // SpotlightCard: Mouse tracking for gold spotlight effect
@@ -386,27 +403,81 @@ const skillsWithSize = skills.map((skill, index) => {
     const items = document.querySelectorAll('.skill-item');
 
     // Skip on touch devices
-    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) return;
+    if (window.matchMedia('(hover: none), (pointer: coarse), (prefers-reduced-motion: reduce)').matches) return;
 
     items.forEach((item) => {
       const el = item as HTMLElement;
+      if (el.dataset.spotlightInitialized === 'true') return;
 
-      el.addEventListener('mousemove', (e: MouseEvent) => {
-        const rect = el.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        el.style.setProperty('--spotlight-x', `${x}px`);
-        el.style.setProperty('--spotlight-y', `${y}px`);
-      });
+      const controller = new AbortController();
+      let rect: DOMRect | null = null;
+      let pointerX = 0;
+      let pointerY = 0;
+      let rafId = 0;
+
+      const updateSpotlight = () => {
+        rafId = 0;
+        if (!rect) return;
+
+        el.style.setProperty('--spotlight-x', `${pointerX - rect.left}px`);
+        el.style.setProperty('--spotlight-y', `${pointerY - rect.top}px`);
+      };
+
+      el.dataset.spotlightInitialized = 'true';
+
+      el.addEventListener('pointerenter', () => {
+        rect = el.getBoundingClientRect();
+      }, { signal: controller.signal });
+
+      el.addEventListener('pointermove', (e: PointerEvent) => {
+        pointerX = e.clientX;
+        pointerY = e.clientY;
+        if (!rafId) rafId = requestAnimationFrame(updateSpotlight);
+      }, { signal: controller.signal });
+
+      el.addEventListener('pointerleave', () => {
+        rect = null;
+        if (rafId) cancelAnimationFrame(rafId);
+        rafId = 0;
+      }, { signal: controller.signal });
+
+      document.addEventListener('astro:before-swap', () => {
+        controller.abort();
+        if (rafId) cancelAnimationFrame(rafId);
+        delete el.dataset.spotlightInitialized;
+      }, { once: true, signal: controller.signal });
     });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initSkillsAnimation, 200);
+  let skillsAnimationTimeout = 0;
+
+  function initSkillsSection() {
+    if (skillsAnimationTimeout) window.clearTimeout(skillsAnimationTimeout);
+    skillsAnimationTimeout = window.setTimeout(() => {
+      skillsAnimationTimeout = 0;
+      initSkillsAnimation();
+    }, 200);
     initSpotlightCards();
-  });
-  document.addEventListener('astro:after-swap', () => {
-    setTimeout(initSkillsAnimation, 200);
-    initSpotlightCards();
-  });
+  }
+
+  function clearSkillsSchedule() {
+    if (skillsAnimationTimeout) window.clearTimeout(skillsAnimationTimeout);
+    skillsAnimationTimeout = 0;
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSkillsSection, { once: true });
+  } else {
+    initSkillsSection();
+  }
+
+  if (!(window as any).__skillsAfterSwapBound) {
+    document.addEventListener('astro:after-swap', initSkillsSection);
+    (window as any).__skillsAfterSwapBound = true;
+  }
+
+  if (!(window as any).__skillsBeforeSwapBound) {
+    document.addEventListener('astro:before-swap', clearSkillsSchedule);
+    (window as any).__skillsBeforeSwapBound = true;
+  }
 </script>
