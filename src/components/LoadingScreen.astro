@@ -1,71 +1,139 @@
 ---
 import { personal } from '../data/portfolio';
+
+const firstName = personal.name.split(' ')[0];
+const letters = firstName.split('');
 ---
 
-<!-- Elegant Loading Screen -->
-<div id="loading-screen" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[var(--bg-primary)] transition-opacity duration-700">
-  <!-- Logo/Name -->
-  <div class="loading-logo mb-8">
-    <span class="font-[family-name:var(--font-serif)] text-4xl md:text-5xl text-[var(--text-primary)]">
-      {personal.name.split(' ')[0]}
-      <span class="text-[var(--accent)]">.</span>
-    </span>
+<!-- Signature Loading Screen -->
+<div id="loading-screen" class="loading-screen fixed inset-0 z-[100] bg-[var(--bg-primary)]">
+  <div class="loading-content" aria-label="Loading">
+    <div class="loading-signature" aria-label={firstName}>
+      {letters.map((letter, index) => (
+        <span class="loading-letter" style={`--letter-index:${index}`}>{letter}</span>
+      ))}
+      <span class="loading-dot" aria-hidden="true">.</span>
+    </div>
+
+    <div class="loading-line-container" aria-hidden="true">
+      <div class="loading-line"></div>
+    </div>
   </div>
-  
-  <!-- Elegant Line Loader -->
-  <div class="loading-line-container w-48 md:w-64 h-px bg-[var(--border-color)] overflow-hidden">
-    <div class="loading-line h-full bg-[var(--accent)]"></div>
-  </div>
-  
-  <!-- Loading Text -->
-  <p class="loading-text mt-6 text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-    Loading
-  </p>
 </div>
 
 <style>
-  /* Logo entrance animation */
-  .loading-logo {
-    opacity: 0;
-    transform: translateY(20px);
-    animation: loadingFadeUp 800ms var(--ease-luxury) forwards;
-    animation-delay: 100ms;
+  .loading-screen {
+    overflow: hidden;
+    color: var(--text-primary);
+    clip-path: inset(0 0 0 0);
+    transition: opacity 700ms var(--ease-luxury);
+    display: grid;
+    place-items: center;
   }
-  
-  /* Line container entrance */
-  .loading-line-container {
-    opacity: 0;
-    animation: loadingFade 600ms var(--ease-luxury) forwards;
-    animation-delay: 400ms;
+
+  .loading-screen::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--bg-primary);
   }
-  
-  /* Loading line animation */
-  .loading-line {
-    width: 0%;
-    animation: loadingProgress 1800ms var(--ease-luxury) forwards;
+
+  .loading-content {
+    display: grid;
+    place-items: center;
+    gap: 0.9rem;
+    padding: 2rem;
+    transform: translateY(-0.25rem);
+  }
+
+  .loading-signature {
+    display: inline-flex;
+    align-items: baseline;
+    font-family: var(--font-serif);
+    font-size: clamp(1.85rem, 4.8vw, 3.2rem);
+    font-weight: 400;
+    line-height: 0.95;
+    letter-spacing: -0.025em;
+  }
+
+  .loading-letter {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(0.75rem);
+    animation: loadingLetter 720ms var(--ease-luxury) forwards;
+    animation-delay: calc(120ms + var(--letter-index) * 48ms);
+  }
+
+  .loading-dot {
+    display: inline-block;
+    color: var(--accent);
+    opacity: 0;
+    transform: scale(0.3);
+    animation: loadingDot 680ms var(--ease-luxury) forwards;
     animation-delay: 500ms;
+    transform-origin: center;
   }
-  
-  /* Loading text */
-  .loading-text {
+
+  .loading-line-container {
+    position: relative;
+    width: min(8.5rem, 42vw);
+    height: 1px;
+    overflow: hidden;
+    background: var(--border-color);
     opacity: 0;
-    animation: loadingFade 600ms var(--ease-luxury) forwards;
-    animation-delay: 600ms;
+    transform: scaleX(0.72);
+    animation: loadingLineIn 640ms var(--ease-luxury) 280ms forwards;
+    transform-origin: center;
   }
-  
-  @keyframes loadingFadeUp {
+
+  .loading-line-container::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    width: 30%;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 90%, white 10%), transparent);
+    transform: translateX(-100%);
+    animation: loadingScan 980ms var(--ease-luxury) 520ms infinite;
+  }
+
+  .loading-line {
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    animation: loadingProgress 1500ms var(--ease-luxury) 360ms forwards;
+  }
+
+  @keyframes loadingLetter {
     to {
       opacity: 1;
       transform: translateY(0);
     }
   }
-  
-  @keyframes loadingFade {
-    to {
+
+  @keyframes loadingDot {
+    0% {
+      opacity: 0;
+      transform: scale(0.3);
+    }
+    60% {
       opacity: 1;
+      transform: scale(1.18);
+      text-shadow: 0 0 1rem color-mix(in srgb, var(--accent) 48%, transparent);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+      text-shadow: 0 0 0 transparent;
     }
   }
-  
+
+  @keyframes loadingLineIn {
+    to {
+      opacity: 1;
+      transform: scaleX(1);
+    }
+  }
+
   @keyframes loadingProgress {
     0% {
       width: 0%;
@@ -77,11 +145,55 @@ import { personal } from '../data/portfolio';
       width: 100%;
     }
   }
-  
-  /* Hidden state after loading */
+
+  @keyframes loadingScan {
+    to {
+      transform: translateX(420%);
+    }
+  }
+
   #loading-screen.loaded {
-    opacity: 0;
     pointer-events: none;
+    animation: loadingCurtainExit 720ms cubic-bezier(0.76, 0, 0.24, 1) forwards;
+  }
+
+  #loading-screen.loaded .loading-content {
+    opacity: 0;
+    transform: translateY(-0.8rem);
+    transition:
+      opacity 220ms ease-out,
+      transform 420ms var(--ease-luxury);
+  }
+
+  @keyframes loadingCurtainExit {
+    0% {
+      clip-path: inset(0 0 0 0);
+    }
+    100% {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .loading-screen,
+    .loading-screen *,
+    .loading-screen *::before,
+    .loading-screen *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+
+    .loading-letter,
+    .loading-dot,
+    .loading-line-container {
+      opacity: 1;
+      transform: none;
+    }
+
+    .loading-line {
+      width: 100%;
+    }
   }
 </style>
 
@@ -100,7 +212,7 @@ import { personal } from '../data/portfolio';
         loadingScreen.classList.add('loaded');
         setTimeout(() => {
           loadingScreen.style.display = 'none';
-        }, 700);
+        }, 900);
       }
       
       if (mainContent) {
