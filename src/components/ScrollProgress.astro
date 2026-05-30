@@ -25,7 +25,9 @@
 
   // Smooth updates using requestAnimationFrame
   let ticking = false;
-  window.addEventListener('scroll', () => {
+  const controller = new AbortController();
+
+  const handleScroll = () => {
     if (!ticking) {
       window.requestAnimationFrame(() => {
         updateScrollProgress();
@@ -33,7 +35,16 @@
       });
       ticking = true;
     }
+  };
+
+  window.addEventListener('scroll', handleScroll, {
+    passive: true,
+    signal: controller.signal,
   });
+
+  document.addEventListener('astro:before-swap', () => {
+    controller.abort();
+  }, { once: true, signal: controller.signal });
 
   // Initial call
   updateScrollProgress();

@@ -92,6 +92,7 @@
     let animationFrameId: number;
     let mouseX = -100;
     let mouseY = -100;
+    const controller = new AbortController();
 
     const onMouseMove = (e: MouseEvent) => {
       mouseX = e.clientX;
@@ -109,11 +110,11 @@
     const onMouseLeave = () => cursor.classList.add('hidden');
     const onMouseEnter = () => cursor.classList.remove('hidden');
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mousedown', onMouseDown);
-    document.addEventListener('mouseup', onMouseUp);
-    document.addEventListener('mouseleave', onMouseLeave);
-    document.addEventListener('mouseenter', onMouseEnter);
+    document.addEventListener('mousemove', onMouseMove, { signal: controller.signal });
+    document.addEventListener('mousedown', onMouseDown, { signal: controller.signal });
+    document.addEventListener('mouseup', onMouseUp, { signal: controller.signal });
+    document.addEventListener('mouseleave', onMouseLeave, { signal: controller.signal });
+    document.addEventListener('mouseenter', onMouseEnter, { signal: controller.signal });
 
     // Hover effect using event delegation (no per-element listeners)
     const interactiveSelector = 'a, button, [role="button"], input, textarea, select, label, .project-card, [data-cursor-hover]';
@@ -127,18 +128,12 @@
         cursor.classList.remove('hover');
       }
     };
-    document.addEventListener('mouseover', onDelegatedEnter);
-    document.addEventListener('mouseout', onDelegatedLeave);
+    document.addEventListener('mouseover', onDelegatedEnter, { signal: controller.signal });
+    document.addEventListener('mouseout', onDelegatedLeave, { signal: controller.signal });
 
     // Register cleanup
     cleanupCursor = () => {
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mousedown', onMouseDown);
-      document.removeEventListener('mouseup', onMouseUp);
-      document.removeEventListener('mouseleave', onMouseLeave);
-      document.removeEventListener('mouseenter', onMouseEnter);
-      document.removeEventListener('mouseover', onDelegatedEnter);
-      document.removeEventListener('mouseout', onDelegatedLeave);
+      controller.abort();
     };
   }
 

@@ -392,8 +392,8 @@ const archiveCopy = {
     }
 
     gsap.set(meter, { '--archive-progress': '0%' });
-    gsap.set(firstLine, { autoAlpha: 1, y: 0, scale: 1, clearProps: 'filter' });
-    gsap.set(secondLine, { autoAlpha: 0, y: 80, scale: 0.88, clearProps: 'filter' });
+    gsap.set(firstLine, { autoAlpha: 1, y: 18, scale: 0.985, filter: 'blur(2px)' });
+    gsap.set(secondLine, { autoAlpha: 0, y: 80, scale: 0.88, filter: 'blur(10px)' });
     gsap.set(grid, { y: 220, rotateX: 62, scale: 1.15, autoAlpha: 0.22 });
     gsap.set(rail, { scaleX: 0.34, rotate: -6, autoAlpha: 0.32 });
     gsap.set(cards[0], { autoAlpha: 0, x: -180, y: 72, z: -260, rotateZ: -10, rotateY: -22, scale: 0.78 });
@@ -412,10 +412,11 @@ const archiveCopy = {
     });
 
     archiveTimeline
+      .to(firstLine, { y: 0, scale: 1, filter: 'blur(0px)' }, 0)
       .to(grid, { y: -160, rotateX: 50, scale: 1.28, autoAlpha: 0.42 }, 0)
       .to(rail, { scaleX: 1, rotate: -2, autoAlpha: 0.72 }, 0.05)
-      .to(firstLine, { autoAlpha: 0, y: -90, scale: 0.86 }, 0.08)
-      .to(secondLine, { autoAlpha: 1, y: 0, scale: 1 }, 0.18)
+      .to(firstLine, { autoAlpha: 0, y: -90, scale: 0.86, filter: 'blur(6px)' }, 0.12)
+      .to(secondLine, { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)' }, 0.2)
       .to(cards[0], { autoAlpha: 0.92, x: 0, y: 0, z: 80, rotateZ: -7, rotateY: -6, scale: 1 }, 0.2)
       .to(cards[1], { autoAlpha: 0.94, x: 0, y: 0, z: 120, rotateZ: 5, rotateY: 5, scale: 1 }, 0.26)
       .to(cards[2], { autoAlpha: 0.88, x: 0, y: 0, z: 70, rotateZ: 4, rotateX: 5, scale: 0.96 }, 0.32)
