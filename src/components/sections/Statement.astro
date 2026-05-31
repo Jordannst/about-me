@@ -1,442 +1,52 @@
 ---
-import { projects } from '../../data/portfolio';
-
-const archiveProjects = projects.filter((project) => project.featured).slice(0, 3);
-const archiveCopy = {
-  first: 'Craft stays quiet.',
-  second: 'The work answers.',
-};
+// Minimal editorial statement — a quiet breather between About and the work.
+// Personal voice, no scroll-jacking. Reuses the site's signature motion:
+//   • TextReveal (word slide-up) for the headline — same as About/Hero
+//   • BlurText (blur-to-clear) for the supporting line — same as Hero tagline
+import TextReveal from '../TextReveal.astro';
+import BlurText from '../BlurText.astro';
 ---
 
-<section id="statement" class="manifesto-archive relative bg-[var(--bg-primary)]">
-  <div class="manifesto-archive__scene" id="manifestoArchiveScene">
-    <div class="manifesto-archive__ambient" aria-hidden="true"></div>
-    <div class="manifesto-archive__grid" aria-hidden="true"></div>
-    <div class="manifesto-archive__rail" aria-hidden="true"></div>
-
-    <div class="manifesto-archive__copy" aria-label="Manifesto transition">
-      <p class="manifesto-archive__eyebrow">Manifesto becomes evidence</p>
-      <p class="manifesto-archive__line manifesto-archive__line--first">{archiveCopy.first}</p>
-      <p class="manifesto-archive__line manifesto-archive__line--second">{archiveCopy.second}</p>
+<section
+  id="statement"
+  class="py-24 md:py-40 px-8 md:px-16 border-t border-[var(--border-color)]"
+>
+  <div class="max-w-[1600px] mx-auto">
+    <!-- Section Label -->
+    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
+      <div class="h-px w-8 bg-[var(--border-color)]"></div>
+      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+        Statement
+      </span>
     </div>
 
-    <div class="manifesto-archive__cards" aria-label="Project archive preview">
-      {archiveProjects.map((project, index) => (
-        <a
-          href={`/projects/${project.id}`}
-          class={`manifesto-card manifesto-card--${index + 1}`}
-          data-archive-card
-          aria-label={`Open ${project.title}`}
+    <div class="grid grid-cols-1 lg:grid-cols-12">
+      <div class="lg:col-span-10 lg:col-start-2">
+        <TextReveal
+          tag="h2"
+          animation="words"
+          stagger={0.08}
+          duration={0.9}
+          class="font-[family-name:var(--font-serif)] text-4xl md:text-6xl lg:text-7xl leading-[1.05] tracking-tight text-[var(--text-primary)]"
         >
-          <img
-            src={project.image}
-            alt={project.title}
-            loading="lazy"
-            decoding="async"
-            fetchpriority="low"
-            sizes="(max-width: 900px) 100vw, 20vw"
-          />
-          <span class="manifesto-card__meta">
-            <span>{project.year}</span>
-            <span>{project.title}</span>
-          </span>
-        </a>
-      ))}
-    </div>
+          Still a student,
+          <br />
+          <span class="italic text-[var(--accent)]">already shipping</span>
+          <br />
+          real work.
+        </TextReveal>
 
-    <div class="manifesto-archive__meter" aria-hidden="true"></div>
+        <BlurText
+          tag="p"
+          delay={0.5}
+          stagger={0.05}
+          duration={0.8}
+          class="mt-10 md:mt-12 max-w-2xl text-lg md:text-xl leading-relaxed text-[var(--text-secondary)]"
+        >
+          Each project below began as a real problem worth solving, and a
+          reason to learn what no lecture ever could.
+        </BlurText>
+      </div>
+    </div>
   </div>
 </section>
-
-<style>
-  .manifesto-archive {
-    position: relative;
-    height: 210dvh;
-    margin-top: -1px;
-    overflow: clip;
-    background: var(--bg-primary);
-    color: var(--text-primary);
-  }
-
-  .manifesto-archive__scene {
-    position: sticky;
-    top: 0;
-    height: 100dvh;
-    min-height: 42rem;
-    overflow: hidden;
-    isolation: isolate;
-    display: grid;
-    align-items: center;
-    padding: clamp(5rem, 9vw, 8rem) clamp(1.5rem, 5vw, 6rem);
-    background:
-      linear-gradient(180deg, var(--bg-primary) 0%, color-mix(in srgb, var(--bg-primary) 92%, transparent) 16%, transparent 38%),
-      radial-gradient(circle at 18% 28%, color-mix(in srgb, var(--accent) 8%, transparent), transparent 30rem),
-      radial-gradient(circle at 86% 18%, color-mix(in srgb, var(--bg-secondary) 46%, transparent), transparent 26rem),
-      radial-gradient(circle at 72% 78%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 24rem),
-      var(--bg-primary);
-  }
-
-  .manifesto-archive__scene::before,
-  .manifesto-archive__scene::after {
-    content: '';
-    position: absolute;
-    pointer-events: none;
-  }
-
-  .manifesto-archive__scene::before {
-    inset: 0 0 auto;
-    height: clamp(8rem, 18vh, 14rem);
-    background: linear-gradient(180deg, var(--bg-primary), color-mix(in srgb, var(--bg-primary) 68%, transparent), transparent);
-    z-index: 3;
-  }
-
-  .manifesto-archive__scene::after {
-    width: 160%;
-    height: 1px;
-    top: 57%;
-    left: -30%;
-    background: linear-gradient(90deg, transparent, var(--border-strong), var(--accent), var(--border-strong), transparent);
-    opacity: 0.34;
-    transform: rotate(-17deg);
-    box-shadow: 0 0 3rem color-mix(in srgb, var(--accent) 12%, transparent);
-    z-index: -1;
-  }
-
-  .manifesto-archive__grid {
-    position: absolute;
-    inset: -20% -12%;
-    opacity: 0.42;
-    background-image:
-      linear-gradient(color-mix(in srgb, var(--border-color) 72%, transparent) 1px, transparent 1px),
-      linear-gradient(90deg, color-mix(in srgb, var(--border-color) 72%, transparent) 1px, transparent 1px);
-    background-size: 4.25rem 4.25rem;
-    transform: perspective(58rem) rotateX(62deg) translateY(18rem) scale(1.18);
-    transform-origin: 50% 100%;
-    mask-image: linear-gradient(to top, black 8%, transparent 72%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .manifesto-archive__ambient,
-  .manifesto-archive__rail,
-  .manifesto-archive__copy,
-  .manifesto-archive__cards,
-  .manifesto-archive__meter {
-    position: relative;
-    z-index: 1;
-  }
-
-  .manifesto-archive__ambient {
-    position: absolute;
-    inset: 9% 8% auto auto;
-    width: min(34rem, 44vw);
-    aspect-ratio: 1;
-    border-radius: 999px;
-    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 10%, transparent), transparent 68%);
-    filter: blur(1.5rem);
-    opacity: 0.7;
-    z-index: 0;
-  }
-
-  .manifesto-archive__rail {
-    position: absolute;
-    inset: 14% auto auto 7%;
-    width: min(44rem, 58vw);
-    height: 1px;
-    background: linear-gradient(90deg, var(--border-strong), transparent);
-    transform: rotate(-28deg);
-    transform-origin: left center;
-    opacity: 0.55;
-  }
-
-  .manifesto-archive__copy {
-    max-width: min(48rem, 58vw);
-  }
-
-  .manifesto-archive__eyebrow {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.25rem;
-    color: var(--text-secondary);
-    font-size: 0.68rem;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-  }
-
-  .manifesto-archive__eyebrow::before {
-    content: '';
-    width: 2.5rem;
-    height: 1px;
-    background: var(--border-strong);
-  }
-
-  .manifesto-archive__line {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-size: clamp(3.3rem, 8.4vw, 9.5rem);
-    font-weight: 400;
-    line-height: 0.9;
-    letter-spacing: -0.065em;
-    color: var(--text-primary);
-    text-wrap: balance;
-  }
-
-  .manifesto-archive__line--second {
-    color: var(--accent);
-  }
-
-
-  .manifesto-archive__cards {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    perspective: 72rem;
-    pointer-events: none;
-  }
-
-  .manifesto-card {
-    position: absolute;
-    display: grid;
-    width: clamp(13rem, 20vw, 20rem);
-    aspect-ratio: 4 / 3;
-    overflow: hidden;
-    color: var(--text-primary);
-    text-decoration: none;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    border-radius: 1.35rem;
-    box-shadow: var(--shadow-card);
-    filter: grayscale(0.9) contrast(0.96) brightness(0.82);
-    transform-style: preserve-3d;
-    pointer-events: auto;
-    transition:
-      border-color 0.7s var(--ease-luxury),
-      box-shadow 0.7s var(--ease-luxury),
-      filter 0.7s var(--ease-luxury);
-  }
-
-  .manifesto-card--1 {
-    top: 16%;
-    right: 12%;
-    transform: rotate(4deg);
-  }
-
-  .manifesto-card--2 {
-    right: 30%;
-    bottom: 13%;
-    transform: rotate(-6deg);
-  }
-
-  .manifesto-card--3 {
-    right: 5%;
-    bottom: 24%;
-    transform: rotate(8deg);
-  }
-
-  .manifesto-card:hover,
-  .manifesto-card:focus-visible {
-    border-color: var(--border-strong);
-    box-shadow: 0 1.5rem 5rem color-mix(in srgb, var(--text-primary) 14%, transparent);
-    filter: grayscale(0) contrast(1) brightness(1);
-  }
-
-  .manifesto-card:focus-visible {
-    outline: 1px solid var(--accent);
-    outline-offset: 4px;
-  }
-
-  .manifesto-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .manifesto-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 50% 20%, transparent, color-mix(in srgb, var(--bg-primary) 58%, transparent));
-    pointer-events: none;
-  }
-
-  .manifesto-card__meta {
-    position: absolute;
-    inset: auto 1rem 1rem;
-    display: grid;
-    gap: 0.25rem;
-    color: var(--text-primary);
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.16em;
-    line-height: 1.45;
-    text-transform: uppercase;
-  }
-
-  .manifesto-card__meta span:first-child {
-    color: var(--accent);
-  }
-
-  .manifesto-archive__meter {
-    position: absolute;
-    right: clamp(1.25rem, 3vw, 3rem);
-    top: 50%;
-    width: 2px;
-    height: min(38rem, 58vh);
-    transform: translateY(-50%);
-    background: var(--border-color);
-    overflow: hidden;
-  }
-
-  .manifesto-archive__meter::before {
-    content: '';
-    position: absolute;
-    inset: 0 0 auto;
-    height: var(--archive-progress, 0%);
-    background: linear-gradient(to bottom, var(--accent), var(--border-strong));
-  }
-
-  @media (max-width: 900px), (max-height: 700px) {
-    .manifesto-archive {
-      height: auto;
-      overflow: visible;
-    }
-
-    .manifesto-archive__scene {
-      position: relative;
-      height: auto;
-      min-height: 0;
-      overflow: visible;
-      display: block;
-      padding: 4.5rem 1.25rem;
-    }
-
-    .manifesto-archive__scene::before,
-    .manifesto-archive__scene::after,
-    .manifesto-archive__ambient,
-    .manifesto-archive__grid,
-    .manifesto-archive__rail,
-    .manifesto-archive__meter {
-      display: none;
-    }
-
-    .manifesto-archive__copy {
-      max-width: none;
-    }
-
-    .manifesto-archive__line {
-      font-size: clamp(3rem, 17vw, 5.8rem);
-    }
-
-    .manifesto-archive__cards {
-      position: relative;
-      inset: auto;
-      display: grid;
-      gap: 1rem;
-      margin-top: 2rem;
-      perspective: none;
-      pointer-events: auto;
-    }
-
-    .manifesto-card,
-    .manifesto-card--1,
-    .manifesto-card--2,
-    .manifesto-card--3 {
-      position: relative;
-      inset: auto;
-      width: 100%;
-      max-width: none;
-      aspect-ratio: 16 / 10;
-      transform: none;
-      filter: grayscale(0.25) contrast(1) brightness(0.92);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .manifesto-card {
-      transition: none;
-      transform: none !important;
-    }
-  }
-</style>
-
-<script>
-  import { gsap, ScrollTrigger } from '../../lib/gsap-setup';
-
-  let archiveTimeline: gsap.core.Timeline | null = null;
-
-  function initManifestoArchive() {
-    archiveTimeline?.kill();
-    archiveTimeline = null;
-
-    ScrollTrigger.getAll()
-      .filter((trigger) => trigger.vars.id === 'manifesto-archive')
-      .forEach((trigger) => trigger.kill());
-
-    const section = document.querySelector<HTMLElement>('.manifesto-archive');
-    const scene = document.querySelector<HTMLElement>('.manifesto-archive__scene');
-    const grid = document.querySelector<HTMLElement>('.manifesto-archive__grid');
-    const rail = document.querySelector<HTMLElement>('.manifesto-archive__rail');
-    const firstLine = document.querySelector<HTMLElement>('.manifesto-archive__line--first');
-    const secondLine = document.querySelector<HTMLElement>('.manifesto-archive__line--second');
-    const meter = document.querySelector<HTMLElement>('.manifesto-archive__meter');
-    const cards = gsap.utils.toArray<HTMLElement>('[data-archive-card]');
-
-    if (!section || !scene || !grid || !rail || !firstLine || !secondLine || !meter || cards.length < 3) {
-      return;
-    }
-
-    if (window.matchMedia('(max-width: 900px), (max-height: 700px), (prefers-reduced-motion: reduce)').matches) {
-      gsap.set([scene, grid, rail, firstLine, secondLine, meter, ...cards], { clearProps: 'all' });
-      return;
-    }
-
-    gsap.set(meter, { '--archive-progress': '0%' });
-    gsap.set(firstLine, { autoAlpha: 1, y: 18, scale: 0.985, filter: 'blur(2px)' });
-    gsap.set(secondLine, { autoAlpha: 0, y: 80, scale: 0.88, filter: 'blur(10px)' });
-    gsap.set(grid, { y: 220, rotateX: 62, scale: 1.15, autoAlpha: 0.22 });
-    gsap.set(rail, { scaleX: 0.34, rotate: -6, autoAlpha: 0.32 });
-    gsap.set(cards[0], { autoAlpha: 0, x: -180, y: 72, z: -260, rotateZ: -10, rotateY: -22, scale: 0.78 });
-    gsap.set(cards[1], { autoAlpha: 0, x: 210, y: 90, z: -300, rotateZ: 8, rotateY: 24, scale: 0.76 });
-    gsap.set(cards[2], { autoAlpha: 0, x: -120, y: -110, z: -220, rotateZ: 6, rotateX: 16, scale: 0.72 });
-
-    archiveTimeline = gsap.timeline({
-      defaults: { ease: 'none' },
-      scrollTrigger: {
-        id: 'manifesto-archive',
-        trigger: section,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 0.85,
-      },
-    });
-
-    archiveTimeline
-      .to(firstLine, { y: 0, scale: 1, filter: 'blur(0px)' }, 0)
-      .to(grid, { y: -160, rotateX: 50, scale: 1.28, autoAlpha: 0.42 }, 0)
-      .to(rail, { scaleX: 1, rotate: -2, autoAlpha: 0.72 }, 0.05)
-      .to(firstLine, { autoAlpha: 0, y: -90, scale: 0.86, filter: 'blur(6px)' }, 0.12)
-      .to(secondLine, { autoAlpha: 1, y: 0, scale: 1, filter: 'blur(0px)' }, 0.2)
-      .to(cards[0], { autoAlpha: 0.92, x: 0, y: 0, z: 80, rotateZ: -7, rotateY: -6, scale: 1 }, 0.2)
-      .to(cards[1], { autoAlpha: 0.94, x: 0, y: 0, z: 120, rotateZ: 5, rotateY: 5, scale: 1 }, 0.26)
-      .to(cards[2], { autoAlpha: 0.88, x: 0, y: 0, z: 70, rotateZ: 4, rotateX: 5, scale: 0.96 }, 0.32)
-      .set(cards, { filter: 'grayscale(0) contrast(1) brightness(1)' }, 0.45)
-      .to(secondLine, { autoAlpha: 0.08, y: -44, scale: 0.92 }, 0.68)
-      .to(cards[0], { x: -120, y: -38, rotateZ: -2, rotateY: 0, scale: 0.9 }, 0.7)
-      .to(cards[1], { x: 0, y: -64, rotateZ: 0, rotateY: 0, scale: 1.04 }, 0.7)
-      .to(cards[2], { x: 120, y: -30, rotateZ: 2, rotateX: 0, scale: 0.88 }, 0.7)
-      .to(meter, { '--archive-progress': '100%' }, 0)
-      .to(rail, { scaleX: 1.18, autoAlpha: 0.92 }, 0.82);
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initManifestoArchive, { once: true });
-  } else {
-    initManifestoArchive();
-  }
-
-  if (!(window as any).__manifestoArchiveAfterSwapBound) {
-    document.addEventListener('astro:after-swap', initManifestoArchive);
-    (window as any).__manifestoArchiveAfterSwapBound = true;
-  }
-</script>
