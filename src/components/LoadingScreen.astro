@@ -98,8 +98,10 @@ const letters = firstName.split('');
 
   .loading-line {
     height: 100%;
-    width: 0%;
+    width: 100%;
     background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
     animation: loadingProgress 1500ms var(--ease-luxury) 360ms forwards;
   }
 
@@ -136,13 +138,13 @@ const letters = firstName.split('');
 
   @keyframes loadingProgress {
     0% {
-      width: 0%;
+      transform: scaleX(0);
     }
     50% {
-      width: 70%;
+      transform: scaleX(0.7);
     }
     100% {
-      width: 100%;
+      transform: scaleX(1);
     }
   }
 
@@ -192,7 +194,7 @@ const letters = firstName.split('');
     }
 
     .loading-line {
-      width: 100%;
+      transform: scaleX(1);
     }
   }
 </style>
@@ -234,5 +236,14 @@ const letters = firstName.split('');
       // Safety fallback - never block longer than 4 seconds
       setTimeout(hideLoader, 2500); // safety fallback
     }
+  });
+
+  // SPA navigations swap in a fresh copy of this overlay — kill it instantly.
+  // The loading experience belongs to the first visit only; in-app navigation
+  // is handled by PageTransition's curtain.
+  document.addEventListener('astro:after-swap', () => {
+    const loadingScreen = document.getElementById('loading-screen');
+    if (loadingScreen) loadingScreen.style.display = 'none';
+    document.querySelector('main')?.classList.add('content-revealed');
   });
 </script>

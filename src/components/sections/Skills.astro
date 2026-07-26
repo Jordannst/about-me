@@ -1,5 +1,6 @@
 ---
 import { skills } from '../../data/portfolio';
+import SectionLabel from '../SectionLabel.astro';
 
 // Define skill sizes and icons
 const skillIcons: Record<string, string> = {
@@ -67,23 +68,14 @@ const skillsWithSize = skills.map((skill, index) => {
 ---
 
 <!-- Skills section with main theme -->
-<section id="skills" class="py-20 md:py-32 px-8 md:px-16 border-t border-[var(--border-color)]">
+<section id="skills" class="py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]">
   <div class="max-w-[1600px] mx-auto">
-    <!-- Section Label -->
-    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-        03
-      </span>
-      <div class="h-px w-8 bg-[var(--border-color)]"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-        Expertise
-      </span>
-    </div>
+    <SectionLabel number="04" label="Expertise" />
 
     <!-- Section Title -->
     <h2 class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 reveal-fade-up">
       Skills &
-      <span class="italic text-[var(--accent)]">Technologies</span>
+      <span class="italic text-[var(--accent-text)]">Technologies</span>
     </h2>
 
     <!-- Staggered Grid -->
@@ -123,7 +115,10 @@ const skillsWithSize = skills.map((skill, index) => {
     padding: 1.25rem;
     border: 1px solid var(--border-color);
     background: transparent;
-    transition: background 0.5s ease, border-color 0.5s ease, box-shadow 0.5s ease;
+    transition:
+      background var(--duration-normal) var(--ease-luxury),
+      border-color var(--duration-normal) var(--ease-luxury),
+      box-shadow var(--duration-normal) var(--ease-luxury);
     opacity: 0;
     transform: translateY(60px) scale(0.85);
     position: relative;
@@ -135,7 +130,7 @@ const skillsWithSize = skills.map((skill, index) => {
     position: absolute;
     inset: 0;
     opacity: 0;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.4s var(--ease-luxury);
     pointer-events: none;
     z-index: 0;
     background: radial-gradient(
@@ -177,19 +172,19 @@ const skillsWithSize = skills.map((skill, index) => {
     background: var(--bg-secondary);
     border-color: var(--accent);
     transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(181, 155, 107, 0.15);
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 15%, transparent);
   }
   
   .skill-item:hover .skill-icon {
     opacity: 1;
-    color: var(--accent);
+    color: var(--accent-text);
   }
   
   .skill-category {
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: 0.2em;
-    color: var(--accent);
+    color: var(--accent-text);
     margin-bottom: 0.5rem;
   }
   
@@ -200,7 +195,9 @@ const skillsWithSize = skills.map((skill, index) => {
   
   .skill-icon {
     opacity: 0.3;
-    transition: all 0.5s ease;
+    transition:
+      opacity var(--duration-normal) var(--ease-luxury),
+      color var(--duration-normal) var(--ease-luxury);
     flex-shrink: 0;
     position: relative;
     z-index: 1;
@@ -348,7 +345,6 @@ const skillsWithSize = skills.map((skill, index) => {
     }
   }
   
-  /* fadeInUp keyframes defined in global.css */
 </style>
 
 <script>

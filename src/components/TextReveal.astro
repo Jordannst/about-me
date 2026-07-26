@@ -43,8 +43,8 @@ const Tag = tag;
     display: inline-block;
     transform: translateY(100%);
     opacity: 0;
-    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-                opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.8s var(--ease-out-expo),
+                opacity 0.8s var(--ease-out-expo);
   }
 
   .text-reveal.revealed .char,
@@ -68,6 +68,13 @@ const Tag = tag;
 
   function initTextReveal() {
     const elements = document.querySelectorAll('.text-reveal:not(.initialized)');
+
+    // GSAP writes inline styles, so the global CSS reduced-motion override
+    // can't neutralize it — bail out here and leave the text untouched.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      elements.forEach((el) => el.classList.add('initialized', 'revealed'));
+      return;
+    }
 
     elements.forEach((element) => {
       const el = element as HTMLElement;

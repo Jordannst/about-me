@@ -110,6 +110,14 @@ const filterId = `fuzzy-filter-${Math.random().toString(36).slice(2, 8)}`;
 
       if (!turbulence || !displacement) return;
 
+      // SVG turbulence is one of the most expensive filters a browser can
+      // paint — never run the per-frame loop under reduced motion (CSS
+      // already strips the filter) and pause it while the tab is hidden.
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        el.classList.add('fuzzy-initialized');
+        return;
+      }
+
       let currentIntensity = baseIntensity;
       let targetIntensity = baseIntensity;
       let seed = 0;
@@ -147,8 +155,18 @@ const filterId = `fuzzy-filter-${Math.random().toString(36).slice(2, 8)}`;
         animationId = requestAnimationFrame(animate);
       }
 
-      // Start animation
+      // Start animation; pause while the tab is hidden
       animate();
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          isRunning = false;
+          cancelAnimationFrame(animationId);
+        } else if (document.body.contains(el)) {
+          isRunning = true;
+          animate();
+        }
+      });
 
       // Hover handling
       if (enableHover) {

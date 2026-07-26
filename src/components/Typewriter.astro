@@ -57,8 +57,15 @@ const Tag = tag as any;
 
           const textEl = container.querySelector('.typewriter-text') as HTMLElement;
           const cursorEl = container.querySelector('.typewriter-cursor') as HTMLElement;
-          
+
           if (!textEl || !cursorEl) return;
+
+          // Reduced motion: show the full quote at once, no typing loop.
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            textEl.classList.remove('opacity-0');
+            cursorEl.style.display = 'none';
+            return;
+          }
 
           const textToType = container.getAttribute('data-text') || '';
           const speed = parseInt(container.getAttribute('data-speed') || '40', 10);

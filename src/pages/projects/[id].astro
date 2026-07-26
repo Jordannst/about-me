@@ -14,7 +14,7 @@ export function getStaticPaths() {
 const { project } = Astro.props;
 ---
 
-<Layout>
+<Layout title={`${project.title} | Jordan Sutarto`} description={project.description}>
   <Navigation />
   
   <main class="pt-24 md:pt-32 pb-20 md:pb-32">
@@ -109,9 +109,12 @@ const { project } = Astro.props;
         <!-- Right: Project Image -->
         <div class="lg:col-span-6 order-1 lg:order-2 reveal-fade-up">
           <div class="aspect-[4/3] bg-[var(--bg-secondary)] overflow-hidden relative lg:sticky lg:top-24">
-            <img 
-              src={project.image} 
+            <img
+              src={project.image}
               alt={project.title}
+              width={project.imageWidth}
+              height={project.imageHeight}
+              fetchpriority="high"
               class="w-full h-full object-cover"
             />
           </div>

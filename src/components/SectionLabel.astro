@@ -1,0 +1,23 @@
+---
+// SectionLabel.astro — the editorial "01 — About" marker used at the top of
+// every section. One component so numbering and styling can't drift.
+interface Props {
+  label: string;
+  number?: string;
+  class?: string;
+}
+
+const { label, number, class: className = 'mb-12 md:mb-16' } = Astro.props;
+---
+
+<div class:list={['flex items-center gap-4 reveal', className]}>
+  {number && (
+    <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+      {number}
+    </span>
+  )}
+  <div class="h-px w-8 bg-[var(--border-color)]"></div>
+  <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
+    {label}
+  </span>
+</div>

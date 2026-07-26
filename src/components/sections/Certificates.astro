@@ -1,5 +1,6 @@
 ---
 import { certificates } from '../../data/portfolio';
+import SectionLabel from '../SectionLabel.astro';
 import TextReveal from '../TextReveal.astro';
 
 /* ============================================================
@@ -112,12 +113,7 @@ const rows = sortedCerts.map((cert, i) => {
 >
   <div class="max-w-[1600px] mx-auto">
 
-    <!-- Section Label (matches About / Projects / Skills) -->
-    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">04</span>
-      <div class="h-px w-8 bg-[var(--border-color)]"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">Achievements</span>
-    </div>
+    <SectionLabel number="05" label="Achievements" />
 
     <!-- Section Title (kept as original) -->
     <TextReveal
@@ -127,7 +123,7 @@ const rows = sortedCerts.map((cert, i) => {
       class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-12 md:mb-16 max-w-3xl"
     >
       Certificates &amp;
-      <span class="italic text-[var(--accent)]">Awards</span>
+      <span class="italic text-[var(--accent-text)]">Awards</span>
     </TextReveal>
 
     {total === 0 ? (
@@ -177,10 +173,12 @@ const rows = sortedCerts.map((cert, i) => {
 
             <div
               id={`toc-body-${row.cert.id}`}
-              class="toc-chapter-body"
+              class="toc-drawer"
               role="region"
               aria-label={`Chapter ${row.chapter} body`}
             >
+              <div class="toc-drawer-inner">
+              <div class="toc-chapter-body">
               <div class="chapter-prose">
                 <div class="chapter-issuer">
                   <span class="who">{row.issuerShort}</span>
@@ -234,6 +232,8 @@ const rows = sortedCerts.map((cert, i) => {
                   <img
                     src={row.cert.image}
                     alt={row.cert.title}
+                    width={row.cert.imageWidth}
+                    height={row.cert.imageHeight}
                     loading="lazy"
                     decoding="async"
                   />
@@ -243,6 +243,8 @@ const rows = sortedCerts.map((cert, i) => {
                   </figcaption>
                 </figure>
               )}
+              </div>
+              </div>
             </div>
           </li>
         ))}
@@ -267,7 +269,7 @@ const rows = sortedCerts.map((cert, i) => {
      Local easing not present in global.css
      ============================================================ */
   #certificates {
-    --ease-toc-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-toc-expo: var(--ease-out-expo);
   }
 
   /* ============================================================
@@ -353,7 +355,7 @@ const rows = sortedCerts.map((cert, i) => {
                 transform 0.55s var(--ease-toc-expo);
   }
   .toc-row:hover .toc-marker,
-  .toc-row.is-open .toc-marker { color: var(--accent); }
+  .toc-row.is-open .toc-marker { color: var(--accent-text); }
   .toc-row.is-open .toc-marker { transform: rotate(90deg); }
 
   .toc-chapter {
@@ -371,7 +373,7 @@ const rows = sortedCerts.map((cert, i) => {
     transition: color 350ms var(--ease-luxury);
   }
   .toc-row:hover .toc-chapter b,
-  .toc-row.is-open .toc-chapter b { color: var(--accent); }
+  .toc-row.is-open .toc-chapter b { color: var(--accent-text); }
 
   .toc-title-line {
     display: flex;
@@ -386,7 +388,7 @@ const rows = sortedCerts.map((cert, i) => {
     align-self: center;
   }
   .toc-rank {
-    color: var(--accent);
+    color: var(--accent-text);
     font-style: italic;
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -396,7 +398,7 @@ const rows = sortedCerts.map((cert, i) => {
     font-size: 0.42em;
     font-style: normal;
     letter-spacing: 0.05em;
-    color: color-mix(in srgb, var(--accent) 70%, transparent);
+    color: color-mix(in srgb, var(--accent-text) 85%, transparent);
     margin-left: 0.05em;
   }
   .toc-name { font-weight: 400; }
@@ -467,8 +469,8 @@ const rows = sortedCerts.map((cert, i) => {
   }
   .toc-row:hover .toc-year,
   .toc-row.is-open .toc-year {
-    color: var(--accent);
-    -webkit-text-stroke-color: var(--accent);
+    color: var(--accent-text);
+    -webkit-text-stroke-color: var(--accent-text);
   }
 
   .toc-paginate {
@@ -480,29 +482,35 @@ const rows = sortedCerts.map((cert, i) => {
     white-space: nowrap;
   }
   .toc-paginate b {
-    color: var(--accent);
+    color: var(--accent-text);
     font-weight: 500;
   }
 
   /* ============================================================
      EXPANDED CHAPTER BODY
      ============================================================ */
+  /* Expand/collapse via grid-template-rows 0fr -> 1fr: the browser animates
+     to the drawer's real height (no magic max-height) and the inner content
+     is simply clipped, so no per-frame layout of the rest of the list. */
+  .toc-drawer {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 0.9s var(--ease-toc-expo),
+                opacity 0.55s var(--ease-luxury);
+  }
+  .toc-row.is-open .toc-drawer {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .toc-drawer-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
   .toc-chapter-body {
     display: grid;
-    grid-column: 1 / -1;
     grid-template-columns: 1.1fr 1fr;
     gap: 3rem;
-    padding: 0 0.75rem;
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.9s var(--ease-toc-expo),
-                opacity 0.55s var(--ease-luxury),
-                padding 0.5s var(--ease-luxury);
-  }
-  .toc-row.is-open .toc-chapter-body {
-    max-height: 720px;
-    opacity: 1;
     padding: 0.5rem 0.75rem 2.75rem;
   }
 
@@ -538,7 +546,7 @@ const rows = sortedCerts.map((cert, i) => {
     letter-spacing: 0;
   }
   .chapter-issuer .tier {
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   .chapter-quote {
@@ -583,7 +591,7 @@ const rows = sortedCerts.map((cert, i) => {
     font-size: 9px;
     letter-spacing: 0.22em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-text);
     border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
     padding: 0.4rem 0.65rem;
     transition: background var(--duration-fast) var(--ease-luxury),
@@ -609,10 +617,10 @@ const rows = sortedCerts.map((cert, i) => {
     min-width: 90px;
   }
   .chapter-meta dt {
-    font-size: 8.5px;
+    font-size: 9px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-text);
     font-weight: 500;
   }
   .chapter-meta dd {
@@ -629,7 +637,7 @@ const rows = sortedCerts.map((cert, i) => {
     font-size: 10px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    color: var(--accent);
+    color: var(--accent-text);
     border-bottom: 1px solid var(--accent);
     padding-bottom: 3px;
     display: inline-flex;
@@ -731,7 +739,6 @@ const rows = sortedCerts.map((cert, i) => {
       order: -1;
       max-width: 520px;
     }
-    .toc-row.is-open .toc-chapter-body { max-height: 1100px; }
   }
   @media (max-width: 720px) {
     .toc-line {

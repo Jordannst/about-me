@@ -1,10 +1,11 @@
 ---
-// Back to Top Button
-// Uses page transition overlay for smooth experience
+// Back to Top Button — scrolls smoothly to the top (via Lenis when active).
+// The old implementation reloaded the whole page to "reset animations";
+// that threw away scroll position, state, and ~1s of the visitor's time.
 ---
 
-<button 
-  id="back-to-top" 
+<button
+  id="back-to-top"
   class="fixed bottom-8 right-8 z-50 w-12 h-12 bg-[var(--bg-inverted)] text-[var(--text-inverted)] opacity-0 pointer-events-none translate-y-4 transition-all duration-500 hover:bg-[var(--accent)] hover:text-[var(--text-inverted)] group"
   aria-label="Back to top"
 >
@@ -13,83 +14,39 @@
   </svg>
 </button>
 
-<!-- Dedicated overlay for back to top -->
-<div id="back-to-top-overlay" class="btt-overlay">
-  <div class="btt-overlay-inner"></div>
-</div>
-
 <style>
   #back-to-top.visible {
     opacity: 1;
     pointer-events: auto;
     transform: translateY(0);
   }
-  
-  .btt-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 80;
-    pointer-events: none;
-    overflow: hidden;
-  }
-  
-  .btt-overlay-inner {
-    position: absolute;
-    inset: 0;
-    background-color: var(--bg-inverted);
-    transform: translateY(100%);
-    transition: transform 500ms cubic-bezier(0.65, 0, 0.35, 1);
-  }
-  
-  .btt-overlay.entering .btt-overlay-inner {
-    transform: translateY(0);
-  }
-  
-  .btt-overlay.exiting .btt-overlay-inner {
-    transform: translateY(-100%);
-  }
-  
-  /* No transition when resetting to prevent sliding back */
-  .btt-overlay.reset .btt-overlay-inner {
-    transition: none;
-    transform: translateY(100%);
-  }
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+  function initBackToTop() {
     const backToTop = document.getElementById('back-to-top');
-    const overlay = document.getElementById('back-to-top-overlay');
+    if (!backToTop || backToTop.dataset.initialized === 'true') return;
+    backToTop.dataset.initialized = 'true';
+
     const controller = new AbortController();
 
-    // Show/hide based on scroll position
     const toggleVisibility = () => {
-      if (window.scrollY > 500) {
-        backToTop?.classList.add('visible');
-      } else {
-        backToTop?.classList.remove('visible');
-      }
+      backToTop.classList.toggle('visible', window.scrollY > 500);
     };
-    
-    // Page transition to top
-    backToTop?.addEventListener('click', () => {
-      if (overlay) {
-        // Step 1: Overlay enters from bottom
-        overlay.classList.remove('reset');
-        overlay.classList.add('entering');
 
-        // Step 2: After fully covered, reload page so all animations reset
-        setTimeout(() => {
-          window.scrollTo({ top: 0, behavior: 'instant' });
-          window.location.href = window.location.pathname;
-        }, 500);
+    backToTop.addEventListener('click', () => {
+      const lenis = (window as any).lenis;
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      if (reduceMotion) {
+        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      } else if (lenis) {
+        lenis.scrollTo(0, { duration: 1.2 });
       } else {
-        // Fallback
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
     }, { signal: controller.signal });
 
-    // Listen to scroll
     window.addEventListener('scroll', toggleVisibility, {
       passive: true,
       signal: controller.signal,
@@ -100,5 +57,12 @@
     }, { once: true, signal: controller.signal });
 
     toggleVisibility();
-  });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initBackToTop, { once: true });
+  } else {
+    initBackToTop();
+  }
+  document.addEventListener('astro:after-swap', initBackToTop);
 </script>

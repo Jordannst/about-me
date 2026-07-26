@@ -4,6 +4,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
+  // Canonical domain — canonical links and og:image URLs derive from this.
+  site: 'https://jordannst.dev',
   server: {
     host: '0.0.0.0',
     port: 5000,

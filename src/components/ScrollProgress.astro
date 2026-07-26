@@ -2,14 +2,16 @@
 ---
 
 <div id="scroll-progress-container" class="fixed top-0 left-0 w-full h-1 z-[100] pointer-events-none">
-  <div 
-    id="scroll-progress-bar" 
-    class="h-full bg-[var(--accent)] w-0 transition-all duration-150 ease-out"
-    style="box-shadow: 0 0 10px var(--accent);"
+  <div
+    id="scroll-progress-bar"
+    class="h-full w-full bg-[var(--accent)] origin-left"
+    style="box-shadow: 0 0 10px var(--accent); transform: scaleX(0);"
   ></div>
 </div>
 
 <script>
+  // Progress bar scales on transform only (no width/layout work) and the
+  // element is re-queried per frame, so it keeps working after SPA swaps.
   function updateScrollProgress() {
     const scrollBar = document.getElementById('scroll-progress-bar');
     if (!scrollBar) return;
@@ -17,16 +19,13 @@
     const windowHeight = window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    
-    const scrollPercentage = (scrollTop / (documentHeight - windowHeight)) * 100;
-    
-    scrollBar.style.width = `${scrollPercentage}%`;
+    const scrollable = documentHeight - windowHeight;
+    const progress = scrollable > 0 ? Math.min(scrollTop / scrollable, 1) : 0;
+
+    scrollBar.style.transform = `scaleX(${progress})`;
   }
 
-  // Smooth updates using requestAnimationFrame
   let ticking = false;
-  const controller = new AbortController();
-
   const handleScroll = () => {
     if (!ticking) {
       window.requestAnimationFrame(() => {
@@ -37,15 +36,8 @@
     }
   };
 
-  window.addEventListener('scroll', handleScroll, {
-    passive: true,
-    signal: controller.signal,
-  });
+  window.addEventListener('scroll', handleScroll, { passive: true });
+  document.addEventListener('astro:after-swap', updateScrollProgress);
 
-  document.addEventListener('astro:before-swap', () => {
-    controller.abort();
-  }, { once: true, signal: controller.signal });
-
-  // Initial call
   updateScrollProgress();
 </script>

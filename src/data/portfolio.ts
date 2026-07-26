@@ -13,6 +13,15 @@ export const about = {
   highlight: `For me, coding isn't just about logic, it's about creating experiences that leave an impression.`,
 };
 
+// Single source of truth for section navigation — rendered by the desktop
+// nav, mobile overlay, and big footer so the lists can never drift apart.
+export const navLinks = [
+  { href: "#about", label: "About" },
+  { href: "#work", label: "Work" },
+  { href: "#skills", label: "Skills" },
+  { href: "#contact", label: "Contact" },
+];
+
 export const skills = [
   { name: "JavaScript", category: "Languages" },
   { name: "TypeScript", category: "Languages" },
@@ -40,6 +49,10 @@ export interface Project {
   description: string;
   longDescription?: string;
   image: string;
+  /* Intrinsic pixel size of the image file — rendered as width/height
+     attributes so the browser reserves space before load (no CLS). */
+  imageWidth: number;
+  imageHeight: number;
   tags: string[];
   link: string;
   liveUrl?: string;
@@ -58,6 +71,8 @@ export const projects: Project[] = [
     longDescription:
       "Production-grade Retrieval-Augmented Generation system with hybrid semantic search (vector + full-text), AI-powered document analysis, and Data Analyst Agent that generates Python code from natural language queries for CSV/Excel analytics with chart visualization.",
     image: "/rag-chatbot.webp",
+    imageWidth: 938,
+    imageHeight: 632,
     tags: ["Next.js", "Go", "PostgreSQL", "pgvector", "Gemini AI"],
     link: "https://github.com/Jordannst/contextual-rag-chat",
     featured: true,
@@ -73,6 +88,8 @@ export const projects: Project[] = [
     longDescription:
       "Cloud-based Point of Sale SaaS for Indonesian SMEs. Features AI analytics, real-time inventory sync, multi-outlet management & subscription tiers. Try FREE at kassentix.cloud!",
     image: "/kassentix.webp",
+    imageWidth: 844,
+    imageHeight: 570,
     tags: ["Next.js 15", "TypeScript", "Express.js", "Prisma", "Socket.io"],
     link: "https://kassentix.cloud",
     liveUrl: "https://kassentix.cloud",
@@ -89,6 +106,8 @@ export const projects: Project[] = [
     longDescription:
       "A modern invoice management system built for logistics/expedition businesses. Includes transaction management, invoice grouping, digital signature storage, PDF export with html2pdf.js, rate-limited authentication, soft-delete functionality, and real-time analytics dashboard.",
     image: "/klkinvoice.webp",
+    imageWidth: 1002,
+    imageHeight: 676,
     tags: [
       "Next.js 16",
       "TypeScript",
@@ -114,6 +133,8 @@ export interface Certificate {
   date: string;
   type: "organization" | "competition" | "course";
   image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   credentialUrl?: string;
   description?: string;
 }
@@ -128,6 +149,8 @@ export const certificates: Certificate[] = [
     description:
       "3rd Honorable Mention (Juara Harapan 3) in the UI/UX Design category at the Indonesia IT Competition (Indoneris) 2025.",
     image: "/UIUX-6.webp",
+    imageWidth: 999,
+    imageHeight: 706,
     credentialUrl: "#",
   },
   {
@@ -139,6 +162,8 @@ export const certificates: Certificate[] = [
     description:
       "First place winner in the UI/UX Design category at the Indonesia IT Competition (Indoneris) 2024.",
     image: "/2024-UIUX.webp",
+    imageWidth: 1046,
+    imageHeight: 738,
     credentialUrl: "#",
   },
   

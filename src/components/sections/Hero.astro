@@ -14,7 +14,7 @@ const greetings = [
 ];
 ---
 
-<section class="min-h-screen flex items-center md:items-end pb-16 md:pb-32 pt-24 md:pt-32 px-8 md:px-16 relative overflow-hidden">
+<section class="min-h-screen flex items-center md:items-end pb-16 md:pb-32 pt-24 md:pt-32 px-6 md:px-16 relative overflow-hidden">
   <!-- Vertical Label (Desktop) -->
   <div class="hidden lg:block absolute left-8 top-1/2 -translate-y-1/2">
     <span class="vertical-text text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
@@ -26,7 +26,9 @@ const greetings = [
     <!-- Decorative Line + Rotating Greeting -->
     <div class="flex items-center gap-4 mb-8 hero-line">
       <div class="h-px w-8 md:w-12 bg-[var(--border-strong)]"></div>
-      <span class="hello-rotator" id="helloRotator" aria-live="polite" aria-atomic="true">
+      <!-- No aria-live here on purpose: the greeting cycles forever and a live
+           region would interrupt screen readers every 2.5s. -->
+      <span class="hello-rotator" id="helloRotator">
         {greetings.map((g, i) => (
           <span
             class:list={['hello-lang', i === 0 && 'active']}
@@ -174,16 +176,25 @@ const greetings = [
 </style>
 
 <script>
-  // Hide scroll indicator on scroll
-  let scrollIndicator: HTMLElement | null;
+  // Hide scroll indicator on scroll.
+  // The cached element is invalidated on astro:after-swap — otherwise it would
+  // keep pointing at a detached node from the previous page.
+  let scrollIndicator: HTMLElement | null = null;
+  let indicatorHidden = false;
   function handleHeroScroll() {
+    if (indicatorHidden || window.scrollY <= 100) return;
     scrollIndicator = scrollIndicator || document.querySelector('.scroll-indicator');
-    if (scrollIndicator && window.scrollY > 100) {
+    if (scrollIndicator) {
+      scrollIndicator.style.transition = 'opacity 0.5s var(--ease-luxury)';
       scrollIndicator.style.opacity = '0';
-      scrollIndicator.style.transition = 'opacity 0.5s ease';
+      indicatorHidden = true;
     }
   }
   window.addEventListener('scroll', handleHeroScroll, { passive: true });
+  document.addEventListener('astro:after-swap', () => {
+    scrollIndicator = null;
+    indicatorHidden = false;
+  });
 
   // ============================================
   // Rotating Greeting — blur swap between languages

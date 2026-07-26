@@ -5,7 +5,7 @@ import FooterMinimal from '../../components/FooterMinimal.astro';
 import { projects } from '../../data/portfolio';
 ---
 
-<Layout>
+<Layout title="All Projects | Jordan Sutarto">
   <Navigation />
   
   <main class="pt-24 md:pt-32 pb-20 md:pb-32">
@@ -44,13 +44,15 @@ import { projects } from '../../data/portfolio';
           <a
             href={`/projects/${project.id}`}
             class="project-card group block"
-            data-cursor-text="View"
           >
             <!-- Project Image -->
             <div class="image-container aspect-video mb-4 overflow-hidden relative bg-[var(--bg-secondary)]">
               <img
                 src={project.image}
                 alt={project.title}
+                width={project.imageWidth}
+                height={project.imageHeight}
+                loading="lazy"
                 class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
               
@@ -117,7 +119,9 @@ import { projects } from '../../data/portfolio';
 
 <style>
   .image-container {
-    transition: transform 400ms ease, box-shadow 400ms ease;
+    transition:
+      transform 400ms var(--ease-luxury),
+      box-shadow 400ms var(--ease-luxury);
   }
   
   .project-card:hover .image-container {

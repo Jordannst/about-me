@@ -41,7 +41,7 @@ const { src, alt, class: className = '', direction = 'left' } = Astro.props;
     height: 100%;
     object-fit: cover;
     transform: scale(1.2);
-    transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 1.2s var(--ease-out-expo);
   }
 
   /* Direction variants */
@@ -81,6 +81,13 @@ const { src, alt, class: className = '', direction = 'left' } = Astro.props;
 
   function initImageReveal() {
     const images = document.querySelectorAll('.image-reveal:not(.initialized)');
+
+    // Reduced motion: jump straight to the revealed state (mask gone,
+    // image unscaled) — the .revealed CSS rules handle it without motion.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      images.forEach((el) => el.classList.add('initialized', 'revealed'));
+      return;
+    }
 
     images.forEach((container) => {
       const el = container as HTMLElement;

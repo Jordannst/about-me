@@ -52,15 +52,9 @@
     }
   }
 
-  /* Hide default cursor on desktop */
-  @media (hover: hover) and (pointer: fine) {
-    :global(html) {
-      cursor: none !important;
-    }
-    :global(a, button, [role="button"], input, textarea, select, label) {
-      cursor: none !important;
-    }
-  }
+  /* The native cursor is hidden via body.has-custom-cursor (global.css),
+     which this component's script adds only after it has initialized —
+     if JS fails, visitors keep their normal cursor. */
 </style>
 
 <script>
@@ -85,8 +79,12 @@
     if (isTouchDevice) {
       cursor.style.display = 'none';
       document.documentElement.style.cursor = '';
+      document.body.classList.remove('has-custom-cursor');
       return;
     }
+
+    // Only now is it safe to hide the native cursor.
+    document.body.classList.add('has-custom-cursor');
 
     // Instant, lag-free cursor follow using hardware acceleration (transform)
     let animationFrameId: number;
@@ -134,6 +132,7 @@
     // Register cleanup
     cleanupCursor = () => {
       controller.abort();
+      document.body.classList.remove('has-custom-cursor');
     };
   }
 

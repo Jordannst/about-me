@@ -5,20 +5,15 @@
 //   • BlurText (blur-to-clear) for the supporting line — same as Hero tagline
 import TextReveal from '../TextReveal.astro';
 import BlurText from '../BlurText.astro';
+import SectionLabel from '../SectionLabel.astro';
 ---
 
 <section
   id="statement"
-  class="py-24 md:py-40 px-8 md:px-16 border-t border-[var(--border-color)]"
+  class="py-24 md:py-40 px-6 md:px-16 border-t border-[var(--border-color)]"
 >
   <div class="max-w-[1600px] mx-auto">
-    <!-- Section Label -->
-    <div class="flex items-center gap-4 mb-12 md:mb-16 reveal">
-      <div class="h-px w-8 bg-[var(--border-color)]"></div>
-      <span class="text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)]">
-        Statement
-      </span>
-    </div>
+    <SectionLabel number="02" label="Statement" />
 
     <div class="grid grid-cols-1 lg:grid-cols-12">
       <div class="lg:col-span-10 lg:col-start-2">
@@ -31,7 +26,7 @@ import BlurText from '../BlurText.astro';
         >
           Still a student,
           <br />
-          <span class="italic text-[var(--accent)]">already shipping</span>
+          <span class="italic text-[var(--accent-text)]">already shipping</span>
           <br />
           real work.
         </TextReveal>

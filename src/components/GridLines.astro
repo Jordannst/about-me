@@ -59,4 +59,8 @@
     // No loading screen, animate immediately
     triggerGridAnimation();
   }
+
+  // After an SPA swap the fresh grid lines start at scaleY(0) — draw them
+  // right away (no loading screen on in-app navigation).
+  document.addEventListener('astro:after-swap', triggerGridAnimation);
 </script>
