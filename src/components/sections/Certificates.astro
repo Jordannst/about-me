@@ -1,41 +1,21 @@
 ---
+// Certificates.astro — "Featured + Ledger" (minimal)
+//
+// One achievement gets the spotlight: the highest-weight entry, picked
+// automatically from the data (1st > 2nd > 3rd > honorable > course), so a
+// bigger future win takes over without any redesign. Every other entry is a
+// thin ledger row. Rows open the credential link when one exists, otherwise
+// a minimal lightbox with the certificate image.
 import { certificates } from '../../data/portfolio';
+import ImageReveal from '../ImageReveal.astro';
 import SectionLabel from '../SectionLabel.astro';
 import TextReveal from '../TextReveal.astro';
-
-/* ============================================================
-   Helpers — derive display data from the certificates array.
-   Keeps the schema in portfolio.ts untouched while letting the
-   Table of Recognition render rich, editorial-style metadata.
-   ============================================================ */
 
 const typeLabels: Record<string, string> = {
   organization: 'Organization',
   competition: 'Competition',
-  course: 'Course',
+  course: 'Certification',
 };
-
-function toRoman(num: number): string {
-  const map: [number, string][] = [
-    [50, 'L'], [40, 'XL'], [10, 'X'], [9, 'IX'],
-    [5, 'V'],  [4, 'IV'],  [1, 'I'],
-  ];
-  let n = num;
-  let out = '';
-  for (const [val, sym] of map) {
-    while (n >= val) { out += sym; n -= val; }
-  }
-  return out || 'I';
-}
-
-function pad2(n: number): string {
-  return n < 10 ? `0${n}` : String(n);
-}
-
-function shortYear(year: string): string {
-  // "2024" -> "'24"; leaves anything else (e.g. "Present") as-is
-  return /^\d{4}$/.test(year) ? `'${year.slice(2)}` : year;
-}
 
 interface ParsedTitle {
   category: string;   // e.g. "UI/UX Design"
@@ -57,54 +37,56 @@ function parseTitle(title: string): ParsedTitle {
 }
 
 function shortIssuer(issuer: string): string {
-  // "Indoneris IT Competition - Universitas Amikom Purwokerto"
-  // → "Indoneris IT Competition"
   return issuer.split(/[-–—]/)[0].trim();
 }
 
+function issuerRest(issuer: string): string {
+  return issuer.split(/[-–—]/).slice(1).join(' · ').trim();
+}
+
 function brandName(issuer: string): string {
-  // "Indoneris IT Competition - ..." → "Indoneris"
   return shortIssuer(issuer).split(/\s+/)[0];
 }
 
-function shortRankLabel(p: ParsedTitle): string {
+function rankLabel(p: ParsedTitle): string {
   if (!p.rank) return '';
-  if (/honor/i.test(p.rankPhrase)) return `${p.rank}${p.rankSuffix} Honorable`;
-  if (p.rankPhrase) return `${p.rank}${p.rankSuffix} ${p.rankPhrase}`;
-  return `${p.rank}${p.rankSuffix}`;
+  return `${p.rank}${p.rankSuffix} ${p.rankPhrase}`.trim();
 }
 
-const sortedCerts = [...certificates].sort((a, b) => {
-  // newest first
-  const ay = parseInt(a.date) || 0;
-  const by = parseInt(b.date) || 0;
-  return by - ay;
-});
+/* Featured selection: lower weight wins. Ranked places first (honorable
+   mentions weighted below podium places), then everything else by recency. */
+function weightOf(p: ParsedTitle): number {
+  if (!p.rank) return 99;
+  const n = parseInt(p.rank, 10);
+  return /honor/i.test(p.rankPhrase) ? n + 0.5 : n;
+}
 
-const total = sortedCerts.length;
-const totalPad = pad2(total);
-
-const rows = sortedCerts.map((cert, i) => {
+const entries = certificates.map((cert) => {
   const parsed = parseTitle(cert.title);
   const hasCredential = !!(cert.credentialUrl && cert.credentialUrl !== '#');
   return {
     cert,
-    index: i,
-    chapter: toRoman(i + 1),
-    page: pad2(i + 1),
-    rank: parsed.rank,
-    rankSuffix: parsed.rankSuffix,
-    rankPhrase: parsed.rankPhrase,
-    rankLabel: shortRankLabel(parsed),
-    category: parsed.category || 'Recognition',
-    name: `${brandName(cert.issuer)} ${shortYear(cert.date)}`,
-    yearShort: shortYear(cert.date),
-    issuerShort: shortIssuer(cert.issuer),
+    parsed,
+    weight: weightOf(parsed),
+    year: parseInt(cert.date) || 0,
+    rankLabel: rankLabel(parsed),
     typeLabel: typeLabels[cert.type] || cert.type,
-    certNo: `${(cert.type || 'cert').slice(0, 2).toUpperCase()}-${pad2(cert.id)}-${cert.date.slice(-2)}`,
     hasCredential,
   };
 });
+
+const sorted = [...entries].sort((a, b) => a.weight - b.weight || b.year - a.year);
+const featured = sorted[0] ?? null;
+const ledger = sorted
+  .slice(1)
+  .sort((a, b) => b.year - a.year || a.weight - b.weight);
+
+/* Ledger row display name: "Indoneris, Honorable Mention" / full title for courses */
+function ledgerName(e: (typeof entries)[number]): string {
+  if (!e.parsed.rank) return e.parsed.category;
+  const suffix = /honor/i.test(e.parsed.rankPhrase) ? ', Honorable Mention' : '';
+  return `${brandName(e.cert.issuer)}${suffix}`;
+}
 ---
 
 <section
@@ -112,765 +94,480 @@ const rows = sortedCerts.map((cert, i) => {
   class="py-20 md:py-32 px-6 md:px-16 border-t border-[var(--border-color)]"
 >
   <div class="max-w-[1600px] mx-auto">
-
     <SectionLabel number="05" label="Achievements" />
 
-    <!-- Section Title (kept as original) -->
     <TextReveal
       tag="h2"
       animation="words"
       stagger={0.08}
-      class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-12 md:mb-16 max-w-3xl"
+      class="text-4xl md:text-5xl lg:text-7xl leading-[0.95] mb-16 md:mb-24 max-w-3xl"
     >
       Certificates &amp;
       <span class="italic text-[var(--accent-text)]">Awards</span>
     </TextReveal>
 
-    {total === 0 ? (
-      <p class="toc-empty">No recognitions on record yet — this chapter is still being written.</p>
-    ) : (
-      <ol class="toc-list" id="toc-list" role="list">
-        {rows.map((row, i) => (
-          <li class="toc-row" data-index={i} data-key={row.cert.id}>
-            <div
-              class="toc-line"
-              role="button"
-              tabindex="0"
-              aria-expanded="false"
-              aria-controls={`toc-body-${row.cert.id}`}
+    {featured && (
+      <div class="featured grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-24 items-center mb-20 md:mb-28">
+        <div>
+          <p class="featured-flag reveal-fade-up">Featured</p>
+          <h3 class="featured-title reveal-fade-up" style="transition-delay: 100ms;">
+            {featured.rankLabel ? (
+              <>
+                <em>{featured.rankLabel}</em>, {featured.parsed.category}
+              </>
+            ) : (
+              featured.parsed.category
+            )}
+          </h3>
+          <p class="featured-meta reveal-fade-up" style="transition-delay: 200ms;">
+            {shortIssuer(featured.cert.issuer)}
+            {issuerRest(featured.cert.issuer) && <br />}
+            {issuerRest(featured.cert.issuer) && `${issuerRest(featured.cert.issuer)} · `}
+            {!issuerRest(featured.cert.issuer) && ''}
+            {featured.cert.date}
+          </p>
+          {featured.hasCredential && (
+            <a
+              class="featured-cta reveal-fade-up"
+              style="transition-delay: 300ms;"
+              href={featured.cert.credentialUrl}
+              target="_blank"
+              rel="noopener"
             >
-              <svg
-                class="toc-marker"
-                viewBox="0 0 16 16"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="1.6"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                aria-hidden="true"
-              >
-                <path d="M5 3 L11 8 L5 13"></path>
+              View credential
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
               </svg>
+            </a>
+          )}
+        </div>
 
-              <span class="toc-chapter">Ch · <b>{row.chapter}</b></span>
+        {featured.cert.image && (
+          <button
+            type="button"
+            class="featured-proof"
+            data-lightbox-src={featured.cert.image}
+            data-lightbox-alt={featured.cert.title}
+            data-lightbox-caption={`${featured.rankLabel || featured.typeLabel} · ${featured.cert.date}`}
+            aria-label={`View certificate: ${featured.cert.title}`}
+          >
+            <ImageReveal
+              src={featured.cert.image}
+              alt={featured.cert.title}
+              direction="right"
+              class="w-full h-full"
+            />
+          </button>
+        )}
+      </div>
+    )}
 
-              <span class="toc-title-line">
-                {row.rank && (
-                  <span class="toc-rank">
-                    {row.rank}<sup>{row.rankSuffix}</sup>
-                  </span>
-                )}
-                <span class="toc-name">{row.name}</span>
-                <span class="toc-cat">{row.category}</span>
-              </span>
-
-              <span class="toc-dots" aria-hidden="true"></span>
-
-              <span class="toc-year">{row.yearShort}</span>
-
-              <span class="toc-paginate">P. <b>{row.page}</b> / {totalPad}</span>
-            </div>
-
-            <div
-              id={`toc-body-${row.cert.id}`}
-              class="toc-drawer"
-              role="region"
-              aria-label={`Chapter ${row.chapter} body`}
-            >
-              <div class="toc-drawer-inner">
-              <div class="toc-chapter-body">
-              <div class="chapter-prose">
-                <div class="chapter-issuer">
-                  <span class="who">{row.issuerShort}</span>
-                  {row.cert.issuer.includes('-') && (
-                    <>
-                      <span class="em">—</span>
-                      <span>{row.cert.issuer.split(/[-–—]/).slice(1).join(' — ').trim()}</span>
-                    </>
+    {ledger.length > 0 && (
+      <ol class="ach-toc" id="achievement-ledger" role="list">
+        {ledger.map((e) => (
+          <li class="toc-row">
+            {e.hasCredential ? (
+              <a class="toc-line" href={e.cert.credentialUrl} target="_blank" rel="noopener">
+                <span class="toc-title">
+                  {e.parsed.rank && (
+                    <span class="toc-rank">{e.parsed.rank}<sup>{e.parsed.rankSuffix}</sup></span>
                   )}
-                  <span class="em">—</span>
-                  <span class="tier">{row.typeLabel}</span>
-                </div>
-
-                {row.cert.description && (
-                  <p class="chapter-quote">{row.cert.description}</p>
-                )}
-
-                <div class="chapter-tags">
-                  {row.rankLabel && <span class="chapter-tag">{row.rankLabel}</span>}
-                  {row.category && <span class="chapter-tag">{row.category}</span>}
-                  <span class="chapter-tag">{row.typeLabel}</span>
-                  <span class="chapter-tag">Cert · {row.certNo}</span>
-                </div>
-
-                <dl class="chapter-meta">
-                  {row.rankLabel && (
-                    <div><dt>Rank</dt><dd>{row.rankLabel}</dd></div>
+                  <span class="toc-name">{ledgerName(e)}</span>
+                </span>
+                <span class="toc-cat">{e.parsed.rank ? e.parsed.category : e.typeLabel}</span>
+                <span class="toc-year">{e.cert.date}</span>
+              </a>
+            ) : (
+              <button
+                type="button"
+                class="toc-line"
+                data-lightbox-src={e.cert.image}
+                data-lightbox-alt={e.cert.title}
+                data-lightbox-caption={`${e.rankLabel || e.typeLabel} · ${e.cert.date}`}
+                disabled={!e.cert.image}
+              >
+                <span class="toc-title">
+                  {e.parsed.rank && (
+                    <span class="toc-rank">{e.parsed.rank}<sup>{e.parsed.rankSuffix}</sup></span>
                   )}
-                  <div><dt>Class</dt><dd>{row.typeLabel}</dd></div>
-                  <div><dt>Category</dt><dd>{row.category}</dd></div>
-                  <div><dt>Year</dt><dd>{row.cert.date}</dd></div>
-                </dl>
-
-                {row.hasCredential && (
-                  <a
-                    class="chapter-cta"
-                    href={row.cert.credentialUrl}
-                    target="_blank"
-                    rel="noopener"
-                  >
-                    View certificate
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                      <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                  </a>
-                )}
-              </div>
-
-              {row.cert.image && (
-                <figure class="chapter-proof">
-                  <img
-                    src={row.cert.image}
-                    alt={row.cert.title}
-                    width={row.cert.imageWidth}
-                    height={row.cert.imageHeight}
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <figcaption>
-                    <span>{row.name} · {row.category}</span>
-                    {row.rankLabel && <b>{row.rankLabel}</b>}
-                  </figcaption>
-                </figure>
-              )}
-              </div>
-              </div>
-            </div>
+                  <span class="toc-name">{ledgerName(e)}</span>
+                </span>
+                <span class="toc-cat">{e.parsed.rank ? e.parsed.category : e.typeLabel}</span>
+                <span class="toc-year">{e.cert.date}</span>
+              </button>
+            )}
           </li>
         ))}
       </ol>
     )}
 
-    <!-- Bookplate ornament -->
-    {total > 0 && (
-      <div class="toc-end reveal-fade-up">
-        <span class="rule"></span>
-        <span class="mark">※</span>
-        <span>End of recorded chapters · more to come</span>
-        <span class="mark">※</span>
-        <span class="rule"></span>
-      </div>
-    )}
+    <p class="ach-more reveal-fade">More to come.</p>
+  </div>
+
+  <!-- Minimal lightbox for entries without a credential URL -->
+  <div id="cert-lightbox" class="cert-lightbox" role="dialog" aria-modal="true" aria-label="Certificate preview">
+    <button type="button" class="lightbox-close" aria-label="Close preview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+        <line x1="18" y1="6" x2="6" y2="18"/>
+        <line x1="6" y1="6" x2="18" y2="18"/>
+      </svg>
+    </button>
+    <figure class="lightbox-figure">
+      <img src="" alt="" />
+      <figcaption></figcaption>
+    </figure>
   </div>
 </section>
 
 <style>
-  /* ============================================================
-     Local easing not present in global.css
-     ============================================================ */
-  #certificates {
-    --ease-toc-expo: var(--ease-out-expo);
-  }
-
-  /* ============================================================
-     EMPTY STATE
-     ============================================================ */
-  .toc-empty {
-    margin-top: 3rem;
-    padding: 2.5rem 0;
-    border-bottom: 1px solid var(--border-color);
-    font-family: var(--font-serif);
-    font-style: italic;
-    color: var(--text-secondary);
-    text-align: center;
-  }
-
-  /* ============================================================
-     TOC LIST
-     ============================================================ */
-  .toc-list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
-  }
-
-  .toc-row {
-    position: relative;
-    border-bottom: 1px solid var(--border-color);
-    transition: padding 0.6s var(--ease-toc-expo),
-                background-color var(--duration-normal) var(--ease-luxury);
-    /* GSAP entrance from-state — JS animates these to opacity:1, y:0 */
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  .toc-row:last-child { border-bottom: none; }
-
-  /* Gold underline that sweeps on hover/open */
-  .toc-row::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -1px;
-    height: 1px;
-    width: 0;
-    background: var(--accent);
-    transition: width 0.9s var(--ease-toc-expo);
-  }
-  .toc-row:hover::after,
-  .toc-row.is-open::after { width: 100%; }
-
-  .toc-row.is-open {
-    background: color-mix(in srgb, var(--accent) 4%, transparent);
-  }
-
-  /* ===== The clickable line ===== */
-  .toc-line {
-    display: grid;
-    grid-template-columns: auto auto auto 1fr auto auto;
-    align-items: baseline;
-    gap: 1.25rem;
-    padding: 2.25rem 0;
-    cursor: pointer;
-    transition: padding 0.55s var(--ease-toc-expo);
-    user-select: none;
-  }
-  .toc-line:focus-visible {
-    outline: 1px dashed var(--accent);
-    outline-offset: 4px;
-  }
-  .toc-row:hover .toc-line,
-  .toc-row.is-open .toc-line {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-  }
-
-  .toc-marker {
-    width: 14px; height: 14px;
-    flex-shrink: 0;
-    align-self: center;
-    color: var(--text-secondary);
-    transition: color 350ms var(--ease-luxury),
-                transform 0.55s var(--ease-toc-expo);
-  }
-  .toc-row:hover .toc-marker,
-  .toc-row.is-open .toc-marker { color: var(--accent-text); }
-  .toc-row.is-open .toc-marker { transform: rotate(90deg); }
-
-  .toc-chapter {
+  /* ===== Featured ===== */
+  .featured-flag {
     font-size: 10px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    align-self: center;
-    white-space: nowrap;
-  }
-  .toc-chapter b {
-    color: var(--text-primary);
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    transition: color 350ms var(--ease-luxury);
-  }
-  .toc-row:hover .toc-chapter b,
-  .toc-row.is-open .toc-chapter b { color: var(--accent-text); }
-
-  .toc-title-line {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: 0.5rem 0.85rem;
-    font-family: var(--font-serif);
-    font-size: clamp(1.3rem, 2.7vw, 2.1rem);
-    line-height: 1.1;
-    letter-spacing: -0.015em;
-    color: var(--text-primary);
-    align-self: center;
-  }
-  .toc-rank {
-    color: var(--accent-text);
-    font-style: italic;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    font-size: 1.05em;
-  }
-  .toc-rank sup {
-    font-size: 0.42em;
-    font-style: normal;
-    letter-spacing: 0.05em;
-    color: color-mix(in srgb, var(--accent-text) 85%, transparent);
-    margin-left: 0.05em;
-  }
-  .toc-name { font-weight: 400; }
-  .toc-cat {
-    color: var(--text-secondary);
-    font-style: italic;
-    font-weight: 400;
-    font-size: 0.78em;
-  }
-  .toc-cat::before {
-    content: "— ";
-    color: var(--accent);
-    font-style: normal;
-    margin-right: 0.05em;
-  }
-
-  /* ===== Leader dots — dual layer (base + gold fill) ===== */
-  .toc-dots {
-    position: relative;
-    align-self: flex-end;
-    margin-bottom: 0.55rem;
-    height: 8px;
-    min-width: 60px;
-    flex: 1;
-    overflow: hidden;
-  }
-  .toc-dots::before,
-  .toc-dots::after {
-    content: "";
-    position: absolute;
-    left: 0; right: 0;
-    top: 50%;
-    height: 2px;
-    transform: translateY(-50%);
-    background-image: radial-gradient(circle, currentColor 1.1px, transparent 1.4px);
-    background-size: 8px 2px;
-    background-repeat: repeat-x;
-  }
-  .toc-dots::before { color: var(--text-secondary); opacity: 0.45; }
-  .toc-dots::after {
-    color: var(--accent);
-    opacity: 0;
-    transform: translateY(-50%) scaleX(0);
-    transform-origin: left;
-    transition: transform 0.85s var(--ease-toc-expo),
-                opacity 350ms var(--ease-luxury);
-  }
-  .toc-row:hover .toc-dots::after,
-  .toc-row.is-open .toc-dots::after {
-    opacity: 1;
-    transform: translateY(-50%) scaleX(1);
-  }
-
-  /* ===== Year (page number) — outlined italic Playfair ===== */
-  .toc-year {
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-weight: 600;
-    font-size: clamp(1.5rem, 3vw, 2.4rem);
-    line-height: 1;
-    letter-spacing: -0.02em;
-    color: transparent;
-    -webkit-text-stroke: 1px var(--text-primary);
-    align-self: center;
-    text-align: right;
-    transition: color 0.4s var(--ease-luxury),
-                -webkit-text-stroke-color 0.4s var(--ease-luxury);
-  }
-  .toc-row:hover .toc-year,
-  .toc-row.is-open .toc-year {
-    color: var(--accent-text);
-    -webkit-text-stroke-color: var(--accent-text);
-  }
-
-  .toc-paginate {
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    align-self: center;
-    white-space: nowrap;
-  }
-  .toc-paginate b {
-    color: var(--accent-text);
-    font-weight: 500;
-  }
-
-  /* ============================================================
-     EXPANDED CHAPTER BODY
-     ============================================================ */
-  /* Expand/collapse via grid-template-rows 0fr -> 1fr: the browser animates
-     to the drawer's real height (no magic max-height) and the inner content
-     is simply clipped, so no per-frame layout of the rest of the list. */
-  .toc-drawer {
-    display: grid;
-    grid-template-rows: 0fr;
-    opacity: 0;
-    transition: grid-template-rows 0.9s var(--ease-toc-expo),
-                opacity 0.55s var(--ease-luxury);
-  }
-  .toc-row.is-open .toc-drawer {
-    grid-template-rows: 1fr;
-    opacity: 1;
-  }
-  .toc-drawer-inner {
-    overflow: hidden;
-    min-height: 0;
-  }
-  .toc-chapter-body {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr;
-    gap: 3rem;
-    padding: 0.5rem 0.75rem 2.75rem;
-  }
-
-  .chapter-prose {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-    min-width: 0;
-  }
-  .chapter-issuer {
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.55rem;
-  }
-  .chapter-issuer .who {
-    color: var(--text-primary);
-    font-weight: 500;
-    letter-spacing: 0.15em;
-  }
-  .chapter-issuer .em {
-    color: var(--accent);
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: 1.1rem;
-    line-height: 0;
-    margin-top: -2px;
-    text-transform: none;
-    letter-spacing: 0;
-  }
-  .chapter-issuer .tier {
-    color: var(--accent-text);
-  }
-
-  .chapter-quote {
-    position: relative;
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: 1.1rem;
-    line-height: 1.55;
-    color: var(--text-primary);
-    padding-left: 1.25rem;
-    max-width: 54ch;
-    margin: 0;
-  }
-  .chapter-quote::before {
-    content: "";
-    position: absolute;
-    left: 0; top: 0;
-    width: 2px; height: 0;
-    background: var(--accent);
-    transition: height 1s var(--ease-toc-expo) 150ms;
-  }
-  .toc-row.is-open .chapter-quote::before { height: 100%; }
-  .chapter-quote::after {
-    content: "”";
-    position: absolute;
-    left: 0.75rem;
-    top: -0.5rem;
-    font-size: 2.5rem;
-    color: var(--accent);
-    opacity: 0.18;
-    font-style: normal;
-    line-height: 1;
-    pointer-events: none;
-  }
-
-  .chapter-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .chapter-tag {
-    font-size: 9px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--accent-text);
-    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    padding: 0.4rem 0.65rem;
-    transition: background var(--duration-fast) var(--ease-luxury),
-                color var(--duration-fast) var(--ease-luxury);
-  }
-  .chapter-tag:hover {
-    background: var(--accent);
-    color: var(--text-inverted);
-  }
-
-  .chapter-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1.5rem;
-    padding-top: 1rem;
-    margin: 0.25rem 0 0;
-    border-top: 1px dashed var(--border-color);
-  }
-  .chapter-meta div {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    min-width: 90px;
-  }
-  .chapter-meta dt {
-    font-size: 9px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--accent-text);
-    font-weight: 500;
-  }
-  .chapter-meta dd {
-    margin: 0;
-    font-family: var(--font-serif);
-    font-style: italic;
-    font-size: 0.95rem;
-    color: var(--text-primary);
+    margin-bottom: 1.5rem;
   }
 
-  .chapter-cta {
-    align-self: flex-start;
-    margin-top: 0.5rem;
+  .featured-title {
+    font-size: clamp(1.9rem, 3.4vw, 2.9rem);
+    line-height: 1.12;
+    letter-spacing: -0.015em;
+    max-width: 16ch;
+    margin-bottom: 1.4rem;
+  }
+  .featured-title em {
+    font-style: italic;
+    color: var(--accent-text);
+  }
+
+  .featured-meta {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.28em;
+    line-height: 2.1;
+    color: var(--text-secondary);
+    margin-bottom: 1.8rem;
+  }
+
+  .featured-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
     font-size: 10px;
     letter-spacing: 0.3em;
     text-transform: uppercase;
     color: var(--accent-text);
     border-bottom: 1px solid var(--accent);
-    padding-bottom: 3px;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    transition: gap 350ms var(--ease-luxury);
+    padding-bottom: 4px;
     text-decoration: none;
+    transition: gap 350ms var(--ease-luxury);
   }
-  .chapter-cta:hover { gap: 1rem; }
-  .chapter-cta svg { width: 12px; height: 12px; }
+  .featured-cta:hover { gap: 1rem; }
+  .featured-cta svg { width: 12px; height: 12px; }
 
-  /* Right column — proof image with luxury image treatment */
-  .chapter-proof {
-    position: relative;
-    align-self: start;
-    margin: 0;
-    border: 1px solid var(--accent);
-    background: var(--bg-secondary);
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.12),
-      inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-    overflow: hidden;
-    aspect-ratio: 4 / 3;
-    transform: translateX(24px);
-    opacity: 0.9;
-    transition: transform 0.9s var(--ease-toc-expo),
-                opacity 0.55s var(--ease-luxury),
-                box-shadow 0.5s var(--ease-luxury);
-  }
-  .toc-row.is-open .chapter-proof {
-    transform: translateX(0);
-    opacity: 1;
-  }
-  .chapter-proof img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  .featured-proof {
     display: block;
-    filter: grayscale(100%) contrast(1.05);
-    transition: filter 1.5s var(--ease-luxury),
-                transform 1.5s var(--ease-luxury);
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    padding: 0;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    cursor: pointer;
+    overflow: hidden;
+    transition: border-color var(--duration-normal) var(--ease-luxury);
   }
-  .chapter-proof:hover img {
-    filter: grayscale(0%) contrast(1);
-    transform: scale(1.03);
+  .featured-proof:hover { border-color: var(--accent); }
+  .featured-proof:focus-visible {
+    outline: 1px dashed var(--accent);
+    outline-offset: 4px;
   }
-  .chapter-proof:hover {
-    box-shadow:
-      0 16px 48px rgba(0, 0, 0, 0.18),
-      inset 0 0 0 1px rgba(0, 0, 0, 0.06);
-  }
-  .chapter-proof figcaption {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.6rem 0.85rem;
-    background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.65) 100%);
-    color: #f9f8f6;
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    pointer-events: none;
-  }
-  .chapter-proof figcaption b { color: var(--accent); font-weight: 500; }
 
-  /* ============================================================
-     END BOOKPLATE
-     ============================================================ */
-  .toc-end {
+  /* ===== Ledger ===== */
+  .ach-toc {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .toc-row {
+    border-bottom: 1px solid var(--border-color);
+    /* GSAP entrance from-state */
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  .toc-line {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: baseline;
+    gap: 2rem;
+    width: 100%;
+    padding: 1.75rem 0.25rem;
+    background: none;
+    border: none;
+    font: inherit;
+    text-align: left;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .toc-line:disabled { cursor: default; }
+  .toc-line:focus-visible {
+    outline: 1px dashed var(--accent);
+    outline-offset: 4px;
+  }
+
+  .toc-title {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-    padding: 3rem 0 0.5rem;
+    align-items: baseline;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    font-family: var(--font-serif);
+    font-size: clamp(1.2rem, 2vw, 1.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+  .toc-rank {
+    color: var(--accent-text);
+    font-style: italic;
+    font-weight: 600;
+  }
+  .toc-rank sup { font-size: 0.42em; font-style: normal; }
+  .toc-name { transition: color 350ms var(--ease-luxury); }
+  .toc-line:hover .toc-name { color: var(--accent-text); }
+
+  .toc-cat,
+  .toc-year {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.24em;
     color: var(--text-secondary);
+    align-self: center;
+    white-space: nowrap;
+    transition: color 350ms var(--ease-luxury);
+  }
+  .toc-line:hover .toc-year { color: var(--accent-text); }
+
+  .ach-more {
+    margin-top: 3rem;
     font-family: var(--font-serif);
     font-style: italic;
     font-size: 0.95rem;
-  }
-  .toc-end .rule { flex: 0 0 80px; height: 1px; background: var(--border-color); }
-  .toc-end .mark {
-    color: var(--accent);
-    font-style: normal;
-    letter-spacing: 0.4em;
-    font-size: 0.85rem;
+    color: var(--text-secondary);
   }
 
-  /* ============================================================
-     RESPONSIVE
-     ============================================================ */
-  @media (max-width: 900px) {
-    .toc-chapter-body {
-      grid-template-columns: 1fr;
-      gap: 1.5rem;
-    }
-    .chapter-proof {
-      order: -1;
-      max-width: 520px;
-    }
+  /* ===== Lightbox ===== */
+  .cert-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    padding: 2rem;
+    background: rgba(10, 10, 10, 0.88);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.4s var(--ease-out-expo),
+      visibility 0s linear 0.4s;
   }
+  .cert-lightbox.open {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.4s var(--ease-out-expo);
+  }
+
+  .lightbox-figure {
+    margin: 0;
+    max-width: min(920px, 92vw);
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.5s var(--ease-out-expo);
+  }
+  .cert-lightbox.open .lightbox-figure {
+    transform: scale(1) translateY(0);
+  }
+  .lightbox-figure img {
+    display: block;
+    max-width: 100%;
+    max-height: 78vh;
+    border: 1px solid rgba(249, 248, 246, 0.15);
+  }
+  .lightbox-figure figcaption {
+    margin-top: 0.9rem;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(249, 248, 246, 0.7);
+    text-align: center;
+  }
+
+  .lightbox-close {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: none;
+    border: 1px solid rgba(249, 248, 246, 0.25);
+    border-radius: 999px;
+    color: #f9f8f6;
+    cursor: pointer;
+    transition:
+      border-color var(--duration-fast) var(--ease-luxury),
+      color var(--duration-fast) var(--ease-luxury);
+  }
+  .lightbox-close:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .lightbox-close:focus-visible {
+    outline: 1px dashed var(--accent);
+    outline-offset: 4px;
+  }
+  .lightbox-close svg { width: 16px; height: 16px; }
+
+  /* ===== Responsive ===== */
   @media (max-width: 720px) {
     .toc-line {
-      grid-template-columns: auto auto 1fr auto;
-      column-gap: 0.85rem;
+      grid-template-columns: 1fr auto;
       row-gap: 0.45rem;
-      padding: 1.75rem 0;
     }
-    .toc-chapter,
-    .toc-dots,
-    .toc-paginate { display: none; }
-    .toc-title-line { font-size: 1.15rem; }
-    .toc-rank { font-size: 1.5rem; }
-    .toc-marker { align-self: center; }
-    .toc-year { font-size: 1.4rem; align-self: center; }
-    .toc-row:hover .toc-line,
-    .toc-row.is-open .toc-line {
-      padding-left: 0.5rem;
-      padding-right: 0.5rem;
-    }
-  }
-  @media (max-width: 480px) {
-    .toc-deck-row {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1rem;
+    .toc-cat {
+      grid-column: 1 / -1;
+      font-size: 9px;
     }
   }
 
-  /* ============================================================
-     REDUCED MOTION
-     ============================================================ */
+  /* ===== Reduced motion ===== */
   @media (prefers-reduced-motion: reduce) {
     .toc-row {
       opacity: 1 !important;
       transform: none !important;
     }
-    .toc-row::after,
-    .toc-marker,
-    .toc-line,
-    .toc-dots::after,
-    .toc-year,
-    .chapter-proof,
-    .chapter-proof img,
-    .chapter-quote::before,
-    .toc-toggle-all .glyph::after {
+    .cert-lightbox,
+    .lightbox-figure {
       transition: none !important;
     }
+    .lightbox-figure { transform: none; }
   }
 </style>
 
 <script>
   import { gsap, ScrollTrigger } from '../../lib/gsap-setup';
 
-  function initTableOfRecognition() {
+  function initAchievements() {
     const section = document.getElementById('certificates');
-    if (!section) return;
-    if (section.dataset.tocInit === 'true') return;
-    section.dataset.tocInit = 'true';
+    if (!section || section.dataset.achInit === 'true') return;
+    section.dataset.achInit = 'true';
 
-    const list = section.querySelector<HTMLOListElement>('#toc-list');
-    const rows = list ? Array.from(list.querySelectorAll<HTMLLIElement>('.toc-row')) : [];
-    const lines = rows.map(r => r.querySelector<HTMLDivElement>('.toc-line')).filter(Boolean) as HTMLDivElement[];
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const controller = new AbortController();
 
-    /* ============================================================
-       Open / close behavior
-       ============================================================ */
-    function setOpen(row: HTMLLIElement, open: boolean) {
-      row.classList.toggle('is-open', open);
-      const line = row.querySelector<HTMLDivElement>('.toc-line');
-      if (line) line.setAttribute('aria-expanded', open ? 'true' : 'false');
-      // Refresh ScrollTrigger so subsequent triggers re-measure positions
-      // after the drawer height changes.
-      if (typeof ScrollTrigger !== 'undefined') {
-        requestAnimationFrame(() => ScrollTrigger.refresh());
+    /* ===== Ledger entrance — staggered rise ===== */
+    const ledger = section.querySelector<HTMLOListElement>('#achievement-ledger');
+    const rows = ledger ? Array.from(ledger.querySelectorAll<HTMLLIElement>('.toc-row')) : [];
+
+    if (rows.length) {
+      if (reduced) {
+        gsap.set(rows, { opacity: 1, y: 0 });
+      } else {
+        gsap.to(rows, {
+          opacity: 1,
+          y: 0,
+          duration: 0.85,
+          ease: 'power3.out',
+          stagger: 0.12,
+          scrollTrigger: {
+            id: 'achievement-ledger-reveal',
+            trigger: ledger,
+            start: 'top 85%',
+            toggleActions: 'play none none none',
+          },
+        });
       }
     }
 
-    lines.forEach((line) => {
-      const row = line.parentElement as HTMLLIElement | null;
-      if (!row) return;
-      line.addEventListener('click', () => {
-        setOpen(row, !row.classList.contains('is-open'));
-      });
-      line.addEventListener('keydown', (e: KeyboardEvent) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setOpen(row, !row.classList.contains('is-open'));
-        }
-      });
-    });
+    /* ===== Lightbox ===== */
+    const lightbox = section.querySelector<HTMLElement>('#cert-lightbox');
+    const lightboxImg = lightbox?.querySelector<HTMLImageElement>('img') ?? null;
+    const lightboxCaption = lightbox?.querySelector<HTMLElement>('figcaption') ?? null;
+    const closeBtn = lightbox?.querySelector<HTMLButtonElement>('.lightbox-close') ?? null;
+    let lastFocus: HTMLElement | null = null;
+    let isOpen = false;
 
-    // Default: open the most recent (first row, since list is sorted desc).
-    if (rows[0]) setOpen(rows[0], true);
+    function openLightbox(src: string, alt: string, caption: string) {
+      if (!lightbox || !lightboxImg || isOpen) return;
+      isOpen = true;
+      lastFocus = document.activeElement as HTMLElement | null;
 
-    /* ============================================================
-       GSAP entrance — staggered row reveal
-       ============================================================ */
-    if (reduced) {
-      // Already handled by CSS reduced-motion override; nothing to animate.
-      return;
+      lightboxImg.src = src;
+      lightboxImg.alt = alt;
+      if (lightboxCaption) lightboxCaption.textContent = caption;
+
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      (window as any).lenis?.stop?.();
+      closeBtn?.focus();
     }
 
-    if (rows.length === 0 || !list) return;
+    function closeLightbox() {
+      if (!lightbox || !isOpen) return;
+      isOpen = false;
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+      (window as any).lenis?.start?.();
+      lastFocus?.focus?.();
+      lastFocus = null;
+    }
 
-    gsap.to(rows, {
-      opacity: 1,
-      y: 0,
-      duration: 0.85,
-      ease: 'power3.out',
-      stagger: 0.12,
-      scrollTrigger: {
-        trigger: list,
-        start: 'top 82%',
-        toggleActions: 'play none none none',
-      },
-      onComplete: () => {
-        // Release any per-row will-change hints if we'd added them.
-        rows.forEach(r => { r.style.willChange = 'auto'; });
-      },
-    });
+    section.addEventListener('click', (e) => {
+      const trigger = (e.target as Element)?.closest?.('[data-lightbox-src]') as HTMLElement | null;
+      if (trigger && trigger.dataset.lightboxSrc) {
+        e.preventDefault();
+        openLightbox(
+          trigger.dataset.lightboxSrc,
+          trigger.dataset.lightboxAlt || '',
+          trigger.dataset.lightboxCaption || '',
+        );
+      }
+    }, { signal: controller.signal });
+
+    lightbox?.addEventListener('click', (e) => {
+      // Backdrop or close button dismisses; the figure itself does not.
+      if (e.target === lightbox || (e.target as Element).closest('.lightbox-close')) {
+        closeLightbox();
+      }
+    }, { signal: controller.signal });
+
+    document.addEventListener('keydown', (e) => {
+      if (!isOpen) return;
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeLightbox();
+      } else if (e.key === 'Tab') {
+        // Single focusable control inside the dialog — keep focus on it.
+        e.preventDefault();
+        closeBtn?.focus();
+      }
+    }, { signal: controller.signal });
+
+    document.addEventListener('astro:before-swap', () => {
+      closeLightbox();
+      ScrollTrigger.getById('achievement-ledger-reveal')?.kill();
+      gsap.killTweensOf(rows);
+      controller.abort();
+      delete section.dataset.achInit;
+    }, { once: true, signal: controller.signal });
   }
 
-  document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(initTableOfRecognition, 120);
-  });
-  // For Astro page transitions
-  document.addEventListener('astro:after-swap', () => {
-    // Reset init flag on swap so the new section instance can animate
-    const sec = document.getElementById('certificates');
-    if (sec) delete sec.dataset.tocInit;
-    setTimeout(initTableOfRecognition, 120);
-  });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAchievements, { once: true });
+  } else {
+    initAchievements();
+  }
+  document.addEventListener('astro:after-swap', initAchievements);
 </script>
