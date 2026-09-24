@@ -24,6 +24,7 @@
     pointer-events: none;
     z-index: 9999;
     transform: translate(-2px, -2px);
+    opacity: 0;
     transition: opacity 0.2s ease;
     will-change: transform;
     mix-blend-mode: difference;
@@ -41,8 +42,8 @@
     transform: scale(0.9);
   }
 
-  .cursor-arrow.hidden {
-    opacity: 0;
+  .cursor-arrow.is-visible {
+    opacity: 1;
   }
 
   /* Hide on touch devices */
@@ -83,11 +84,11 @@
       return;
     }
 
-    // Only now is it safe to hide the native cursor.
-    document.body.classList.add('has-custom-cursor');
+    // Keep the native cursor until a valid position has been painted.
+    cursor.classList.remove('is-visible');
 
     // Instant, lag-free cursor follow using hardware acceleration (transform)
-    let animationFrameId: number;
+    let animationFrameId = 0;
     let mouseX = -100;
     let mouseY = -100;
     const controller = new AbortController();
@@ -98,6 +99,8 @@
       if (!animationFrameId) {
         animationFrameId = requestAnimationFrame(() => {
           cursor.style.transform = `translate3d(${mouseX}px, ${mouseY}px, 0) translate(-2px, -2px)`;
+          cursor.classList.add('is-visible');
+          document.body.classList.add('has-custom-cursor');
           animationFrameId = 0;
         });
       }
@@ -105,8 +108,13 @@
 
     const onMouseDown = () => cursor.classList.add('click');
     const onMouseUp = () => cursor.classList.remove('click');
-    const onMouseLeave = () => cursor.classList.add('hidden');
-    const onMouseEnter = () => cursor.classList.remove('hidden');
+    const onMouseLeave = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = 0;
+      cursor.classList.remove('is-visible', 'click', 'hover');
+      document.body.classList.remove('has-custom-cursor');
+    };
+    const onMouseEnter = onMouseMove;
 
     document.addEventListener('mousemove', onMouseMove, { signal: controller.signal });
     document.addEventListener('mousedown', onMouseDown, { signal: controller.signal });
@@ -132,7 +140,7 @@
     // Register cleanup
     cleanupCursor = () => {
       controller.abort();
-      document.body.classList.remove('has-custom-cursor');
+      onMouseLeave();
     };
   }
 
