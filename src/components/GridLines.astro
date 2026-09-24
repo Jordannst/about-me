@@ -1,9 +1,9 @@
 ---
 // Grid Lines - Editorial magazine aesthetic
-// Keep all four grid lines visible across viewport sizes.
+// Show all four grid lines on tablet and desktop; keep mobile uncluttered.
 ---
 
-<div id="grid-lines" class="fixed inset-0 pointer-events-none z-40 flex justify-between max-w-[1600px] mx-auto px-6 md:px-16">
+<div id="grid-lines" class="fixed inset-0 pointer-events-none z-40 hidden md:flex justify-between max-w-[1600px] mx-auto px-6 md:px-16">
   <div class="grid-line w-px h-full bg-[var(--border-color)]"></div>
   <div class="grid-line w-px h-full bg-[var(--border-color)]"></div>
   <div class="grid-line w-px h-full bg-[var(--border-color)]"></div>
